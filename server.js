@@ -17,10 +17,13 @@ const PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// 静态文件
-app.use(express.static(__dirname));
-
-// 表单提交 API
+// API 路由 — 必须在 static 之前
+app.all('/api/contact', (req, res, next) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ ok: false, errors: ['Method not allowed'] });
+  }
+  next();
+});
 app.post('/api/contact', async (req, res) => {
   const { name, org, email, interest, message } = req.body;
 
@@ -93,6 +96,9 @@ app.post('/api/contact', async (req, res) => {
 
   res.json({ ok: true, message: '感谢留言！我们会在 2–3 个工作日内回复。' });
 });
+
+// 静态文件 (API 路由之后)
+app.use(express.static(__dirname));
 
 // 启动
 app.listen(PORT, () => {
