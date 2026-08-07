@@ -1,0 +1,17 @@
+{
+  "name": "guanzhi-dongfang",
+  "version": "1.0.0",
+  "description": "观止东方 — 东方文化深度体验产品研发与供应机构 | 品牌官网",
+  "private": true,
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18"
+  }
+}
