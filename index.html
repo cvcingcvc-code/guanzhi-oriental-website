@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
   <link rel="stylesheet" href="css/fonts.css">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+SC:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script type="application/ld+json">
   {
@@ -64,22 +64,25 @@
     </div>
   </header>
   <main>
+    <!-- ============================================================
+    HERO — Cereal 编辑式杂志封面
+    ============================================================ -->
     <section class="hero" id="hero">
-      <div class="hero-cover">
-        <div class="hero-text">
-          <h1 class="hero-title">观止东方</h1>
-          <p class="hero-sub">Guanzhi Dongfang</p>
-          <div class="hero-divider"></div>
-          <p class="hero-tagline">把东方文化，转化为可以进入的旅行体验</p>
-          <p class="hero-tagline-en">Turning Chinese culture into travel experiences<br>people can enter, understand, and remember.</p>
+      <div class="hero-inner">
+        <div class="hero-content">
+          <div class="hero-bar" aria-hidden="true"></div>
+          <h1 class="hero-title">观止东方<span class="hl-comma">，</span><br>把东方文化转化为<br>可以进入的旅行体验</h1>
+          <p class="hero-sub">Turning Chinese culture into travel experiences<br>people can enter, understand, and remember.</p>
           <div class="hero-actions"><a href="#contact" class="btn btn-fill">洽谈合作</a><a href="#about" class="btn btn-line">了解更多 ↓</a></div>
         </div>
-        <div class="hero-image" aria-hidden="true">
-          <div class="hero-image-inner"></div>
-        </div>
-        <span class="hero-watermark" aria-hidden="true">文化深度体验产品研发与供应机构</span>
       </div>
+      <div class="hero-image-overlay" aria-hidden="true"></div>
+      <span class="hero-watermark" aria-hidden="true">文化深度体验产品研发与供应机构</span>
     </section>
+
+    <!-- ============================================================
+    ABOUT — 关于
+    ============================================================ -->
     <section class="about" id="about">
       <div class="container">
         <div class="label-row reveal"><span class="label-line"></span><span class="label-zh">关于</span><span class="label-en">About</span></div>
@@ -93,6 +96,10 @@
         </div>
       </div>
     </section>
+
+    <!-- ============================================================
+    CAPABILITIES — 解决方案（四项核心能力）
+    ============================================================ -->
     <section class="capabilities" id="capabilities">
       <div class="container">
         <div class="label-row reveal"><span class="label-line"></span><span class="label-zh">产品与解决方案</span><span class="label-en">Solutions</span></div>
@@ -103,6 +110,10 @@
         <div class="cap-block reveal"><div><span class="cap-num">04</span><h3 class="cap-title">交付与培训</h3></div><div class="cap-body"><p>确保文化体验产品的落地质量。为合作伙伴提供导游及文化主理人培训、产品手册、交付SOP、质量评估体系与持续迭代支持。</p><ul class="cap-list"><li>导游及文化主理人培训</li><li>产品手册与交付 SOP</li><li>质量评估与反馈体系</li><li>产品持续迭代与更新</li></ul></div></div>
       </div>
     </section>
+
+    <!-- ============================================================
+    LAB — 产品实验室（档案式）
+    ============================================================ -->
     <section class="lab" id="lab">
       <div class="container">
         <div class="label-row reveal"><span class="label-line"></span><span class="label-zh">产品实验室</span><span class="label-en">Product Studio</span></div>
@@ -110,59 +121,189 @@
         <p class="t-body reveal" style="max-width:660px">以下方向正在学术研究与产品化过程中。欢迎旅行社、学者与文化机构参与联合研发。</p>
         <p class="t-en reveal" style="max-width:680px;margin-bottom:var(--s-2xl)">Themes under active research. We welcome co-development partners.</p>
         <div class="lab-grid stagger">
-          <article class="lab-card"><div class="card-pic"><div class="card-pic-img"><span class="card-pic-tag">园林 · Garden</span></div></div><div class="card-body"><h3 class="card-title">园林：如何走进一首中国式的诗</h3><p class="card-title-en">How to step into a Chinese poem</p><p class="card-desc">从空间、时间、声音与光线四个维度，解构江南园林的审美逻辑。理解园主如何用石头、水、植物与建筑写一首可居住的诗。</p><span class="card-badge">重点研发方向</span></div></article>
-          <article class="lab-card"><div class="card-pic"><div class="card-pic-img"><span class="card-pic-tag">藏书楼 · Library</span></div></div><div class="card-body"><h3 class="card-title">藏书楼：文人如何保存知识与精神世界</h3><p class="card-title-en">How literati preserved knowledge</p><p class="card-desc">从天一阁到嘉业堂，中国藏书楼是文人构建精神世界的建筑宣言。藏书、刻书、读书构成一种完整的文化生活方式。</p><span class="card-badge">重点研发方向</span></div></article>
-          <article class="lab-card"><div class="card-pic"><div class="card-pic-img"><span class="card-pic-tag">茶与丝绸 · Tea &amp; Silk</span></div></div><div class="card-body"><h3 class="card-title">茶与丝绸：江南日常生活中的时间与手艺</h3><p class="card-title-en">Time and craft in everyday Jiangnan</p><p class="card-desc">一杯龙井从采摘到冲泡，一匹丝绸从蚕茧到成衣——时间以不同速度流动。从手艺切入，理解江南人对待时间和美的态度。</p><span class="card-badge">重点研发方向</span></div></article>
-          <article class="lab-card"><div class="card-pic"><div class="card-pic-img"><span class="card-pic-tag">运河 · Canal</span></div></div><div class="card-body"><h3 class="card-title">运河：一条水路如何塑造江南商业文明</h3><p class="card-title-en">How a waterway shaped civilization</p><p class="card-desc">京杭大运河不仅是一条运输线，更是江南商业精神、市民文化与南北交流的主动脉。沿运河行走，阅读一座座因水而兴的城镇。</p><span class="card-badge">重点研发方向</span></div></article>
-          <article class="lab-card"><div class="card-pic"><div class="card-pic-img"><span class="card-pic-tag">昆曲 · Kunqu</span></div></div><div class="card-body"><h3 class="card-title">昆曲：如何听懂中国古典戏剧的一段声音</h3><p class="card-title-en">How to hear classical Chinese opera</p><p class="card-desc">昆曲被称为"百戏之祖"。我们设计了一套从文字、音乐、身段到美学观念的阶梯式进入路径。</p><span class="card-badge">重点研发方向</span></div></article>
+          <article class="lab-card">
+            <div class="card-pic"><div class="card-pic-img"><span class="card-pic-tag">园林 · Garden</span></div></div>
+            <div class="card-body">
+              <span class="card-num">01</span>
+              <div class="card-meta"><span class="card-status">合作开发中</span><span class="card-date">2025–2026</span></div>
+              <h3 class="card-title">园林：如何走进一首中国式的诗</h3>
+              <p class="card-title-en">How to step into a Chinese poem</p>
+              <p class="card-desc">从空间、时间、声音与光线四个维度，解构江南园林的审美逻辑。理解园主如何用石头、水、植物与建筑写一首可居住的诗。</p>
+              <span class="card-badge">重点研发方向</span>
+            </div>
+          </article>
+          <article class="lab-card">
+            <div class="card-pic"><div class="card-pic-img"><span class="card-pic-tag">藏书楼 · Library</span></div></div>
+            <div class="card-body">
+              <span class="card-num">02</span>
+              <div class="card-meta"><span class="card-status">研究中</span><span class="card-date">2025–2026</span></div>
+              <h3 class="card-title">藏书楼：文人如何保存知识与精神世界</h3>
+              <p class="card-title-en">How literati preserved knowledge</p>
+              <p class="card-desc">从天一阁到嘉业堂，中国藏书楼是文人构建精神世界的建筑宣言。藏书、刻书、读书构成一种完整的文化生活方式。</p>
+              <span class="card-badge">重点研发方向</span>
+            </div>
+          </article>
+          <article class="lab-card">
+            <div class="card-pic"><div class="card-pic-img"><span class="card-pic-tag">茶与丝绸 · Tea &amp; Silk</span></div></div>
+            <div class="card-body">
+              <span class="card-num">03</span>
+              <div class="card-meta"><span class="card-status">合作开发中</span><span class="card-date">2025–2026</span></div>
+              <h3 class="card-title">茶与丝绸：江南日常生活中的时间与手艺</h3>
+              <p class="card-title-en">Time and craft in everyday Jiangnan</p>
+              <p class="card-desc">一杯龙井从采摘到冲泡，一匹丝绸从蚕茧到成衣——时间以不同速度流动。从手艺切入，理解江南人对待时间和美的态度。</p>
+              <span class="card-badge">重点研发方向</span>
+            </div>
+          </article>
+          <article class="lab-card">
+            <div class="card-pic"><div class="card-pic-img"><span class="card-pic-tag">运河 · Canal</span></div></div>
+            <div class="card-body">
+              <span class="card-num">04</span>
+              <div class="card-meta"><span class="card-status">研究中</span><span class="card-date">2026–</span></div>
+              <h3 class="card-title">运河：一条水路如何塑造江南商业文明</h3>
+              <p class="card-title-en">How a waterway shaped civilization</p>
+              <p class="card-desc">京杭大运河不仅是一条运输线，更是江南商业精神、市民文化与南北交流的主动脉。沿运河行走，阅读一座座因水而兴的城镇。</p>
+              <span class="card-badge">重点研发方向</span>
+            </div>
+          </article>
+          <article class="lab-card">
+            <div class="card-pic"><div class="card-pic-img"><span class="card-pic-tag">昆曲 · Kunqu</span></div></div>
+            <div class="card-body">
+              <span class="card-num">05</span>
+              <div class="card-meta"><span class="card-status">合作开发中</span><span class="card-date">2025–2026</span></div>
+              <h3 class="card-title">昆曲：如何听懂中国古典戏剧的一段声音</h3>
+              <p class="card-title-en">How to hear classical Chinese opera</p>
+              <p class="card-desc">昆曲被称为"百戏之祖"。我们设计了一套从文字、音乐、身段到美学观念的阶梯式进入路径。</p>
+              <span class="card-badge">重点研发方向</span>
+            </div>
+          </article>
         </div>
       </div>
     </section>
+
+    <!-- ============================================================
+    入江南 — 西湖意象抽象转译
+    ============================================================ -->
     <section class="rujiangnan" id="rujiangnan">
+      <!-- 石塔水印 -->
+      <div class="rjn-watermark" aria-hidden="true">
+        <svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="20" cy="8" rx="6" ry="4" fill="none" stroke="%232A2A28" stroke-width=".5"/>
+          <ellipse cx="20" cy="18" rx="5" ry="3.5" fill="none" stroke="%232A2A28" stroke-width=".5"/>
+          <ellipse cx="20" cy="26" rx="4" ry="3" fill="none" stroke="%232A2A28" stroke-width=".5"/>
+          <rect x="19" y="30" width="2" height="26" fill="%232A2A28" opacity=".3"/>
+          <line x1="14" y1="40" x2="26" y2="40" stroke="%232A2A28" stroke-width=".3"/>
+        </svg>
+      </div>
       <div class="container">
         <div class="rjn-grid">
           <div class="rjn-side reveal">
             <div class="label-row"><span class="label-line"></span><span class="label-zh">入江南</span><span class="label-en">Entering Jiangnan</span></div>
-            <span class="rjn-dot"></span>
+            <span class="rjn-dot" aria-hidden="true"></span>
             <p class="rjn-side-note">代表性的重点研发方向</p>
           </div>
           <div class="rjn-main reveal">
             <h2 class="h2 rjn-title">入江南，不是一条景点线路，<br>而是一套进入中国审美与<br>生活方式的文化体验产品。</h2>
             <p class="t-en">Not a sightseeing route. A system of cultural experiences<br>opening a door to Chinese aesthetics and ways of living.</p>
             <div class="rjn-cols">
-              <div class="rjn-col"><h4>什么是江南</h4><span class="rjn-rule"></span><p>江南是中国最具文化密度的区域之一。不仅是地理概念，更是一种审美范式和生活理想。一千年来定义了中国人对"好生活"的想象。</p></div>
-              <div class="rjn-col"><h4>为什么值得理解江南</h4><span class="rjn-rule"></span><p>对海外游客，江南是理解中国文人精神世界与日常生活美学的最佳入口。对国内高知客群，江南提供了"重新看见身边文化"的深度体验。</p></div>
-              <div class="rjn-col"><h4>我们如何进入江南</h4><span class="rjn-rule"></span><p>从园林的空间诗学、藏书楼的知识传统、昆曲的声音美学，到茶、丝绸与饮食中的时间哲学——形成从 90 分钟微体验至多日深度研习的不同层级产品。</p></div>
+              <div class="rjn-col">
+                <h4>什么是江南</h4>
+                <span class="rjn-rule" aria-hidden="true"></span>
+                <p>江南是中国最具文化密度的区域之一。不仅是地理概念，更是一种审美范式和生活理想。一千年来定义了中国人对"好生活"的想象。</p>
+              </div>
+              <div class="rjn-col">
+                <h4>为什么值得理解江南</h4>
+                <span class="rjn-rule" aria-hidden="true"></span>
+                <p>对海外游客，江南是理解中国文人精神世界与日常生活美学的最佳入口。对国内高知客群，江南提供了"重新看见身边文化"的深度体验。</p>
+              </div>
+              <div class="rjn-col">
+                <h4>我们如何进入江南</h4>
+                <span class="rjn-rule" aria-hidden="true"></span>
+                <p>从园林的空间诗学、藏书楼的知识传统、昆曲的声音美学，到茶、丝绸与饮食中的时间哲学——形成从 90 分钟微体验至多日深度研习的不同层级产品。</p>
+              </div>
+            </div>
+            <!-- 水波纹过渡线 -->
+            <div class="rjn-ripples" aria-hidden="true">
+              <span class="rjn-ripple"></span>
+              <span class="rjn-ripple"></span>
+              <span class="rjn-ripple"></span>
             </div>
           </div>
         </div>
       </div>
+      <!-- 湖面倒影层 -->
+      <div class="rjn-reflection" aria-hidden="true"></div>
     </section>
+
+    <!-- ============================================================
+    FOUNDER — 创始人（单栏叙事）
+    ============================================================ -->
     <section class="founder" id="founder">
       <div class="container">
         <div class="label-row reveal"><span class="label-line"></span><span class="label-zh">创始人</span><span class="label-en">Founder</span></div>
         <div class="founder-grid">
-          <div class="founder-pic reveal"><span class="founder-quote">「</span></div>
-          <div class="founder-main reveal"><h2 class="h2">一位内容策划者与资源整合者</h2><p>创始团队拥有跨文化研究、内容策划与文旅行业十余年经验。在创立观止东方之前，深度参与了中国传统文化的内容体系建设与传播实践。</p><div class="founder-card"><h4>过往项目：国风小注</h4><p>创始人曾发起并主导传统文化项目"国风小注"，策划出版《您好，孔夫子》《您好，孟子》《您好，庄子》《您好，荀子》《您好，韩非子》五本先贤系列图书，组织专家团队、文化活动与相关合作资源，积累了从学术研究到大众传播的完整经验。</p></div><p class="founder-meta">公司持有旅行社业务经营资质，主体注册于杭州。</p></div>
+          <div class="founder-pic reveal"><span class="founder-quote" aria-hidden="true">「</span></div>
+          <div class="founder-main reveal">
+            <h2 class="h2">一位内容策划者与资源整合者</h2>
+            <p>创始团队拥有跨文化研究、内容策划与文旅行业十余年经验。在创立观止东方之前，深度参与了中国传统文化的内容体系建设与传播实践。</p>
+            <div class="founder-card">
+              <h4>过往项目：国风小注</h4>
+              <p>创始人曾发起并主导传统文化项目"国风小注"，策划出版《您好，孔夫子》《您好，孟子》《您好，庄子》《您好，荀子》《您好，韩非子》五本先贤系列图书，组织专家团队、文化活动与相关合作资源，积累了从学术研究到大众传播的完整经验。</p>
+            </div>
+            <p class="founder-meta">公司持有旅行社业务经营资质，主体注册于杭州。</p>
+          </div>
         </div>
       </div>
     </section>
+
+    <!-- ============================================================
+    PARTNERSHIP — 合作
+    ============================================================ -->
     <section class="partner" id="partnership">
       <div class="container">
         <div class="label-row reveal"><span class="label-line"></span><span class="label-zh">合作</span><span class="label-en">Partnership</span></div>
-        <h2 class="h2 reveal" style="font-size:var(--fs-2xl);margin-bottom:var(--s-xs)">我们为谁服务，如何合作</h2>
-        <p class="t-en reveal" style="margin-bottom:var(--s-3xl)">Partnership &amp; Collaboration</p>
+        <div class="masthead reveal">
+          <span class="masthead-zh">我们为谁服务，如何合作</span>
+          <span class="masthead-en">Partnership &amp; Collaboration</span>
+        </div>
         <div class="partner-grid stagger">
-          <div class="partner-col"><h3 class="partner-col-title">合作对象</h3><span class="partner-rule"></span><ul class="partner-list"><li>入境旅行社及 DMC</li><li>高端定制旅行机构</li><li>酒店及度假品牌</li><li>银行、企业及会员机构</li><li>目的地及文旅机构</li><li>海外旅行社及文化教育机构</li></ul></div>
-          <div class="partner-col"><h3 class="partner-col-title">合作模式</h3><span class="partner-rule"></span><ul class="partner-list partner-modes"><li><strong>委托研发</strong> — 按需求定制</li><li><strong>联合出品</strong> — 共同投资、共享收益</li><li><strong>内容授权</strong> — 已有产品模块授权</li><li><strong>白标产品</strong> — 合作伙伴品牌交付</li><li><strong>按团/按人结算</strong> — 灵活结算</li><li><strong>培训与交付支持</strong> — 确保落地质量</li></ul></div>
+          <div class="partner-col">
+            <h3 class="partner-col-title">合作对象</h3>
+            <span class="partner-rule" aria-hidden="true"></span>
+            <ul class="partner-list">
+              <li>入境旅行社及 DMC</li>
+              <li>高端定制旅行机构</li>
+              <li>酒店及度假品牌</li>
+              <li>银行、企业及会员机构</li>
+              <li>目的地及文旅机构</li>
+              <li>海外旅行社及文化教育机构</li>
+            </ul>
+          </div>
+          <div class="partner-col">
+            <h3 class="partner-col-title">合作模式</h3>
+            <span class="partner-rule" aria-hidden="true"></span>
+            <ul class="partner-list partner-modes">
+              <li><strong>委托研发</strong> — 按需求定制</li>
+              <li><strong>联合出品</strong> — 共同投资、共享收益</li>
+              <li><strong>内容授权</strong> — 已有产品模块授权</li>
+              <li><strong>白标产品</strong> — 合作伙伴品牌交付</li>
+              <li><strong>按团/按人结算</strong> — 灵活结算</li>
+              <li><strong>培训与交付支持</strong> — 确保落地质量</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
+
+    <!-- ============================================================
+    CONTACT — 联系
+    ============================================================ -->
     <section class="contact" id="contact">
       <div class="container">
         <div class="label-row reveal"><span class="label-line"></span><span class="label-zh">联系</span><span class="label-en">Contact</span></div>
-        <h2 class="h2 reveal" style="font-size:var(--fs-2xl);margin-bottom:var(--s-xs)">期待与您交流</h2>
-        <p class="t-en reveal" style="margin-bottom:var(--s-3xl)">Let's talk about what we can build together.</p>
+        <div class="masthead reveal">
+          <span class="masthead-zh">期待与您交流</span>
+          <span class="masthead-en">Let's talk about what we can build together.</span>
+        </div>
         <div class="contact-grid">
           <div class="reveal">
             <form action="/api/contact" method="POST">
@@ -191,7 +332,15 @@
       </div>
     </section>
   </main>
-  <footer class="footer" role="contentinfo"><div class="container"><div class="footer-inner"><div class="footer-brand"><span class="footer-zh">观止东方</span><span class="footer-en">Guanzhi Dongfang</span></div><p class="footer-tag">东方文化深度体验产品研发与供应机构</p><p class="footer-copy">&copy; 2026 杭州观止东方文化传播有限公司</p></div></div></footer>
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand"><span class="footer-zh">观止东方</span><span class="footer-en">Guanzhi Dongfang</span></div>
+        <p class="footer-tag">东方文化深度体验产品研发与供应机构</p>
+        <p class="footer-copy">&copy; 2026 杭州观止东方文化传播有限公司</p>
+      </div>
+    </div>
+  </footer>
   <script src="js/main.js"></script>
 </body>
 </html>
