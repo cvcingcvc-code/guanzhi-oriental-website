@@ -8,11 +8,14 @@
 
 ## 技术栈
 
-纯静态 HTML + CSS + JS，零框架依赖。双击 `index.html` 即可预览。
-
-- **字体**: Noto Serif SC (宋体) + Source Serif 4 (英文衬线)，自托管
-- **后端**: Cloudflare Pages Functions (生产) / Express (本地开发)
-- **部署**: Cloudflare Pages
+| 层级 | 技术 |
+|------|------|
+| 框架 | React 18 + TypeScript |
+| 构建 | Vite 6 |
+| 样式 | Tailwind CSS 3 + CSS Custom Properties |
+| 动效 | GSAP 3 (ScrollTrigger) |
+| 字体 | Google Fonts: Noto Serif SC + Cormorant Garamond |
+| 部署 | Cloudflare Pages (静态站点) |
 
 ## 本地开发
 
@@ -20,33 +23,89 @@
 # 安装依赖
 npm install
 
-# 启动开发服务器 (含表单 API)
+# 启动开发服务器
 npm run dev
 # → http://localhost:3000
-```
 
-仅预览设计：直接双击 `index.html` 即可。
+# 类型检查
+npx tsc --noEmit
+
+# 生产构建
+npm run build
+
+# 预览生产构建
+npm run preview
+```
 
 ## 项目结构
 
 ```
-├── index.html          # 主页面
-├── css/style.css       # 样式系统
-├── js/main.js          # 交互逻辑
-├── fonts/              # 自托管字体
-├── images/             # 图片资源
-├── functions/api/      # Cloudflare Pages Functions
-├── server.js           # 本地开发服务器
-└── assets/             # Favicon 等
+├── index.html              # Vite 入口 HTML
+├── public/
+│   ├── images/             # 静态图片资源
+│   │   ├── hero-poster.svg
+│   │   └── Gemini_*.png    # AI 生成的文化场景图（8张）
+│   └── videos/
+│       └── hero-loop.mp4   # Hero 背景视频
+├── src/
+│   ├── main.tsx            # React 入口
+│   ├── App.tsx             # 根组件（8区块单页布局）
+│   ├── index.css           # 全局设计系统 + Tailwind
+│   └── components/
+│       ├── Navbar.tsx       # 固定导航栏（桌面+移动端）
+│       ├── HeroVideo.tsx    # Hero 全屏视频 + 三层遮罩
+│       ├── About.tsx        # 关于观止东方
+│       ├── Solutions.tsx    # 四项核心能力
+│       ├── Lab.tsx          # 产品实验室（5款文化母题）
+│       ├── CulturalScroll.tsx # 文化意境卷轴（GSAP滚动叙事）
+│       ├── Jiangnan.tsx     # 入江南（三栏文化阐述）
+│       ├── Founder.tsx      # 创始人 + 过往项目
+│       └── Contact.tsx      # 合作联系 + Footer
+├── scripts/
+│   └── download-fonts.js   # 字体下载脚本
+├── assets/
+│   └── favicon.svg         # 网站图标
+├── tailwind.config.js      # Tailwind 配置（设计Token）
+├── tsconfig.json           # TypeScript 配置
+└── vite.config.ts          # Vite 配置
 ```
 
-## 环境变量
+## 设计系统
 
-复制 `.env.example` → `.env`，填入实际 API Key。
+基于"编辑式美学"理念，安静、克制、有文献感。
 
-## 部署
+| Token | 值 | 用途 |
+|-------|-----|------|
+| `--paper` | `#F7F5F0` | 底色（宣纸米白） |
+| `--ink` | `#2A2A28` | 主文字色（墨色） |
+| `--cinnabar` | `#B54A3F` | 强调色（朱砂） |
+| `--celadon` | `#A4B5A4` | 辅助色（青瓷） |
+| `--border` | `#C5C0B6` | 线条色 |
 
-推送到 GitHub → Cloudflare Pages 自动部署。
+字体栈：`Noto Serif SC`（中文衬线）+ `Cormorant Garamond`（英文斜体）+ 系统无衬线（UI）
+
+## 页面区块（单页锚点导航）
+
+1. **Hero** — 视频背景 + 品牌宣言
+2. **About** — 机构介绍
+3. **Solutions** — 四项核心能力
+4. **Lab** — 文化母题产品卡片
+5. **CulturalScroll** — 沉浸式文化意境卷轴
+6. **Jiangnan** — 入江南三栏阐述
+7. **Founder** — 创始人 + 国风小注项目
+8. **Contact** — 合作伙伴 + 联系方式 + Footer
+
+## 待完成
+
+| 优先级 | 任务 |
+|--------|------|
+| P0 | 真实产品摄影图片（替换 Lab 卡片渐变占位） |
+| P0 | 微信二维码（替换 Contact 占位） |
+| P1 | 多页面路由（/about, /products, /contact） |
+| P1 | 英文版 i18n（/en/） |
+| P1 | 联系表单 + API 后端 |
+| P2 | 测试体系 |
+| P2 | 图片优化管线（WebP/AVIF） |
 
 ---
 

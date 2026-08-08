@@ -1,18 +1,31 @@
 {
   "name": "guanzhi-dongfang",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "观止东方 — 东方文化深度体验产品研发与供应机构 | 品牌官网",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "node server.js",
-    "start": "node server.js",
-    "build": "node scripts/build.js",
+    "dev": "vite",
+    "start": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
     "fonts": "node scripts/download-fonts.js"
   },
   "dependencies": {
-    "express": "^4.21.0"
+    "gsap": "^3.12.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.3"
+  },
   "engines": {
     "node": ">=18"
   }
