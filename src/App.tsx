@@ -16,19 +16,19 @@ const capabilities = [
 ];
 
 const motifs = [
-  { title: '园林', en: 'GARDEN', text: '如何走进一首中国式的诗', image: '/images/Gemini_Generated_Image_stds6ostds6ostds (1).png', status: '合作开发中' },
-  { title: '藏书楼', en: 'LIBRARY', text: '文人如何保存知识与精神世界', image: '/images/Gemini_Generated_Image_stds6ostds6ostds (4).png', status: '重点研发方向' },
-  { title: '茶与丝绸', en: 'TEA & SILK', text: '江南日常生活中的时间和手艺', image: '/images/Gemini_Generated_Image_stds6ostds6ostds (5).png', status: '合作开发中' },
-  { title: '昆曲', en: 'KUNQU', text: '如何听懂中国古典戏剧的一段声音', image: '/images/Gemini_Generated_Image_stds6ostds6ostds (6).png', status: '重点研发方向' },
+  { title: '园林', en: 'GARDEN', text: '如何走进一首中国式的诗', image: '/images/optimized/hero.webp', status: '合作开发中' },
+  { title: '藏书楼', en: 'LIBRARY', text: '文人如何保存知识与精神世界', image: '/images/optimized/motif-library.webp', status: '重点研发方向' },
+  { title: '茶与丝绸', en: 'TEA & SILK', text: '江南日常生活中的时间和手艺', image: '/images/optimized/motif-tea-silk.webp', status: '合作开发中' },
+  { title: '昆曲', en: 'KUNQU', text: '如何听懂中国古典戏剧的一段声音', image: '/images/optimized/motif-kunqu.webp', status: '重点研发方向' },
 ];
 
 const partners = [
-  { title: '入境旅行社及 DMC', image: '/images/partners/partner-01.png', alt: '旅行策划团队围绕地图共同研究江南文化路线' },
-  { title: '高端定制机构', image: '/images/partners/partner-02.png', alt: '文化主理人在江南园林中准备高端定制体验' },
-  { title: '酒店和度假品牌', image: '/images/partners/partner-03.png', alt: '酒店庭院中的东方文化欢迎体验场景' },
-  { title: '银行、企业及会员机构', image: '/images/partners/partner-04.png', alt: '会员客户参加小型东方文化艺术沙龙' },
-  { title: '目的地与文旅机构', image: '/images/partners/partner-05.png', alt: '文旅团队围绕建筑模型规划目的地文化产品' },
-  { title: '海外旅行社及文化教育机构', image: '/images/partners/partner-06.png', alt: '国际访客在中式藏书空间参加文化工作坊' },
+  { title: '入境旅行社及 DMC', image: '/images/optimized/partner-01.webp', alt: '旅行策划团队围绕地图共同研究江南文化路线' },
+  { title: '高端定制机构', image: '/images/optimized/partner-02.webp', alt: '文化主理人在江南园林中准备高端定制体验' },
+  { title: '酒店和度假品牌', image: '/images/optimized/partner-03.webp', alt: '酒店庭院中的东方文化欢迎体验场景' },
+  { title: '银行、企业及会员机构', image: '/images/optimized/partner-04.webp', alt: '会员客户参加小型东方文化艺术沙龙' },
+  { title: '目的地与文旅机构', image: '/images/optimized/partner-05.webp', alt: '文旅团队围绕建筑模型规划目的地文化产品' },
+  { title: '海外旅行社及文化教育机构', image: '/images/optimized/partner-06.webp', alt: '国际访客在中式藏书空间参加文化工作坊' },
 ];
 
 function scrollTo(id: string) {
@@ -111,9 +111,7 @@ export default function App() {
 
       <main>
         <section id="hero" className="hero">
-          <video className="hero-media" autoPlay muted loop playsInline preload="metadata" poster="/images/Gemini_Generated_Image_stds6ostds6ostds (1).png">
-            <source src="/videos/hero-loop.mp4" type="video/mp4" />
-          </video>
+          <img className="hero-media" src="/images/optimized/hero.webp" alt="江南园林与东方文化体验" fetchPriority="high" />
           <div className="hero-shade" />
           <div className="hero-grid" aria-hidden="true" />
           <div className="hero-content">
@@ -180,7 +178,7 @@ export default function App() {
         </section>
 
         <section id="jiangnan" className="jiangnan-section">
-          <img src="/images/Gemini_Generated_Image_stds6ostds6ostds (7).png" alt="雾色江南水乡与舟船" loading="lazy" />
+          <img src="/images/optimized/jiangnan.webp" alt="雾色江南水乡与舟船" loading="lazy" />
           <div className="jiangnan-overlay" />
           <div className="jiangnan-copy">
             <div className="section-mark"><span>04</span><p>ENTERING JIANGNAN / 入江南</p></div>
