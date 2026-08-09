@@ -22,7 +22,14 @@ const motifs = [
   { title: '昆曲', en: 'KUNQU', text: '如何听懂中国古典戏剧的一段声音', image: '/images/Gemini_Generated_Image_stds6ostds6ostds (6).png', status: '重点研发方向' },
 ];
 
-const partners = ['入境旅行社及 DMC', '高端定制机构', '酒店和度假品牌', '银行、企业及会员机构', '目的地与文旅机构', '海外旅行社及文化教育机构'];
+const partners = [
+  { title: '入境旅行社及 DMC', image: '/images/partners/partner-01.png', alt: '旅行策划团队围绕地图共同研究江南文化路线' },
+  { title: '高端定制机构', image: '/images/partners/partner-02.png', alt: '文化主理人在江南园林中准备高端定制体验' },
+  { title: '酒店和度假品牌', image: '/images/partners/partner-03.png', alt: '酒店庭院中的东方文化欢迎体验场景' },
+  { title: '银行、企业及会员机构', image: '/images/partners/partner-04.png', alt: '会员客户参加小型东方文化艺术沙龙' },
+  { title: '目的地与文旅机构', image: '/images/partners/partner-05.png', alt: '文旅团队围绕建筑模型规划目的地文化产品' },
+  { title: '海外旅行社及文化教育机构', image: '/images/partners/partner-06.png', alt: '国际访客在中式藏书空间参加文化工作坊' },
+];
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -190,7 +197,14 @@ export default function App() {
           <div className="section-mark"><span>05</span><p>FOR PARTNERS / 合作对象</p></div>
           <h2>为需要文化深度与稳定交付的机构服务</h2>
           <div className="partner-grid">
-            {partners.map((partner, index) => <div key={partner}><span>0{index + 1}</span><p>{partner}</p></div>)}
+            {partners.map((partner, index) => (
+              <article className="partner-card" key={partner.title}>
+                <img src={partner.image} alt={partner.alt} loading="lazy" />
+                <div className="partner-shade" />
+                <span>0{index + 1}</span>
+                <p>{partner.title}</p>
+              </article>
+            ))}
           </div>
         </section>
 
