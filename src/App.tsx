@@ -3,9 +3,9 @@ import { FormEvent, useEffect, useState } from 'react';
 type Theme = 'nocturne' | 'archive' | 'vermilion';
 
 const themes: { id: Theme; label: string; note: string }[] = [
-  { id: 'nocturne', label: '曜石建筑', note: '黑 / 冷白 / 建筑光' },
-  { id: 'archive', label: '墨绿档案', note: '黑 / 青瓷 / 文献感' },
-  { id: 'vermilion', label: '朱砂剧场', note: '黑 / 朱砂 / 舞台感' },
+  { id: 'nocturne', label: '夜石青瓷', note: '夜石 / 宣纸 / 青瓷' },
+  { id: 'archive', label: '墨绿文献', note: '墨绿 / 铜灰 / 文献感' },
+  { id: 'vermilion', label: '朱砂余光', note: '暖黑 / 朱砂 / 舞台光' },
 ];
 
 const capabilities = [
