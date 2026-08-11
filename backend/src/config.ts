@@ -13,7 +13,6 @@ const envSchema = z.object({
   CORS_ORIGINS: z.string().default('http://localhost:3000,http://localhost:5173'),
   PUBLIC_BASE_URL: z.url().default('http://localhost:8080'),
   UPLOAD_DIR: z.string().default('./data/uploads'),
-  MAX_UPLOAD_BYTES: z.coerce.number().int().positive().max(50 * 1024 * 1024).default(10 * 1024 * 1024),
   RESEND_API_KEY: z.string().optional(),
   NOTIFICATION_FROM: z.string().optional(),
   NOTIFICATION_TO: z.string().optional(),

@@ -76,7 +76,6 @@ npm run db:migrate
 | `CORS_ORIGINS` | 是 | 前端域名列表 | 英文逗号分隔，禁止写 `*` |
 | `PUBLIC_BASE_URL` | 是 | `https://api.example.com` | 媒体绝对地址和 OpenAPI server |
 | `UPLOAD_DIR` | 是 | `/app/data/uploads` | 上传目录 |
-| `MAX_UPLOAD_BYTES` | 否 | `10485760` | 单文件字节上限 |
 | `IP_HASH_SALT` | 是 | 无 | 至少 16 字符，用于 IP 摘要 |
 | `RESEND_API_KEY` | 否 | 空 | 新线索邮件通知 |
 | `NOTIFICATION_FROM` | 邮件启用时 | 空 | 已验证发件地址 |
@@ -102,7 +101,9 @@ npm run db:migrate
 
 ## 5. 从本地文件存储迁移到对象存储
 
-当前媒体记录将物理文件名放在 `storage_key`，页面只引用媒体 ID/URL。未来迁移 OSS、R2 或 S3 时保持 API 响应结构不变：上传实现改为对象存储，历史文件批量同步并更新公开基础地址即可，不需要改页面数据模型。
+当前媒体记录使用不可预测的随机 `storage_key`，原文件名只作为 metadata。页面只引用媒体 ID，公开 URL 由 `StorageAdapter.publicUrl()` 解析。未来迁移 OSS、R2、S3 或 COS 时保持 Content Contract 和 API 响应结构不变。
+
+媒体限额由服务端代码统一定义：图片 12 MiB、PDF 20 MiB、视频 50 MiB；Fastify multipart 总上限与最大分类上限一致，为 50 MiB。
 
 ## 6. 上线前检查
 

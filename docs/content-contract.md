@@ -63,13 +63,13 @@
 - `SEED_CONTENT_MODE=refresh`：刷新开发数据库的基准内容，仅允许非 production 环境。
 - production 明确拒绝 refresh；正式内容变更应通过 CMS 或经过审查的数据迁移完成。
 
-企业身份存在历史冲突。Seed 在确认前不覆盖 `brand.name`、`company.legalName` 和所在地。
+Seed 已集中维护正式 `brand.name`、`company.legalName`、`flagship.name`。`bootstrap` 只补缺，不覆盖 CMS；开发环境显式执行 `refresh` 才会修正历史值。所在地尚未确认，因此 Seed 不写入 `company.location`。
 
 ## 前端首批接入
 
-当前只接入：
+当前接入：
 
-- `GET /api/v1/content/pages/home?locale=zh-CN` 的 Hero block
+- `GET /api/v1/content/pages/home?locale=zh-CN` 的 Hero 与 About block（同一次请求）
 - `GET /api/v1/content/settings` 的联系邮箱
 
 React 初始状态始终使用当前静态内容。API 成功后替换对应字段；请求、数据库或响应校验失败时继续使用静态 fallback，不产生首屏空白。
@@ -87,8 +87,5 @@ React 初始状态始终使用当前静态内容。API 成功后替换对应字�
 
 ## 待甲方确认
 
-- 品牌中文标准名
-- 品牌英文标准名
-- 公司法定主体
 - 公司所在地
-- 非 Hero 区块的正式英文稿
+- About 之外首页区块的正式英文稿

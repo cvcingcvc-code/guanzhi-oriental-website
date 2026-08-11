@@ -191,7 +191,7 @@ export default function Contact() {
 
           {/* Company legal name */}
           <p className="mt-6 text-xs" style={{ color: '#9E9A90' }}>
-            杭州观止东方文化传播有限公司
+            北京见山观止文化有限公司
           </p>
         </div>
 
@@ -200,7 +200,7 @@ export default function Contact() {
           className="mt-16 pt-8 border-t border-[rgba(197,192,182,0.2)] text-center contact-reveal"
         >
           <p className="text-xs" style={{ color: '#9E9A90' }}>
-            &copy; 2026 观止东方 Guanzhi Dongfang. All rights reserved.
+            &copy; 2026 观止东方 Guanzhi Oriental. All rights reserved.
           </p>
         </footer>
       </div>

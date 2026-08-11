@@ -97,7 +97,7 @@ export default function Navbar() {
             className="text-[11px] text-[#8B867C] tracking-[0.2em] mt-0.5"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
-            Guanzhi Dongfang
+            Guanzhi Oriental
           </span>
         </a>
 

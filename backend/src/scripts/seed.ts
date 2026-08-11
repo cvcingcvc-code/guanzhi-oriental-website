@@ -35,17 +35,19 @@ const homeZh = homeContentDocumentSchema.parse({
         mimeType: 'video/mp4',
         poster: media('/images/Gemini_Generated_Image_stds6ostds6ostds (1).png', '江南园林与文化体验场景', { altEn: 'A Jiangnan garden cultural experience scene', mimeType: 'image/png' }),
       }),
-      meta: { brandCode: 'GZ · DF', locationAndYear: 'HANGZHOU / 2026' },
+      meta: { brandCode: 'GZ · ORIENTAL', locationAndYear: '2026' },
     },
     {
       type: 'about', enabled: true, order: 20,
-      lead: '我们不是传统旅行社。',
-      headingLines: ['我们研发文化体验，', '也让它被稳定交付。'],
+      lead: '观止东方 Guanzhi Oriental',
+      headingLines: ['以中国文化为核心的', '内容与体验设计公司'],
       paragraphs: [
-        '观止东方从文化研究出发，将园林、藏书、茶与丝绸、昆曲、运河等东方文化母题，转化为结构清晰、可感知、可交付的体验产品。',
-        '为旅行社、酒店、会员机构与目的地提供产品研发、内容授权、联合出品与交付支持。让合作方从一个好想法，走到一次真实发生的体验。',
+        '北京见山观止文化有限公司是一家以中国文化为核心的内容与体验设计公司。我们以“观止东方”为对外品牌，面向全球旅行及文化合作伙伴，开展文化主题与叙事研发、体验产品设计、在地资源整合、产品标准化交付与联合出品。',
+        '我们关注的不只是一次行程的安排，而是如何让人真正进入中国文化与真实生活：在山水、城市、技艺、饮食与日常之中，获得有节奏、有留白、可感知的深度体验。我们将文化内容转化为能够被理解、被交付、被持续迭代的体验产品，并通过实际运营不断验证其品质与可行性。',
+        '“入江南”是观止东方的首个旗舰样板。它以江南为起点，不将目的地简化为景点集合，而是通过文化叙事、在地资源与沉浸式体验，让旅行者更深入地理解东方生活方式。',
+        '我们期待与重视文化深度、审美表达和长期品质的旅行机构、目的地伙伴、酒店及会员社群合作，共同创造面向全球市场的中国文化体验产品。',
       ],
-      statement: { value: '10″', text: '让行业客户在十秒内看懂\n我们是谁、解决什么问题' },
+      statement: { value: '入江南', text: 'Into Jiangnan\n首个旗舰样板' },
     },
     {
       type: 'capabilities', enabled: true, order: 30,
@@ -93,26 +95,41 @@ const homeZh = homeContentDocumentSchema.parse({
       kicker: '委托研发 · 联合出品 · 内容授权 · 白标产品 · 培训与交付',
       headingLines: ['让文化不止被看见，', '而是真正被进入。'],
       cta: { label: '谈谈您的项目', action: 'inquiry', target: 'inquiry' },
-      location: '杭州 · 中国', locationEn: 'Hangzhou, China',
       email: 'hello@guanzhidongfang.com',
-      organizationDisplayName: '观止东方文化传播',
+      organizationDisplayName: '北京见山观止文化有限公司',
       copyrightYear: 2026,
     },
   ],
 });
 
-// 当前官网只有 Hero 提供了正式英文文案。其余 block 暂时沿用中文作为可见 fallback，
-// 避免伪造未经确认的英文品牌内容；CMS 上线前应由甲方提供正式英文稿。
+// Hero 与 About 已使用正式英文文案；其余 block 暂时沿用中文，等待后续分阶段确认。
+const officialAboutEn = [
+  'Beijing Jianshan Guanzhi Culture Co., Ltd. is a content and experience design company rooted in Chinese culture. Operating under the brand name Guanzhi Oriental, we work with travel and cultural partners worldwide on cultural theme and narrative development, experience design, local resource curation, standardised product delivery and co-creation.',
+  'Our work goes beyond itinerary planning. We explore how people can meaningfully encounter Chinese culture and living traditions through landscapes, cities, craftsmanship, cuisine and everyday life. We transform cultural content into experience products that can be understood, delivered, refined and sustained over time, with real-world operation serving as an ongoing test of quality.',
+  'Into Jiangnan is Guanzhi Oriental’s first flagship initiative. Beginning in Jiangnan, it approaches the destination not as a collection of attractions, but as an entry into an Eastern way of life through narrative, local knowledge and immersive experience.',
+  'We welcome collaboration with travel professionals, destination partners, hotels and member communities that value cultural depth, thoughtful aesthetics and long-term quality.',
+];
+
 const homeEn = homeContentDocumentSchema.parse({
   ...homeZh,
-  blocks: homeZh.blocks.map((block) => block.type === 'hero' ? {
-    ...block,
-    eyebrow: 'CULTURAL EXPERIENCE PRODUCT RESEARCH & DELIVERY',
-    headingLines: ['Turning Chinese culture into', 'travel experiences people can enter,', 'understand and remember.'],
-    description: 'Turning Chinese culture into travel experiences people can enter, understand and remember.',
-    primaryCta: { label: 'Explore our capabilities', action: 'scroll', target: 'solutions' },
-    secondaryCta: { label: 'Start a partnership', action: 'inquiry', target: 'inquiry' },
-  } : block),
+  blocks: homeZh.blocks.map((block) => {
+    if (block.type === 'hero') return {
+      ...block,
+      eyebrow: 'CULTURAL EXPERIENCE PRODUCT RESEARCH & DELIVERY',
+      headingLines: ['Turning Chinese culture into', 'travel experiences people can enter,', 'understand and remember.'],
+      description: 'Turning Chinese culture into travel experiences people can enter, understand and remember.',
+      primaryCta: { label: 'Explore our capabilities', action: 'scroll', target: 'solutions' },
+      secondaryCta: { label: 'Start a partnership', action: 'inquiry', target: 'inquiry' },
+    };
+    if (block.type === 'about') return {
+      ...block,
+      lead: 'Guanzhi Oriental',
+      headingLines: ['A content and experience design company', 'rooted in Chinese culture'],
+      paragraphs: officialAboutEn,
+      statement: { value: 'Into Jiangnan', text: 'First flagship initiative' },
+    };
+    return block;
+  }),
 });
 
 const prose = (paragraphs: string[]): ContentDocument => contentDocumentSchema.parse({
@@ -128,17 +145,17 @@ const content = [
   {
     slug: 'home',
     zh: { title: '观止东方', seoTitle: '观止东方｜东方文化深度体验产品研发与供应', seoDescription: '把东方文化，转化为可以进入的旅行体验。', blocks: homeZh },
-    en: { title: 'Guanzhi Dongfang', seoTitle: 'Guanzhi Dongfang | Cultural Experience Design', seoDescription: 'Turning Chinese culture into travel experiences people can enter, understand and remember.', blocks: homeEn },
+    en: { title: 'Guanzhi Oriental', seoTitle: 'Guanzhi Oriental | Cultural Experience Design', seoDescription: 'Turning Chinese culture into travel experiences people can enter, understand and remember.', blocks: homeEn },
   },
   {
     slug: 'about',
-    zh: { title: '关于观止东方', blocks: prose(['观止东方从文化研究出发，将园林、藏书、茶与丝绸、昆曲、运河等东方文化母题，转化为结构清晰、可感知、可交付的体验产品。', '为旅行社、酒店、会员机构与目的地提供产品研发、内容授权、联合出品与交付支持。让合作方从一个好想法，走到一次真实发生的体验。']) },
-    en: { title: 'About Guanzhi Dongfang', blocks: prose(['Guanzhi Dongfang develops structured, perceptible and deliverable experiences from Chinese cultural themes.', 'We support travel agencies, hotels, membership organizations and destinations through product development, content licensing, co-production and delivery.']) },
+    zh: { title: '关于观止东方', blocks: prose(homeZh.blocks.find((block) => block.type === 'about')!.paragraphs) },
+    en: { title: 'About Guanzhi Oriental', blocks: prose(officialAboutEn) },
   },
   {
     slug: 'brand-story',
     zh: { title: '在抵达之前，先学会看见', blocks: prose(['这是一个不断加快抵达的时代。', '观止东方不把文化当作行程中的装饰，也不把目的地简化为景点、酒店与交通的拼接。']) },
-    en: { title: 'Before Arrival, Learn to See', blocks: prose(['We live in an age of ever-accelerating arrival.', 'Guanzhi Dongfang does not treat culture as decoration within an itinerary.']) },
+    en: { title: 'Before Arrival, Learn to See', blocks: prose(['We live in an age of ever-accelerating arrival.', 'Guanzhi Oriental does not treat culture as decoration within an itinerary.']) },
   },
   {
     slug: 'into-jiangnan',
@@ -184,8 +201,10 @@ try {
     }
   }
 
-  // 企业身份信息存在历史冲突，在甲方确认前不由 Seed 覆盖 brand.name、company.legalName 或所在地。
   const settings = {
+    'brand.name': { 'zh-CN': '观止东方', en: 'Guanzhi Oriental' },
+    'company.legalName': { 'zh-CN': '北京见山观止文化有限公司', en: 'Beijing Jianshan Guanzhi Culture Co., Ltd.' },
+    'flagship.name': { 'zh-CN': '入江南', en: 'Into Jiangnan' },
     'contact.email': 'hello@guanzhidongfang.com',
     'site.locales': ['zh-CN', 'en'],
   };

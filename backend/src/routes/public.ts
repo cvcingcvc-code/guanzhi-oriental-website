@@ -6,7 +6,7 @@ import { config } from '../config.js';
 import { ipHash, parse } from '../lib/http.js';
 
 const localeSchema = z.enum(['zh-CN', 'en']);
-const inquirySchema = z.object({
+export const inquirySchema = z.object({
   name: z.string().trim().min(2).max(80),
   organization: z.string().trim().min(2).max(160),
   jobTitle: z.string().trim().max(80).optional(),
@@ -18,8 +18,23 @@ const inquirySchema = z.object({
   sourceUrl: z.url().max(1000).optional(),
   website: z.string().max(0).optional(),
 });
+export type InquiryInput = z.infer<typeof inquirySchema>;
 
-async function notifyInquiry(input: z.infer<typeof inquirySchema>, id: string) {
+export interface PublicRepository {
+  health(): Promise<void>;
+  createInquiry(input: Omit<InquiryInput, 'website'> & { ipHash: string }): Promise<{ id: string; createdAt: Date }>;
+}
+
+const publicRepository: PublicRepository = {
+  async health() { await db.execute('select 1'); },
+  async createInquiry(input) {
+    const [created] = await db.insert(inquiries).values(input).returning({ id: inquiries.id, createdAt: inquiries.createdAt });
+    if (!created) throw new Error('Failed to create inquiry');
+    return created;
+  },
+};
+
+async function notifyInquiry(input: InquiryInput, id: string) {
   if (!config.RESEND_API_KEY || !config.NOTIFICATION_FROM || !config.NOTIFICATION_TO) return;
   const body = [`姓名：${input.name}`, `机构：${input.organization}`, `邮箱：${input.email}`, `联系方式：${input.contact ?? '-'}`, `意向：${input.intent}`, `留言：${input.message ?? '-'}`, `线索编号：${id}`].join('\n');
   const response = await fetch('https://api.resend.com/emails', {
@@ -30,9 +45,10 @@ async function notifyInquiry(input: z.infer<typeof inquirySchema>, id: string) {
   if (!response.ok) throw new Error(`Resend returned ${response.status}`);
 }
 
-const routes: FastifyPluginAsync = async (app) => {
+export function createPublicRoutes(repository: PublicRepository, notify = notifyInquiry): FastifyPluginAsync {
+  return async (app) => {
   app.get('/health', { schema: { tags: ['公共'], summary: '服务健康检查' } }, async () => {
-    await db.execute('select 1');
+    await repository.health();
     return { ok: true, data: { status: 'healthy', timestamp: new Date().toISOString() } };
   });
 
@@ -45,11 +61,11 @@ const routes: FastifyPluginAsync = async (app) => {
   }, async (request, reply) => {
     const input = parse(inquirySchema, request.body);
     const { website: _honeypot, ...inquiry } = input;
-    const [created] = await db.insert(inquiries).values({ ...inquiry, ipHash: ipHash(request) }).returning({ id: inquiries.id, createdAt: inquiries.createdAt });
-    if (!created) throw new Error('Failed to create inquiry');
-    void notifyInquiry(input, created.id).catch((error) => request.log.error({ error, inquiryId: created.id }, 'notification failed'));
+    const created = await repository.createInquiry({ ...inquiry, ipHash: ipHash(request) });
+    void notify(input, created.id).catch((error) => request.log.error({ error, inquiryId: created.id }, 'notification failed'));
     return reply.code(201).send({ ok: true, data: created });
   });
-};
+  };
+}
 
-export default routes;
+export default createPublicRoutes(publicRepository);

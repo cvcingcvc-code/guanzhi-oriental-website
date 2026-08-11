@@ -137,7 +137,7 @@ export const contactBlockSchema = z.object({
   kicker: z.string().trim().min(1).max(300),
   headingLines: z.array(z.string().trim().min(1).max(160)).min(1).max(4),
   cta: ctaSchema,
-  location: z.string().trim().min(1).max(160),
+  location: z.string().trim().min(1).max(160).optional(),
   locationEn: z.string().trim().min(1).max(160).optional(),
   email: z.email().max(254),
   organizationDisplayName: z.string().trim().min(1).max(200),

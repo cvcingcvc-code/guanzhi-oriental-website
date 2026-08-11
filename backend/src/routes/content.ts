@@ -1,11 +1,11 @@
 import type { FastifyPluginAsync } from 'fastify';
-import { config } from '../config.js';
 import { localeSchema, parseContentDocument } from '../content/contract.js';
 import { publicContentRepository, type PublicContentRepository } from '../content/repository.js';
 import { buildPublicContentPage, buildPublicSettings, mediaAssetIds } from '../content/public-dto.js';
 import { HttpError, parse } from '../lib/http.js';
+import { mediaStorage } from '../media/index.js';
 
-export function createContentRoutes(repository: PublicContentRepository): FastifyPluginAsync {
+export function createContentRoutes(repository: PublicContentRepository, resolvePublicMediaUrl = (storageKey: string) => mediaStorage.publicUrl(storageKey)): FastifyPluginAsync {
   return async (app) => {
     app.get('/content/pages/:slug', {
       schema: {
@@ -21,7 +21,7 @@ export function createContentRoutes(repository: PublicContentRepository): Fastif
       if (!row) return reply.code(404).send({ ok: false, error: { code: 'NOT_FOUND', message: '页面不存在、尚未发布或缺少该语言版本' } });
       const document = parseContentDocument(slug, row.blocks);
       const assets = await repository.findMediaAssets(mediaAssetIds(document));
-      const data = buildPublicContentPage(row, document, assets, (storageKey) => `${config.PUBLIC_BASE_URL}/uploads/${storageKey}`);
+      const data = buildPublicContentPage(row, document, assets, resolvePublicMediaUrl);
       return { ok: true, data };
     });
 

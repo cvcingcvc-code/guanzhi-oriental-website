@@ -172,6 +172,7 @@ export const publicSettingsSchema = z.object({
   locales: z.array(localeSchema).min(1),
   brand: z.object({ name: localizedTextSchema.optional() }).strict(),
   company: z.object({ legalName: localizedTextSchema.optional(), location: localizedTextSchema.optional() }).strict(),
+  flagship: z.object({ name: localizedTextSchema.optional() }).strict(),
   contact: z.object({ email: z.email().max(254).optional() }).strict(),
 }).strict();
 export type PublicSettings = z.infer<typeof publicSettingsSchema>;
@@ -192,6 +193,7 @@ export function buildPublicSettings(rows: Array<{ key: string; value: unknown }>
     locales: locales.length ? locales : ['zh-CN', 'en'],
     brand: { name: localized('brand.name') },
     company: { legalName: localized('company.legalName'), location: localized('company.location') },
+    flagship: { name: localized('flagship.name') },
     contact: { email: emailResult.success ? emailResult.data : undefined },
   });
 }

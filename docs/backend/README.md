@@ -29,7 +29,7 @@
 | 校验 | Zod 4 | API 输入及环境变量校验 |
 | 认证 | JWT + bcrypt | 后台账号认证；密码只存哈希 |
 | 接口文档 | OpenAPI + Swagger UI | 启动后访问 `/docs` |
-| 文件存储 | 本地持久卷（首期） | 后续通过存储层替换为 OSS/R2/S3 |
+| 文件存储 | Storage Adapter + 本地持久卷（首期） | 后续替换为 OSS/R2/S3/COS |
 | 容器 | Docker Compose | 本地和云服务器保持一致 |
 
 ## 3. 总体结构
@@ -84,7 +84,10 @@ guanzhi-dongfang/
 - 公共读取只返回已发布内容；后台保存草稿后需要显式发布。
 - 发布前要求中英文都存在，避免线上出现半套双语页面。
 - 数据库结构变更必须生成迁移文件，不在生产环境使用自动 `push`。
-- 上传目录使用 Docker volume，重启容器不会丢文件；云上可再切换到对象存储。
+- 媒体业务通过 `StorageAdapter` 读写，首期 `LocalStorageAdapter` 使用 Docker volume；云上可替换对象存储。
+- 上传根据文件内容识别真实 MIME；只允许 JPEG、PNG、WebP、AVIF、MP4、PDF，明确禁止 SVG。
+- 图片上限 12 MiB、PDF 20 MiB、视频 50 MiB；图片入库时读取 width/height。
+- 软删除前扫描页面 Content Document 的 `assetId` 引用；后续规模扩大时再建立持久化引用索引。
 - 不保存原始访问 IP，只保存带盐 SHA-256 摘要用于反垃圾和审计。
 - 数据库不暴露公网；生产流量由 Nginx/Caddy 终止 HTTPS 后转发给 API。
 
@@ -98,4 +101,4 @@ guanzhi-dongfang/
 
 ## 7. 当前前端接入边界
 
-当前只将 Site Settings 的联系邮箱和 `home` 页面 Hero block 接入 API。React 初始状态使用静态 fallback，API 或数据库故障不会造成首屏空白。About、Capabilities、Motifs、Jiangnan、Partners 和 Contact 正文仍保持当前静态渲染，等待分阶段验收。
+当前将 Site Settings 联系邮箱及 `home` 页 Hero、About block 接入 API。Hero 与 About 共用一次首页请求，React 初始状态使用正式静态 fallback，API 或数据库故障不会造成首屏空白。Capabilities、Motifs、Jiangnan、Partners 和 Contact 正文仍保持静态渲染，等待分阶段验收。

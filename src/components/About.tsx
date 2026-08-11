@@ -86,7 +86,7 @@ export default function About() {
 
             {/* Qualification note */}
             <p className="mt-8 text-sm leading-relaxed" style={{ color: '#9E9A90' }}>
-              杭州观止东方文化传播有限公司，具备旅行社业务经营资质。
+              运营主体：北京见山观止文化有限公司
               公司旗下拥有内容策划、产品研发、文化转译与交付培训四大核心团队。
             </p>
           </div>

@@ -122,14 +122,14 @@ Authorization: Bearer <login 返回的 token>
 
 公共页面响应不会直接暴露数据库 JSONB。响应包含 `version`、`slug`、`locale`、SEO 和解析后的 blocks。媒体字段输出公开 `url`、对应语言的 `alt`、MIME、宽高和可选 poster；不会向前端暴露本机文件路径。
 
-公共设置响应只包含白名单字段：locale、品牌名、法定主体、所在地和联系邮箱。后台私有设置不会被原样返回。
+公共设置响应只包含白名单字段：locale、品牌名、法定主体、旗舰名称、所在地和联系邮箱。后台私有设置不会被原样返回。
 
 ## 5. 媒体、线索与设置
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
 | GET | `/admin/media` | 媒体列表 |
-| POST | `/admin/media?altZh=...&altEn=...&category=...` | `multipart/form-data` 上传单文件 |
+| POST | `/admin/media?altZh=...&altEn=...` | `multipart/form-data` 上传单文件 |
 | DELETE | `/admin/media/{id}` | 软删除媒体 |
 | GET | `/admin/inquiries` | 线索分页；支持 `page`、`pageSize`、`status`、`q` |
 | GET | `/admin/inquiries/{id}` | 线索详情与跟进记录 |
@@ -143,7 +143,9 @@ Authorization: Bearer <login 返回的 token>
 
 线索状态：`NEW`、`CONTACTED`、`NEGOTIATING`、`WON`、`CLOSED`。
 
-允许上传：JPEG、PNG、WebP、AVIF、SVG、MP4、PDF；默认上限 10 MiB。当前文件地址为 `/uploads/{storageKey}`。
+允许上传：JPEG、PNG、WebP、AVIF、MP4、PDF；首期明确禁止 SVG。服务端按文件内容识别真实 MIME，并拒绝声明 MIME 与真实类型不一致的文件。图片上限 12 MiB、PDF 20 MiB、视频 50 MiB，multipart 总上限 50 MiB。
+
+图片入库时记录真实 `mimeType`、`sizeBytes`、`width`、`height`。Admin Media DTO 返回稳定的公开字段和 URL，不返回 `storageKey` 或服务器路径。软删除前会阻止仍被页面 Content Document 引用的媒体。
 
 ## 6. 常用状态码
 

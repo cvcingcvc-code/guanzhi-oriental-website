@@ -1,4 +1,4 @@
-# 观止东方 · Guanzhi Dongfang
+# 观止东方 · Guanzhi Oriental
 
 **东方文化深度体验产品研发与供应机构**
 
@@ -107,7 +107,7 @@ npm run preview
 
 `public/server/index.js` 是旧 API prototype，仅保留历史兼容；正式后端是 `backend/src/server.ts` 下的 Fastify API。
 
-当前 Hero 与公开站点设置已接入数据库内容 API，并保留静态 fallback。合作咨询已接入 `POST /api/v1/inquiries`。
+当前 Hero、About 与公开站点设置已接入数据库内容 API，并保留静态 fallback。合作咨询已接入 `POST /api/v1/inquiries`。
 
 ## 待完成
 
@@ -123,4 +123,4 @@ npm run preview
 
 ---
 
-© 2026 杭州观止东方文化传播有限公司
+观止东方 Guanzhi Oriental｜运营主体：北京见山观止文化有限公司

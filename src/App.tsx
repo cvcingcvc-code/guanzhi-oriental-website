@@ -1,5 +1,5 @@
 import { FormEvent, Fragment, useEffect, useRef, useState } from 'react';
-import { FALLBACK_HERO, FALLBACK_SETTINGS, loadHeroOrFallback, loadSiteSettingsOrFallback, type ContentCta } from './content/public-content';
+import { FALLBACK_ABOUT, FALLBACK_HERO, FALLBACK_SETTINGS, loadHomeContentOrFallback, loadSiteSettingsOrFallback, type ContentCta } from './content/public-content';
 
 type Theme = 'nocturne' | 'archive' | 'vermilion';
 
@@ -45,6 +45,7 @@ export default function App() {
   const [submitError, setSubmitError] = useState('');
   const submittingRef = useRef(false);
   const [hero, setHero] = useState(FALLBACK_HERO);
+  const [about, setAbout] = useState(FALLBACK_ABOUT);
   const [siteSettings, setSiteSettings] = useState(FALLBACK_SETTINGS);
   const contactEmail = siteSettings.contact.email ?? FALLBACK_SETTINGS.contact.email!;
 
@@ -66,7 +67,12 @@ export default function App() {
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
-    void loadHeroOrFallback(controller.signal).then((value) => { if (active) setHero(value); });
+    void loadHomeContentOrFallback(controller.signal).then((value) => {
+      if (active) {
+        setHero(value.hero);
+        setAbout(value.about);
+      }
+    });
     void loadSiteSettingsOrFallback(controller.signal).then((value) => { if (active) setSiteSettings(value); });
     return () => {
       active = false;
@@ -158,7 +164,7 @@ export default function App() {
       <header className="topbar">
         <a className="brand" href="#hero" aria-label="观止东方首页">
           <span className="brand-cn">观止东方</span>
-          <span className="brand-en">GUANZHI DONGFANG</span>
+          <span className="brand-en">GUANZHI ORIENTAL</span>
         </a>
         <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label="主要导航">
           <a href="#about" onClick={() => setMenuOpen(false)}>关于</a>
@@ -203,21 +209,20 @@ export default function App() {
               {hero.secondaryCta && <button className="text-action" onClick={() => runCta(hero.secondaryCta!)}>{hero.secondaryCta.label} <i>→</i></button>}
             </div>
           </div>
-          <div className="hero-index"><span>{hero.meta?.brandCode ?? 'GZ · DF'}</span><span>{hero.meta?.locationAndYear ?? 'HANGZHOU / 2026'}</span></div>
+          <div className="hero-index"><span>{hero.meta?.brandCode ?? 'GZ · ORIENTAL'}</span>{hero.meta?.locationAndYear && <span>{hero.meta.locationAndYear}</span>}</div>
           <button className="scroll-cue" onClick={() => scrollTo('about')} aria-label="滚动至下一部分"><span>SCROLL TO EXPLORE</span><i>↓</i></button>
         </section>
 
         <section id="about" className="section intro-section">
           <div className="section-mark"><span>01</span><p>ABOUT / 定位</p></div>
           <div className="intro-copy">
-            <p className="lead">我们不是传统旅行社。</p>
-            <h2>我们研发文化体验，<br />也让它被稳定交付。</h2>
+            <p className="lead">{about.lead}</p>
+            <h2>{about.headingLines.map((line, index) => <Fragment key={line}>{line}{index < about.headingLines.length - 1 && <br />}</Fragment>)}</h2>
             <div className="intro-columns">
-              <p>观止东方从文化研究出发，将园林、藏书、茶与丝绸、昆曲、运河等东方文化母题，转化为结构清晰、可感知、可交付的体验产品。</p>
-              <p>为旅行社、酒店、会员机构与目的地提供产品研发、内容授权、联合出品与交付支持。让合作方从一个好想法，走到一次真实发生的体验。</p>
+              {about.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
             </div>
           </div>
-          <div className="intro-statement"><strong>10″</strong><span>让行业客户在十秒内看懂<br />我们是谁、解决什么问题</span></div>
+          {about.statement && <div className="intro-statement"><strong>{about.statement.value}</strong><span>{about.statement.text.split('\n').map((line, index) => <Fragment key={line}>{line}{index < about.statement!.text.split('\n').length - 1 && <br />}</Fragment>)}</span></div>}
         </section>
 
         <section id="solutions" className="section solutions-section">
@@ -292,9 +297,9 @@ export default function App() {
           <h2>让文化不止被看见，<br />而是真正被进入。</h2>
           <button className="contact-button" onClick={() => setFormOpen(true)}>谈谈您的项目 <span>↗</span></button>
           <div className="contact-meta">
-            <p>杭州 · 中国<br /><span>Hangzhou, China</span></p>
+            <p>观止东方<br /><span>Guanzhi Oriental</span></p>
             <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
-            <p>观止东方文化传播<br /><span>© 2026</span></p>
+            <p>运营主体：北京见山观止文化有限公司<br /><span>© 2026</span></p>
           </div>
         </section>
       </main>
