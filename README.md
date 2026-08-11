@@ -17,6 +17,22 @@
 | 字体 | Google Fonts: Noto Serif SC + Cormorant Garamond |
 | 部署 | Cloudflare Pages (静态站点) |
 
+### 后端基础框架
+
+后端已按独立服务放在 `backend/`，不影响当前 React 单页前端。技术栈为 Node.js 24、TypeScript、Fastify、PostgreSQL、Drizzle ORM、JWT 和 Docker Compose，覆盖双语 CMS、媒体、合作线索、账号权限和操作日志。
+
+- 架构与项目结构：[`docs/backend/README.md`](docs/backend/README.md)
+- API 说明：[`docs/backend/API.md`](docs/backend/API.md)
+- 配置与部署：[`docs/backend/CONFIGURATION.md`](docs/backend/CONFIGURATION.md)
+- Docker 配置模板：`.env.docker.example`
+
+本地启动后端：
+
+```bash
+cp .env.docker.example .env
+docker compose up --build -d
+```
+
 ## 本地开发
 
 ```bash

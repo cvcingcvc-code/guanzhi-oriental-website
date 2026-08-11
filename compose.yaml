@@ -1,0 +1,61 @@
+name: guanzhi-dongfang
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-guanzhi}
+      POSTGRES_USER: ${POSTGRES_USER:-guanzhi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-development-password}
+      TZ: Asia/Shanghai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-guanzhi} -d ${POSTGRES_DB:-guanzhi}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./backend
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 8080
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-guanzhi}:${POSTGRES_PASSWORD:-local-development-password}@db:5432/${POSTGRES_DB:-guanzhi}
+      DB_POOL_MAX: ${DB_POOL_MAX:-10}
+      JWT_SECRET: ${JWT_SECRET:-local-only-jwt-secret-replace-before-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@guanzhi.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-this-local-password}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:5173}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
+      UPLOAD_DIR: /app/data/uploads
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-10485760}
+      IP_HASH_SALT: ${IP_HASH_SALT:-local-ip-hash-secret-replace-production}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      NOTIFICATION_FROM: ${NOTIFICATION_FROM:-}
+      NOTIFICATION_TO: ${NOTIFICATION_TO:-}
+    command: ["sh", "-c", "node dist/scripts/migrate.js && node dist/scripts/seed.js && node dist/server.js"]
+    volumes:
+      - backend_uploads:/app/data/uploads
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  backend_uploads:

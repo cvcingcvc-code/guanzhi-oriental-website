@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 
 type Theme = 'nocturne' | 'archive' | 'vermilion';
 
@@ -42,6 +42,7 @@ export default function App() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -60,22 +61,73 @@ export default function App() {
 
   const submitInquiry = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (submittingRef.current) return;
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get('name') ?? '').trim();
+    const contact = String(formData.get('contact') ?? '').trim();
+    const brief = String(formData.get('brief') ?? '').trim();
+
+    if (name.length < 2) {
+      setSubmitError('请填写至少 2 个字符的姓名或机构名称。');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) {
+      setSubmitError('请填写有效的联系邮箱。');
+      return;
+    }
+
+    if (brief.length < 6) {
+      setSubmitError('请至少用 6 个字符简要说明合作需求。');
+      return;
+    }
+
+    submittingRef.current = true;
     setSubmitting(true);
     setSubmitError('');
-    const form = event.currentTarget;
-    const payload = Object.fromEntries(new FormData(form).entries());
+
+    const payload = {
+      name,
+      organization: name,
+      email: contact,
+      contact,
+      intent: 'other',
+      message: brief,
+      locale: 'zh-CN',
+      sourceUrl: window.location.href,
+      website: '',
+    };
+
     try {
-      const response = await fetch('/api/inquiries', {
+      const response = await fetch('/api/v1/inquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) throw new Error('request failed');
+
+      const result = await response.json().catch(() => null) as {
+        ok?: boolean;
+        error?: { message?: string };
+      } | null;
+
+      if (!response.ok || !result?.ok) {
+        if (response.status === 422) throw new Error('提交内容未通过校验，请检查姓名、邮箱和合作需求。');
+        if (response.status === 429) throw new Error('提交过于频繁，请稍后再试。');
+        if (response.status >= 500) throw new Error('服务暂时不可用，请稍后重试。');
+        throw new Error(result?.error?.message || '提交失败，请检查填写内容。');
+      }
+
       setSubmitted(true);
       form.reset();
-    } catch {
-      setSubmitError('暂时无法提交，请直接邮件联系 hello@guanzhidongfang.com');
+    } catch (error) {
+      const message = error instanceof Error && !/fetch|network/i.test(error.message)
+        ? error.message
+        : '网络连接失败，请稍后重试或直接邮件联系 hello@guanzhidongfang.com。';
+      setSubmitError(message);
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };
@@ -226,12 +278,12 @@ export default function App() {
           <div className="inquiry-modal" role="dialog" aria-modal="true" aria-labelledby="inquiry-title" onMouseDown={(event) => event.stopPropagation()}>
             <button className="modal-close" onClick={() => setFormOpen(false)} aria-label="关闭合作咨询">×</button>
             {submitted ? (
-              <div className="submitted"><span>已记录</span><h2>感谢您的关注。</h2><p>预览版本已完成表单交互。正式上线时将接入企业邮箱与客户线索系统。</p><button onClick={() => { setSubmitted(false); setFormOpen(false); }}>返回网站</button></div>
+              <div className="submitted"><span>提交成功</span><h2>感谢您的关注。</h2><p>合作咨询已成功提交，我们会尽快与您联系。</p><button onClick={() => { setSubmitted(false); setFormOpen(false); }}>返回网站</button></div>
             ) : (
-              <form onSubmit={submitInquiry}>
+              <form onSubmit={submitInquiry} noValidate>
                 <p>PARTNERSHIP INQUIRY</p><h2 id="inquiry-title">谈谈您的项目</h2>
                 <label>您的称呼<input name="name" required autoFocus placeholder="姓名 / 机构" /></label>
-                <label>联系方式<input name="contact" required placeholder="电话 / 微信 / 邮箱" /></label>
+                <label>联系邮箱<input name="contact" type="email" required autoComplete="email" placeholder="name@example.com" /></label>
                 <label>合作需求<textarea name="brief" required rows={4} placeholder="项目背景、目标客群与大致时间" /></label>
                 {submitError && <div className="form-error" role="alert">{submitError}</div>}
                 <button type="submit" disabled={submitting}>{submitting ? '正在提交…' : '提交合作意向'} <span>→</span></button>
