@@ -36,8 +36,8 @@ Authorization: Bearer <login 返回的 token>
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
 | GET | `/health` | 健康检查，同时验证数据库连接 |
-| GET | `/content/pages/{slug}?locale=zh-CN` | 读取已发布页面；语言为 `zh-CN` 或 `en` |
-| GET | `/content/settings` | 读取站点公共设置 |
+| GET | `/content/pages/{slug}?locale=zh-CN` | 读取经过 Content Contract 验证和媒体解析的已发布页面 |
+| GET | `/content/settings` | 读取明确允许公开的站点设置 DTO |
 | POST | `/inquiries` | 提交合作需求；单 IP 每小时最多 5 次 |
 
 合作需求示例：
@@ -97,22 +97,32 @@ Authorization: Bearer <login 返回的 token>
       "title": "关于观止东方",
       "seoTitle": "关于观止东方｜观止东方",
       "seoDescription": "公司介绍",
-      "blocks": [
-        { "type": "heading", "text": "我们是谁" },
-        { "type": "prose", "paragraphs": ["第一段", "第二段"] },
-        { "type": "image", "mediaId": "媒体 UUID", "caption": "图片说明" }
-      ]
+      "blocks": {
+        "version": 1,
+        "blocks": [
+          { "type": "prose", "enabled": true, "order": 10, "paragraphs": ["第一段", "第二段"] }
+        ]
+      }
     },
     {
       "locale": "en",
       "title": "About Guanzhi Oriental",
-      "blocks": []
+      "blocks": {
+        "version": 1,
+        "blocks": [
+          { "type": "prose", "enabled": true, "order": 10, "paragraphs": ["Paragraph one"] }
+        ]
+      }
     }
   ]
 }
 ```
 
-`blocks` 是内容协议，不限定为富文本 HTML。后续接前端时再固定允许的块类型和字段，避免第一阶段过早绑定页面编辑器。
+`blocks` 已采用版本 1 Typed Content Contract。首页要求 `hero`、`about`、`capabilities`、`motifs`、`jiangnan`、`partners`、`contact` 各一个；其他页面当前支持 `prose` 和 `lead`。协议不接受任意 HTML、React 组件名、CSS class 或动画参数。
+
+公共页面响应不会直接暴露数据库 JSONB。响应包含 `version`、`slug`、`locale`、SEO 和解析后的 blocks。媒体字段输出公开 `url`、对应语言的 `alt`、MIME、宽高和可选 poster；不会向前端暴露本机文件路径。
+
+公共设置响应只包含白名单字段：locale、品牌名、法定主体、所在地和联系邮箱。后台私有设置不会被原样返回。
 
 ## 5. 媒体、线索与设置
 

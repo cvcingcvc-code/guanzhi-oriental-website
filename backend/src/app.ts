@@ -13,6 +13,7 @@ import { config } from './config.js';
 import authPlugin from './plugins/auth.js';
 import authRoutes from './routes/auth.js';
 import publicRoutes from './routes/public.js';
+import contentRoutes from './routes/content.js';
 import adminPagesRoutes from './routes/admin-pages.js';
 import adminMediaRoutes from './routes/admin-media.js';
 import adminInquiriesRoutes from './routes/admin-inquiries.js';
@@ -47,6 +48,7 @@ export async function buildApp() {
   await app.register(fastifyStatic, { root: path.resolve(config.UPLOAD_DIR), prefix: '/uploads/', decorateReply: false });
 
   await app.register(publicRoutes, { prefix: '/api/v1' });
+  await app.register(contentRoutes, { prefix: '/api/v1' });
   await app.register(authRoutes, { prefix: '/api/v1/admin/auth' });
   await app.register(adminPagesRoutes, { prefix: '/api/v1/admin/pages' });
   await app.register(adminMediaRoutes, { prefix: '/api/v1/admin/media' });

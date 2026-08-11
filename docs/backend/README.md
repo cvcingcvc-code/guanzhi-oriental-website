@@ -74,7 +74,9 @@ guanzhi-dongfang/
 | `site_settings` | 公司名称、邮箱、导航等全局配置 |
 | `audit_logs` | 关键后台操作审计 |
 
-页面正文使用 `blocks` JSON 数组。这样前端仍可保持精致的定制组件，同时由后台修改文字、图片引用和排序，而不必把官网变成通用页面搭建器。
+页面正文使用版本化 `ContentDocument`。`page_translations.blocks` 当前结构为 `{ version: 1, blocks: [...] }`，由 `backend/src/content/contract.ts` 的 Zod Schema 严格验证，不再接受未经验证的任意对象数组。首页固定支持 `hero`、`about`、`capabilities`、`motifs`、`jiangnan`、`partners` 和 `contact` typed blocks。
+
+数据库模型不直接作为公共 API 响应。公共内容路由会验证内容协议、解析媒体引用并输出稳定 Public DTO。详见 [`../content-contract.md`](../content-contract.md)。
 
 ## 5. 设计原则
 
@@ -93,3 +95,7 @@ guanzhi-dongfang/
 3. 云服务器测试：域名、HTTPS、备份、日志轮转和监控。
 4. 媒体量增加后切换 OSS/R2/S3，并增加 WebP/AVIF 异步处理。
 5. 有真实运营数据后再决定是否增加邮件模板、企业微信通知或更完整的 CRM。
+
+## 7. 当前前端接入边界
+
+当前只将 Site Settings 的联系邮箱和 `home` 页面 Hero block 接入 API。React 初始状态使用静态 fallback，API 或数据库故障不会造成首屏空白。About、Capabilities、Motifs、Jiangnan、Partners 和 Contact 正文仍保持当前静态渲染，等待分阶段验收。

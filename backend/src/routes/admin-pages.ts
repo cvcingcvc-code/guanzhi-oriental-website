@@ -5,15 +5,25 @@ import { db } from '../db/client.js';
 import { pages, pageRevisions, pageTranslations } from '../db/schema.js';
 import { audit } from '../lib/audit.js';
 import { HttpError, parse } from '../lib/http.js';
+import { contentDocumentSchema, homeContentDocumentSchema } from '../content/contract.js';
 
 const translationSchema = z.object({
   locale: z.enum(['zh-CN', 'en']),
   title: z.string().trim().min(1).max(200),
   seoTitle: z.string().trim().max(200).nullable().optional(),
   seoDescription: z.string().trim().max(500).nullable().optional(),
-  blocks: z.array(z.record(z.string(), z.unknown())).default([]),
+  blocks: contentDocumentSchema,
 });
-const pageWriteSchema = z.object({ slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(120), translations: z.array(translationSchema).min(1).max(2) });
+const pageWriteSchema = z.object({ slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(120), translations: z.array(translationSchema).min(1).max(2) })
+  .superRefine((input, context) => {
+    if (input.slug !== 'home') return;
+    input.translations.forEach((translation, index) => {
+      const result = homeContentDocumentSchema.safeParse(translation.blocks);
+      if (!result.success) {
+        context.addIssue({ code: 'custom', path: ['translations', index, 'blocks'], message: 'home 页面必须包含完整首页 Typed Blocks' });
+      }
+    });
+  });
 const idSchema = z.uuid();
 
 async function getPage(id: string) {

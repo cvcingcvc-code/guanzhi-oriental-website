@@ -24,6 +24,7 @@
 - 架构与项目结构：[`docs/backend/README.md`](docs/backend/README.md)
 - API 说明：[`docs/backend/API.md`](docs/backend/API.md)
 - 配置与部署：[`docs/backend/CONFIGURATION.md`](docs/backend/CONFIGURATION.md)
+- 内容协议与首批接入：[`docs/content-contract.md`](docs/content-contract.md)
 - Docker 配置模板：`.env.docker.example`
 
 本地启动后端：
@@ -65,18 +66,10 @@ npm run preview
 │       └── hero-loop.mp4   # Hero 背景视频
 ├── src/
 │   ├── main.tsx            # React 入口
-│   ├── App.tsx             # 根组件（8区块单页布局）
+│   ├── App.tsx             # 当前根组件（7个主区块单页布局）
 │   ├── index.css           # 全局设计系统 + Tailwind
 │   └── components/
-│       ├── Navbar.tsx       # 固定导航栏（桌面+移动端）
-│       ├── HeroVideo.tsx    # Hero 全屏视频 + 三层遮罩
-│       ├── About.tsx        # 关于观止东方
-│       ├── Solutions.tsx    # 四项核心能力
-│       ├── Lab.tsx          # 产品实验室（5款文化母题）
-│       ├── CulturalScroll.tsx # 文化意境卷轴（GSAP滚动叙事）
-│       ├── Jiangnan.tsx     # 入江南（三栏文化阐述）
-│       ├── Founder.tsx      # 创始人 + 过往项目
-│       └── Contact.tsx      # 合作联系 + Footer
+│       └── *.tsx             # Legacy：历史页面组件，当前 App.tsx 未导入
 ├── scripts/
 │   └── download-fonts.js   # 字体下载脚本
 ├── assets/
@@ -100,16 +93,21 @@ npm run preview
 
 字体栈：`Noto Serif SC`（中文衬线）+ `Cormorant Garamond`（英文斜体）+ 系统无衬线（UI）
 
-## 页面区块（单页锚点导航）
+## 当前页面区块（以 `src/App.tsx` 为准）
 
 1. **Hero** — 视频背景 + 品牌宣言
 2. **About** — 机构介绍
 3. **Solutions** — 四项核心能力
-4. **Lab** — 文化母题产品卡片
-5. **CulturalScroll** — 沉浸式文化意境卷轴
-6. **Jiangnan** — 入江南三栏阐述
-7. **Founder** — 创始人 + 国风小注项目
-8. **Contact** — 合作伙伴 + 联系方式 + Footer
+4. **Product Studio** — 文化母题产品卡片
+5. **Jiangnan** — 入江南旗舰内容
+6. **For Partners** — 合作对象
+7. **Contact** — 合作 CTA、联系方式、Footer 与咨询弹窗
+
+`src/components/` 保留旧版 GSAP/Tailwind 设计实现，属于 legacy，不是当前渲染入口。不要依据这些旧组件判断线上内容。
+
+`public/server/index.js` 是旧 API prototype，仅保留历史兼容；正式后端是 `backend/src/server.ts` 下的 Fastify API。
+
+当前 Hero 与公开站点设置已接入数据库内容 API，并保留静态 fallback。合作咨询已接入 `POST /api/v1/inquiries`。
 
 ## 待完成
 
@@ -119,7 +117,7 @@ npm run preview
 | P0 | 微信二维码（替换 Contact 占位） |
 | P1 | 多页面路由（/about, /products, /contact） |
 | P1 | 英文版 i18n（/en/） |
-| P1 | 联系表单 + API 后端 |
+| P1 | 逐块接入 typed content API |
 | P2 | 测试体系 |
 | P2 | 图片优化管线（WebP/AVIF） |
 

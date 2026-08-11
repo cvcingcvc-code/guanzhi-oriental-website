@@ -1,8 +1,7 @@
 import type { FastifyPluginAsync } from 'fastify';
-import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db/client.js';
-import { inquiries, pages, pageTranslations, siteSettings } from '../db/schema.js';
+import { inquiries } from '../db/schema.js';
 import { config } from '../config.js';
 import { ipHash, parse } from '../lib/http.js';
 
@@ -35,23 +34,6 @@ const routes: FastifyPluginAsync = async (app) => {
   app.get('/health', { schema: { tags: ['公共'], summary: '服务健康检查' } }, async () => {
     await db.execute('select 1');
     return { ok: true, data: { status: 'healthy', timestamp: new Date().toISOString() } };
-  });
-
-  app.get('/content/pages/:slug', {
-    schema: { tags: ['公共内容'], summary: '读取已发布双语页面', params: { type: 'object', required: ['slug'], properties: { slug: { type: 'string' } } }, querystring: { type: 'object', properties: { locale: { type: 'string', enum: ['zh-CN', 'en'], default: 'zh-CN' } } } },
-  }, async (request, reply) => {
-    const { slug } = request.params as { slug: string };
-    const locale = parse(localeSchema, (request.query as { locale?: string }).locale ?? 'zh-CN');
-    const [row] = await db.select({ id: pages.id, slug: pages.slug, publishedAt: pages.publishedAt, title: pageTranslations.title, seoTitle: pageTranslations.seoTitle, seoDescription: pageTranslations.seoDescription, blocks: pageTranslations.blocks })
-      .from(pages).innerJoin(pageTranslations, and(eq(pageTranslations.pageId, pages.id), eq(pageTranslations.locale, locale)))
-      .where(and(eq(pages.slug, slug), eq(pages.status, 'PUBLISHED'))).limit(1);
-    if (!row) return reply.code(404).send({ ok: false, error: { code: 'NOT_FOUND', message: '页面不存在或尚未发布' } });
-    return { ok: true, data: { ...row, locale } };
-  });
-
-  app.get('/content/settings', { schema: { tags: ['公共内容'], summary: '读取站点公共设置' } }, async () => {
-    const rows = await db.select({ key: siteSettings.key, value: siteSettings.value }).from(siteSettings);
-    return { ok: true, data: Object.fromEntries(rows.map((row) => [row.key, row.value])) };
   });
 
   app.post('/inquiries', {

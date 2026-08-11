@@ -1,4 +1,5 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, Fragment, useEffect, useRef, useState } from 'react';
+import { FALLBACK_HERO, FALLBACK_SETTINGS, loadHeroOrFallback, loadSiteSettingsOrFallback, type ContentCta } from './content/public-content';
 
 type Theme = 'nocturne' | 'archive' | 'vermilion';
 
@@ -43,6 +44,9 @@ export default function App() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const submittingRef = useRef(false);
+  const [hero, setHero] = useState(FALLBACK_HERO);
+  const [siteSettings, setSiteSettings] = useState(FALLBACK_SETTINGS);
+  const contactEmail = siteSettings.contact.email ?? FALLBACK_SETTINGS.contact.email!;
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -58,6 +62,23 @@ export default function App() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [formOpen]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+    void loadHeroOrFallback(controller.signal).then((value) => { if (active) setHero(value); });
+    void loadSiteSettingsOrFallback(controller.signal).then((value) => { if (active) setSiteSettings(value); });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, []);
+
+  const runCta = (cta: ContentCta) => {
+    if (cta.action === 'scroll') scrollTo(cta.target);
+    else if (cta.action === 'inquiry') setFormOpen(true);
+    else window.location.assign(cta.target);
+  };
 
   const submitInquiry = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -124,7 +145,7 @@ export default function App() {
     } catch (error) {
       const message = error instanceof Error && !/fetch|network/i.test(error.message)
         ? error.message
-        : '网络连接失败，请稍后重试或直接邮件联系 hello@guanzhidongfang.com。';
+        : `网络连接失败，请稍后重试或直接邮件联系 ${contactEmail}。`;
       setSubmitError(message);
     } finally {
       submittingRef.current = false;
@@ -163,21 +184,26 @@ export default function App() {
 
       <main>
         <section id="hero" className="hero">
-          <video className="hero-media" autoPlay muted loop playsInline preload="metadata" poster="/images/Gemini_Generated_Image_stds6ostds6ostds (1).png">
-            <source src="/videos/hero-loop.mp4" type="video/mp4" />
+          <video className="hero-media" autoPlay muted loop playsInline preload="metadata" poster={hero.media.poster?.url}>
+            <source src={hero.media.url} type={hero.media.mimeType ?? 'video/mp4'} />
           </video>
           <div className="hero-shade" />
           <div className="hero-grid" aria-hidden="true" />
           <div className="hero-content">
-            <p className="eyebrow"><span />东方文化深度体验产品研发与供应机构</p>
-            <h1>把东方文化，<br />转化为可以进入的<br /><em>旅行体验。</em></h1>
-            <p className="hero-en">Turning Chinese culture into travel experiences people can enter, understand and remember.</p>
+            <p className="eyebrow"><span />{hero.eyebrow}</p>
+            <h1>{hero.headingLines.map((line, index) => (
+              <Fragment key={`${index}-${line}`}>
+                {index === hero.emphasisLine ? <em>{line}</em> : line}
+                {index < hero.headingLines.length - 1 && <br />}
+              </Fragment>
+            ))}</h1>
+            <p className="hero-en">{hero.description}</p>
             <div className="hero-actions">
-              <button className="primary-action" onClick={() => scrollTo('solutions')}>了解核心能力 <i>↗</i></button>
-              <button className="text-action" onClick={() => setFormOpen(true)}>发起合作咨询 <i>→</i></button>
+              <button className="primary-action" onClick={() => runCta(hero.primaryCta)}>{hero.primaryCta.label} <i>↗</i></button>
+              {hero.secondaryCta && <button className="text-action" onClick={() => runCta(hero.secondaryCta!)}>{hero.secondaryCta.label} <i>→</i></button>}
             </div>
           </div>
-          <div className="hero-index"><span>GZ · DF</span><span>HANGZHOU / 2026</span></div>
+          <div className="hero-index"><span>{hero.meta?.brandCode ?? 'GZ · DF'}</span><span>{hero.meta?.locationAndYear ?? 'HANGZHOU / 2026'}</span></div>
           <button className="scroll-cue" onClick={() => scrollTo('about')} aria-label="滚动至下一部分"><span>SCROLL TO EXPLORE</span><i>↓</i></button>
         </section>
 
@@ -267,7 +293,7 @@ export default function App() {
           <button className="contact-button" onClick={() => setFormOpen(true)}>谈谈您的项目 <span>↗</span></button>
           <div className="contact-meta">
             <p>杭州 · 中国<br /><span>Hangzhou, China</span></p>
-            <a href="mailto:hello@guanzhidongfang.com">hello@guanzhidongfang.com</a>
+            <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
             <p>观止东方文化传播<br /><span>© 2026</span></p>
           </div>
         </section>

@@ -1,6 +1,8 @@
-# 观止东方 · 后台管理系统草案
+# 观止东方 · 后台管理系统草案（Historical Proposal / Deprecated Architecture）
 
 > 版本: v0.1-draft | 日期: 2026-08-09 | 状态: 待评审
+
+> **历史说明：** 本文记录早期 Cloudflare Workers / D1 / R2 架构设想，不代表当前实现。当前正式后端以 Fastify、Drizzle ORM 和 PostgreSQL 为准，接口与数据模型请以 `docs/backend/` 和实际代码为准。本文仅作为需求与设计讨论档案保留。
 
 ---
 

@@ -41,6 +41,15 @@ npm run db:seed
 npm run dev
 ```
 
+Seed 默认使用安全的 `bootstrap` 模式，只插入缺失数据，不覆盖 CMS 已编辑内容。需要将本地开发数据库刷新为当前官网基准内容时，可显式执行：
+
+```powershell
+$env:SEED_CONTENT_MODE='refresh'
+npm run db:seed
+```
+
+`refresh` 在 `NODE_ENV=production` 下会被拒绝。生产内容更新必须通过 CMS 或经过审查的数据迁移完成。
+
 生成新的数据库迁移：
 
 ```powershell
