@@ -41,6 +41,7 @@ export const ctaSchema = z.object({
 const blockBase = {
   enabled: z.boolean().default(true),
   order: z.number().int().min(0).max(1000),
+  contentStatus: z.enum(['approved', 'draft']).default('draft'),
 };
 
 export const heroBlockSchema = z.object({
@@ -121,6 +122,7 @@ export const partnerItemSchema = z.object({
   enabled: z.boolean().default(true),
   order: z.number().int().min(0).max(1000),
   title: z.string().trim().min(1).max(160),
+  description: z.string().trim().min(1).max(500).optional(),
   media: mediaReferenceSchema,
 }).strict();
 
@@ -136,12 +138,14 @@ export const contactBlockSchema = z.object({
   ...blockBase,
   kicker: z.string().trim().min(1).max(300),
   headingLines: z.array(z.string().trim().min(1).max(160)).min(1).max(4),
+  description: z.string().trim().min(1).max(1000).optional(),
   cta: ctaSchema,
+  // Deprecated compatibility fields. New content uses Public Settings for identity/contact data.
   location: z.string().trim().min(1).max(160).optional(),
   locationEn: z.string().trim().min(1).max(160).optional(),
-  email: z.email().max(254),
-  organizationDisplayName: z.string().trim().min(1).max(200),
-  copyrightYear: z.number().int().min(2000).max(2200),
+  email: z.email().max(254).optional(),
+  organizationDisplayName: z.string().trim().min(1).max(200).optional(),
+  copyrightYear: z.number().int().min(2000).max(2200).optional(),
 }).strict();
 
 export const proseBlockSchema = z.object({
@@ -177,12 +181,27 @@ export const contentDocumentSchema = z.object({
 const requiredHomeBlockTypes = ['hero', 'about', 'capabilities', 'motifs', 'jiangnan', 'partners', 'contact'] as const;
 
 export const homeContentDocumentSchema = contentDocumentSchema.superRefine((document, context) => {
+  if (document.blocks.length !== requiredHomeBlockTypes.length) {
+    context.addIssue({ code: 'custom', path: ['blocks'], message: '首页必须且只能包含七个规定的 Typed Blocks' });
+  }
   const types = document.blocks.map((block) => block.type);
   for (const type of requiredHomeBlockTypes) {
     const count = types.filter((candidate) => candidate === type).length;
     if (count !== 1) {
       context.addIssue({ code: 'custom', path: ['blocks'], message: `首页必须且只能包含一个 ${type} block` });
     }
+  }
+  const orderedTypes = [...document.blocks]
+    .sort((left, right) => left.order - right.order)
+    .map((block) => block.type);
+  if (orderedTypes.some((type, index) => type !== requiredHomeBlockTypes[index])) {
+    context.addIssue({ code: 'custom', path: ['blocks'], message: '首页 block order 必须保持规定的视觉区块顺序' });
+  }
+  if (new Set(document.blocks.map((block) => block.order)).size !== document.blocks.length) {
+    context.addIssue({ code: 'custom', path: ['blocks'], message: '首页 block order 不得重复' });
+  }
+  if (!document.blocks.some((block) => block.enabled)) {
+    context.addIssue({ code: 'custom', path: ['blocks'], message: '首页必须至少启用一个 block' });
   }
 });
 

@@ -40,6 +40,15 @@ Authorization: Bearer <login 返回的 token>
 | GET | `/content/settings` | 读取明确允许公开的站点设置 DTO |
 | POST | `/inquiries` | 提交合作需求；单 IP 每小时最多 5 次 |
 
+首页双语读取固定使用：
+
+```http
+GET /content/pages/home?locale=zh-CN
+GET /content/pages/home?locale=en
+```
+
+数据库中的 Homepage Content Document 固定包含七种唯一 block，并要求至少一个 block 启用。Public DTO 会过滤 `enabled=false` 的 block/item 并按 `order` 排序，但仍以单次响应返回目标 locale 的全部可见首页内容，不为 Hero、About、Capabilities、Motifs、Jiangnan、Partners、Contact 分别请求。客户端在整个非空响应通过校验后原子替换；请求失败时保留当前已加载内容。Footer 身份信息独立于 Contact block 的 enabled 状态。
+
 合作需求示例：
 
 ```json
@@ -120,9 +129,20 @@ Authorization: Bearer <login 返回的 token>
 
 `blocks` 已采用版本 1 Typed Content Contract。首页要求 `hero`、`about`、`capabilities`、`motifs`、`jiangnan`、`partners`、`contact` 各一个；其他页面当前支持 `prose` 和 `lead`。协议不接受任意 HTML、React 组件名、CSS class 或动画参数。
 
+首页每个 block 包含 `contentStatus`：
+
+- `approved`：已确认内容。
+- `draft`：待甲方确认的可替换初稿。
+
+当前英文 About 为 `approved`；英文 Hero、Capabilities、Motifs、Jiangnan、Partners、Contact 均为 `draft`。替换正式英文稿只需更新 `home / en` 的相应 block，无需调整 API、React 或数据库表。
+
 公共页面响应不会直接暴露数据库 JSONB。响应包含 `version`、`slug`、`locale`、SEO 和解析后的 blocks。媒体字段输出公开 `url`、对应语言的 `alt`、MIME、宽高和可选 poster；不会向前端暴露本机文件路径。
 
 公共设置响应只包含白名单字段：locale、品牌名、法定主体、旗舰名称、所在地和联系邮箱。后台私有设置不会被原样返回。
+
+Contact block 的 Public DTO 只包含 heading/kicker/description/CTA 等页面内容。品牌名、法定主体、联系邮箱及未来确认后的所在地必须从 `/content/settings` 读取；Contact block 不再作为这些身份信息的重复来源。当前 Settings 不提供未确认的 location。
+
+本阶段沿用 `page_translations.blocks` 的 JSONB 结构，没有数据库 Schema 变更，也没有新增 Migration。
 
 ## 5. 媒体、线索与设置
 

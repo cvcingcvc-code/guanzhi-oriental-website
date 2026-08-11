@@ -44,6 +44,13 @@ const publicJiangnanBlockSchema = jiangnanBlockSchema.omit({ media: true }).exte
 const publicPartnersBlockSchema = partnersBlockSchema.extend({
   items: z.array(partnersBlockSchema.shape.items.element.omit({ media: true }).extend({ media: publicMediaReferenceSchema }).strict()),
 }).strict();
+const publicContactBlockSchema = contactBlockSchema.omit({
+  location: true,
+  locationEn: true,
+  email: true,
+  organizationDisplayName: true,
+  copyrightYear: true,
+}).strict();
 
 export const publicContentBlockSchema = z.discriminatedUnion('type', [
   publicHeroBlockSchema,
@@ -52,7 +59,7 @@ export const publicContentBlockSchema = z.discriminatedUnion('type', [
   publicMotifsBlockSchema,
   publicJiangnanBlockSchema,
   publicPartnersBlockSchema,
-  contactBlockSchema,
+  publicContactBlockSchema,
   proseBlockSchema,
   leadBlockSchema,
 ]);
@@ -145,6 +152,10 @@ export function buildPublicContentPage(
     .map((block) => {
       if (block.type === 'capabilities' || block.type === 'motifs' || block.type === 'partners') {
         return { ...block, items: block.items.filter((item) => item.enabled).sort((left, right) => left.order - right.order) };
+      }
+      if (block.type === 'contact') {
+        const { location: _location, locationEn: _locationEn, email: _email, organizationDisplayName: _organization, copyrightYear: _year, ...content } = block;
+        return content;
       }
       return block;
     });

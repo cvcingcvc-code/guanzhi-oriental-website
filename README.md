@@ -93,7 +93,7 @@ npm run preview
 
 字体栈：`Noto Serif SC`（中文衬线）+ `Cormorant Garamond`（英文斜体）+ 系统无衬线（UI）
 
-## 当前页面区块（以 `src/App.tsx` 为准）
+## 当前首页区块
 
 1. **Hero** — 视频背景 + 品牌宣言
 2. **About** — 机构介绍
@@ -103,11 +103,31 @@ npm run preview
 6. **For Partners** — 合作对象
 7. **Contact** — 合作 CTA、联系方式、Footer 与咨询弹窗
 
+页面布局、动画、响应式和交互仍由 `src/App.tsx` 控制；以下七个区块的展示内容来自同一个经过校验的 Homepage Content Document：
+
+- `hero`
+- `about`
+- `capabilities`
+- `motifs`
+- `jiangnan`
+- `partners`
+- `contact`
+
 `src/components/` 保留旧版 GSAP/Tailwind 设计实现，属于 legacy，不是当前渲染入口。不要依据这些旧组件判断线上内容。
 
 `public/server/index.js` 是旧 API prototype，仅保留历史兼容；正式后端是 `backend/src/server.ts` 下的 Fastify API。
 
-当前 Hero、About 与公开站点设置已接入数据库内容 API，并保留静态 fallback。合作咨询已接入 `POST /api/v1/inquiries`。
+首页 `zh-CN` 与 `en` 均通过一次 `GET /api/v1/content/pages/home?locale=...` 请求读取整份首页内容，不为每个区块单独请求。数据库 Document 固定包含七种唯一 block；Public DTO 会过滤 `enabled=false` 的 block/item，React 对可见子集条件渲染。语言切换成功后原子替换整个响应；失败时保留当前可用内容，不清空页面。
+
+品牌名、法定主体、旗舰名称和联系邮箱不属于 Contact block，统一由 `GET /api/v1/content/settings` 提供。合作咨询已接入 `POST /api/v1/inquiries`。
+
+英文 About 是甲方确认的正式文案，其 `contentStatus` 为 `approved`；英文 Hero、Capabilities、Motifs、Jiangnan、Partners、Contact 为待甲方确认的首期 draft，其 `contentStatus` 为 `draft`。状态保留在内容元数据和交接记录中，不作为官网访客提示；正式稿可逐块替换且无需改代码。
+
+本阶段沿用现有 PostgreSQL JSONB Content Document，没有修改数据库 Schema，也没有新增 Migration。
+
+### Fallback 策略
+
+迁移期间保留完整中文首页静态 fallback 和公开 Settings fallback，保证初次请求或 API 故障时仍有可用页面；语言切换失败则保留切换前的完整 Document。正式 CMS 编辑、发布和可用性监控稳定后，应逐步移除代码中与 CMS 重复的七块正式正文，只长期保留最小品牌/联系信息、通用故障提示和“保留当前已加载内容”的容错逻辑，避免维护两套独立官网文案。
 
 ## 待完成
 
@@ -116,8 +136,8 @@ npm run preview
 | P0 | 真实产品摄影图片（替换 Lab 卡片渐变占位） |
 | P0 | 微信二维码（替换 Contact 占位） |
 | P1 | 多页面路由（/about, /products, /contact） |
-| P1 | 英文版 i18n（/en/） |
-| P1 | 逐块接入 typed content API |
+| P1 | 甲方确认 About 之外六个英文首页 block 的 draft 文案 |
+| P1 | 首页 Content Editor UI（继续复用现有 Typed Contract） |
 | P2 | 测试体系 |
 | P2 | 图片优化管线（WebP/AVIF） |
 

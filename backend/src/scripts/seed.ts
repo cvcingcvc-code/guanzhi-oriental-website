@@ -24,7 +24,7 @@ const homeZh = homeContentDocumentSchema.parse({
   version: 1,
   blocks: [
     {
-      type: 'hero', enabled: true, order: 10,
+      type: 'hero', enabled: true, order: 10, contentStatus: 'approved',
       eyebrow: '东方文化深度体验产品研发与供应机构',
       headingLines: ['把东方文化，', '转化为可以进入的', '旅行体验。'], emphasisLine: 2,
       description: 'Turning Chinese culture into travel experiences people can enter, understand and remember.',
@@ -35,10 +35,10 @@ const homeZh = homeContentDocumentSchema.parse({
         mimeType: 'video/mp4',
         poster: media('/images/Gemini_Generated_Image_stds6ostds6ostds (1).png', '江南园林与文化体验场景', { altEn: 'A Jiangnan garden cultural experience scene', mimeType: 'image/png' }),
       }),
-      meta: { brandCode: 'GZ · ORIENTAL', locationAndYear: '2026' },
+      meta: { brandCode: 'Guanzhi Oriental', locationAndYear: '2026' },
     },
     {
-      type: 'about', enabled: true, order: 20,
+      type: 'about', enabled: true, order: 20, contentStatus: 'approved',
       lead: '观止东方 Guanzhi Oriental',
       headingLines: ['以中国文化为核心的', '内容与体验设计公司'],
       paragraphs: [
@@ -50,7 +50,7 @@ const homeZh = homeContentDocumentSchema.parse({
       statement: { value: '入江南', text: 'Into Jiangnan\n首个旗舰样板' },
     },
     {
-      type: 'capabilities', enabled: true, order: 30,
+      type: 'capabilities', enabled: true, order: 30, contentStatus: 'approved',
       headingLines: ['从文化母题', '到可交付产品'],
       intro: '研究不是终点。我们把内容、流程、人员与标准组织成可复用的产品系统。',
       items: [
@@ -61,7 +61,7 @@ const homeZh = homeContentDocumentSchema.parse({
       ],
     },
     {
-      type: 'motifs', enabled: true, order: 40,
+      type: 'motifs', enabled: true, order: 40, contentStatus: 'approved',
       headingLines: ['正在生长的', '文化体验母题'],
       intro: '不虚构成熟案例。以下方向正在研究、验证与联合开发中。',
       items: [
@@ -72,37 +72,34 @@ const homeZh = homeContentDocumentSchema.parse({
       ],
     },
     {
-      type: 'jiangnan', enabled: true, order: 50,
+      type: 'jiangnan', enabled: true, order: 50, contentStatus: 'approved',
       headingLines: ['不是一条景点线路，', '而是一套进入中国审美', '与生活方式的文化体验。'],
       description: '从园林、藏书、昆曲、饮食与日常生活进入江南。为海外游客与国内高知客群建立一条理解中国文化的安静入口。',
       cta: { label: '共同研发「入江南」', action: 'scroll', target: 'contact' },
       media: media('/images/Gemini_Generated_Image_stds6ostds6ostds (7).png', '雾色江南水乡与舟船', { altEn: 'A misty Jiangnan water town and boat', mimeType: 'image/png' }),
     },
     {
-      type: 'partners', enabled: true, order: 60,
+      type: 'partners', enabled: true, order: 60, contentStatus: 'approved',
       heading: '为需要文化深度与稳定交付的机构服务',
       items: [
-        { id: 'inbound-dmc', enabled: true, order: 10, title: '入境旅行社及 DMC', media: media('/images/partners/partner-01.png', '旅行策划团队围绕地图共同研究江南文化路线', { mimeType: 'image/png' }) },
-        { id: 'bespoke-travel', enabled: true, order: 20, title: '高端定制机构', media: media('/images/partners/partner-02.png', '文化主理人在江南园林中准备高端定制体验', { mimeType: 'image/png' }) },
-        { id: 'hospitality', enabled: true, order: 30, title: '酒店和度假品牌', media: media('/images/partners/partner-03.png', '酒店庭院中的东方文化欢迎体验场景', { mimeType: 'image/png' }) },
-        { id: 'membership', enabled: true, order: 40, title: '银行、企业及会员机构', media: media('/images/partners/partner-04.png', '会员客户参加小型东方文化艺术沙龙', { mimeType: 'image/png' }) },
-        { id: 'destination', enabled: true, order: 50, title: '目的地与文旅机构', media: media('/images/partners/partner-05.png', '文旅团队围绕建筑模型规划目的地文化产品', { mimeType: 'image/png' }) },
-        { id: 'overseas-education', enabled: true, order: 60, title: '海外旅行社及文化教育机构', media: media('/images/partners/partner-06.png', '国际访客在中式藏书空间参加文化工作坊', { mimeType: 'image/png' }) },
+        { id: 'inbound-dmc', enabled: true, order: 10, title: '入境旅行社及 DMC', media: media('/images/partners/partner-01.png', '旅行策划团队围绕地图共同研究江南文化路线', { altEn: 'Travel planners studying a Jiangnan cultural route around a map', mimeType: 'image/png' }) },
+        { id: 'bespoke-travel', enabled: true, order: 20, title: '高端定制机构', media: media('/images/partners/partner-02.png', '文化主理人在江南园林中准备高端定制体验', { altEn: 'A cultural host preparing a bespoke experience in a Jiangnan garden', mimeType: 'image/png' }) },
+        { id: 'hospitality', enabled: true, order: 30, title: '酒店和度假品牌', media: media('/images/partners/partner-03.png', '酒店庭院中的东方文化欢迎体验场景', { altEn: 'A Chinese cultural welcome experience in a hotel courtyard', mimeType: 'image/png' }) },
+        { id: 'membership', enabled: true, order: 40, title: '银行、企业及会员机构', media: media('/images/partners/partner-04.png', '会员客户参加小型东方文化艺术沙龙', { altEn: 'Members attending an intimate Chinese culture and arts salon', mimeType: 'image/png' }) },
+        { id: 'destination', enabled: true, order: 50, title: '目的地与文旅机构', media: media('/images/partners/partner-05.png', '文旅团队围绕建筑模型规划目的地文化产品', { altEn: 'A destination team planning a cultural product around an architectural model', mimeType: 'image/png' }) },
+        { id: 'overseas-education', enabled: true, order: 60, title: '海外旅行社及文化教育机构', media: media('/images/partners/partner-06.png', '国际访客在中式藏书空间参加文化工作坊', { altEn: 'International visitors joining a cultural workshop in a Chinese library setting', mimeType: 'image/png' }) },
       ],
     },
     {
-      type: 'contact', enabled: true, order: 70,
+      type: 'contact', enabled: true, order: 70, contentStatus: 'approved',
       kicker: '委托研发 · 联合出品 · 内容授权 · 白标产品 · 培训与交付',
       headingLines: ['让文化不止被看见，', '而是真正被进入。'],
       cta: { label: '谈谈您的项目', action: 'inquiry', target: 'inquiry' },
-      email: 'hello@guanzhidongfang.com',
-      organizationDisplayName: '北京见山观止文化有限公司',
-      copyrightYear: 2026,
     },
   ],
 });
 
-// Hero 与 About 已使用正式英文文案；其余 block 暂时沿用中文，等待后续分阶段确认。
+// About 段落为甲方正式英文稿；其余英文首页内容为可替换的 draft，等待甲方确认。
 const officialAboutEn = [
   'Beijing Jianshan Guanzhi Culture Co., Ltd. is a content and experience design company rooted in Chinese culture. Operating under the brand name Guanzhi Oriental, we work with travel and cultural partners worldwide on cultural theme and narrative development, experience design, local resource curation, standardised product delivery and co-creation.',
   'Our work goes beyond itinerary planning. We explore how people can meaningfully encounter Chinese culture and living traditions through landscapes, cities, craftsmanship, cuisine and everyday life. We transform cultural content into experience products that can be understood, delivered, refined and sustained over time, with real-world operation serving as an ongoing test of quality.',
@@ -115,6 +112,7 @@ const homeEn = homeContentDocumentSchema.parse({
   blocks: homeZh.blocks.map((block) => {
     if (block.type === 'hero') return {
       ...block,
+      contentStatus: 'draft' as const,
       eyebrow: 'CULTURAL EXPERIENCE PRODUCT RESEARCH & DELIVERY',
       headingLines: ['Turning Chinese culture into', 'travel experiences people can enter,', 'understand and remember.'],
       description: 'Turning Chinese culture into travel experiences people can enter, understand and remember.',
@@ -123,22 +121,74 @@ const homeEn = homeContentDocumentSchema.parse({
     };
     if (block.type === 'about') return {
       ...block,
+      contentStatus: 'approved' as const,
       lead: 'Guanzhi Oriental',
       headingLines: ['A content and experience design company', 'rooted in Chinese culture'],
       paragraphs: officialAboutEn,
       statement: { value: 'Into Jiangnan', text: 'First flagship initiative' },
     };
-    return block;
+    if (block.type === 'capabilities') return {
+      ...block,
+      contentStatus: 'draft' as const,
+      headingLines: ['From cultural themes', 'to deliverable products'],
+      intro: 'Research is not the endpoint. We organize content, processes, people and standards into reusable product systems.',
+      items: [
+        { id: 'cultural-product-rd', enabled: true, order: 10, number: '01', title: 'Cultural Product Development', description: 'From cultural themes and narrative systems to experience flows, we develop complete products that people can understand, participate in and remember.' },
+        { id: 'standard-experience-modules', enabled: true, order: 20, number: '02', title: 'Standard Experience Modules', description: 'We provide 90-minute, half-day, full-day and multi-day thematic modules for different channels, settings and audiences.' },
+        { id: 'international-cultural-translation', enabled: true, order: 30, number: '03', title: 'Cross-cultural Interpretation', description: 'Multilingual content, clear points of entry and interpretation systems reduce barriers to cross-cultural understanding.' },
+        { id: 'delivery-and-training', enabled: true, order: 40, number: '04', title: 'Delivery and Training', description: 'Product manuals, team training, delivery SOPs and quality assessment help each experience land consistently.' },
+      ],
+    };
+    if (block.type === 'motifs') return {
+      ...block,
+      contentStatus: 'draft' as const,
+      headingLines: ['Cultural experience themes', 'taking shape'],
+      intro: 'These are directions under research, validation and co-development—not completed case studies.',
+      items: [
+        { ...block.items[0]!, title: 'Garden', description: 'How to step into a Chinese poem', status: 'Open for co-development' },
+        { ...block.items[1]!, title: 'Library', description: 'How Chinese scholars preserved knowledge and the world of the mind', status: 'Priority research direction' },
+        { ...block.items[2]!, title: 'Tea and Silk', description: 'Time and craftsmanship in everyday Jiangnan life', status: 'Open for co-development' },
+        { ...block.items[3]!, title: 'Kunqu', description: 'How to listen to a passage of classical Chinese theatre', status: 'Priority research direction' },
+      ],
+    };
+    if (block.type === 'jiangnan') return {
+      ...block,
+      contentStatus: 'draft' as const,
+      headingLines: ['Not a checklist of attractions,', 'but a cultural experience that opens', 'into Chinese aesthetics and ways of life.'],
+      description: 'Enter Jiangnan through gardens, libraries, Kunqu, cuisine and everyday life—a quiet pathway into Chinese culture for international visitors and culturally curious travellers.',
+      cta: { label: 'Co-develop Into Jiangnan', action: 'scroll' as const, target: 'contact' },
+    };
+    if (block.type === 'partners') return {
+      ...block,
+      contentStatus: 'draft' as const,
+      heading: 'For organizations that value cultural depth and reliable delivery',
+      items: [
+        { ...block.items[0]!, title: 'Inbound Travel Agencies and DMCs' },
+        { ...block.items[1]!, title: 'Bespoke Travel Specialists' },
+        { ...block.items[2]!, title: 'Hotels and Resort Brands' },
+        { ...block.items[3]!, title: 'Banks, Companies and Member Communities' },
+        { ...block.items[4]!, title: 'Destinations and Cultural Tourism Organizations' },
+        { ...block.items[5]!, title: 'Overseas Travel and Cultural Education Partners' },
+      ],
+    };
+    if (block.type === 'contact') return {
+      ...block,
+      contentStatus: 'draft' as const,
+      kicker: 'COMMISSIONED R&D · CO-PRODUCTION · CONTENT LICENSING · WHITE LABEL · TRAINING & DELIVERY',
+      headingLines: ['Let culture be more than seen.', 'Let it be entered.'],
+      cta: { label: 'Discuss your project', action: 'inquiry' as const, target: 'inquiry' },
+    };
+    throw new Error(`Missing explicit English homepage mapping for block: ${block.type}`);
   }),
 });
 
 const prose = (paragraphs: string[]): ContentDocument => contentDocumentSchema.parse({
   version: 1,
-  blocks: [{ type: 'prose', enabled: true, order: 10, paragraphs }],
+  blocks: [{ type: 'prose', enabled: true, order: 10, contentStatus: 'approved', paragraphs }],
 });
 const lead = (text: string): ContentDocument => contentDocumentSchema.parse({
   version: 1,
-  blocks: [{ type: 'lead', enabled: true, order: 10, text }],
+  blocks: [{ type: 'lead', enabled: true, order: 10, contentStatus: 'approved', text }],
 });
 
 const content = [

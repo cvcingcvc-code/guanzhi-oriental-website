@@ -1,4 +1,4 @@
-# 官网内容协议与首批接入
+# 官网内容协议与双语首页接入
 
 当前内容协议版本为 `1`，后端权威实现位于 `backend/src/content/contract.ts`。前端不得导入 `backend/src`，只声明实际消费的 Public DTO 投影，避免 Vite 与后端独立 TypeScript 构建、Docker 产物互相耦合。
 
@@ -32,7 +32,26 @@
 6. `partners`
 7. `contact`
 
-每个 block 都有固定 `type`、`enabled`、`order` 和类型化字段。CMS 数据不能控制 React 组件名、CSS class、GSAP 参数或任意 HTML。
+每个 block 都有固定 `type`、`enabled`、`order`、`contentStatus` 和类型化字段。CMS 数据不能控制 React 组件名、CSS class、GSAP 参数或任意 HTML。
+
+`contentStatus` 是 block 级内容审批状态：
+
+- `approved`：已确认内容。
+- `draft`：可用于首期双语联调和展示，但仍待甲方确认。
+
+状态必须放在 block 上，而不是只放在英文页面级别，因为同一个 `home / en` Document 中 About 已获确认，而其他区块尚未确认。当前英文状态为：
+
+| Block | `contentStatus` | 状态来源 |
+| --- | --- | --- |
+| `about` | `approved` | 甲方正式提供的英文原文 |
+| `hero` | `draft` | 现有英文表达，待甲方确认 |
+| `capabilities` | `draft` | 根据中文迁移基准形成的英文初稿 |
+| `motifs` | `draft` | 根据中文迁移基准形成的英文初稿 |
+| `jiangnan` | `draft` | 根据中文迁移基准形成的英文初稿 |
+| `partners` | `draft` | 根据中文迁移基准形成的英文初稿 |
+| `contact` | `draft` | 根据中文迁移基准形成的英文初稿 |
+
+`zh-CN` 首页七块均使用当前正式中文迁移基准并标记为 `approved`。替换英文 draft 为正式文案时只更新相应 locale 的 Content Document 和状态，不需要修改 React 或数据库表。
 
 ## MediaReference
 
@@ -55,7 +74,9 @@
 4. 将 MediaReference 解析为 `{ url, alt, mimeType, width, height, poster }`。
 5. 返回稳定的版本化 DTO。
 
-公共设置 API只允许输出品牌名、法定主体、所在地、联系邮箱和 locale。其他后台设置不会无条件公开。
+公共设置 API只允许输出品牌名、法定主体、旗舰名称、所在地、联系邮箱和 locale。其他后台设置不会无条件公开。
+
+Contact block 只管理页面内容，例如 kicker/合作说明、标题、描述和 CTA。品牌名、法定主体、联系邮箱以及未来确认后的所在地由 Public Settings 提供，不能在 Contact block 中再维护一份冲突数据。Footer 同样由 `brand.name`、`company.legalName`、`contact.email` 组合展示；当前不输出未确认的所在地。
 
 ## Seed 安全策略
 
@@ -65,14 +86,37 @@
 
 Seed 已集中维护正式 `brand.name`、`company.legalName`、`flagship.name`。`bootstrap` 只补缺，不覆盖 CMS；开发环境显式执行 `refresh` 才会修正历史值。所在地尚未确认，因此 Seed 不写入 `company.location`。
 
-## 前端首批接入
+本次完整首页接入只调整 `page_translations.blocks` 内的 JSONB Content Document 与 Seed 内容。现有表结构已满足需求，因此未修改数据库 Schema，也没有新增 Migration。
 
-当前接入：
+## 双语首页请求与切换
 
-- `GET /api/v1/content/pages/home?locale=zh-CN` 的 Hero 与 About block（同一次请求）
-- `GET /api/v1/content/settings` 的联系邮箱
+两个 locale 使用同一个公共端点：
 
-React 初始状态始终使用当前静态内容。API 成功后替换对应字段；请求、数据库或响应校验失败时继续使用静态 fallback，不产生首屏空白。
+- `GET /api/v1/content/pages/home?locale=zh-CN`
+- `GET /api/v1/content/pages/home?locale=en`
+
+数据库中的 Homepage Document 固定包含七种唯一 block，并按规定的视觉区块顺序使用不重复 `order`，且至少启用一个 block。Public DTO 会按 `enabled` 过滤 block/item 并按 `order` 排序；React 接受这一非空可见子集并条件渲染。Footer 独立于 Contact 的 enabled 状态，始终由 Public Settings 组合。每个 locale 仍只发一次请求，不为 Hero、About、Capabilities、Motifs、Jiangnan、Partners 和 Contact 分别请求。
+
+切换时先继续显示当前 Document，再请求目标 locale；响应的可见 block 子集及其嵌套字段全部通过校验后一次性替换。目标 locale 请求失败、响应 locale 不一致或内容不满足协议时，保留切换前内容并显示非侵入式错误状态，不产生整页空白。
+
+固定 UI 微文案不进入 CMS：菜单开关、语言切换提示、表单字段、placeholder、校验错误、提交状态和必要 accessibility 文案由前端轻量 `zh-CN`/`en` dictionary 管理。
+
+## Fallback 长期策略
+
+迁移期当前保留：
+
+- 完整 `zh-CN` 首页静态 fallback，用于首次加载失败。
+- 正式品牌名、法定主体、旗舰名称和联系邮箱的 Settings fallback。
+- 语言切换失败时保留当前已加载 Document 的内存级容错。
+- 不依赖 CMS 的表单错误、提交状态与 accessibility 微文案。
+
+正式 CMS Editor、发布流程、API 可用性监控和缓存策略稳定后，应逐步移除：
+
+- 与 PostgreSQL 中七个 block 重复的整套正式正文。
+- 独立维护的英文 block fallback；英文 draft/正式稿只保留一个 CMS 权威来源。
+- 任何为了迁移而长期复制的媒体标题、说明和 CTA。
+
+长期仍应保留最小可用的品牌/联系信息、通用故障界面，以及“请求失败不清空当前内容”的行为。这样既保证故障韧性，也避免代码和 CMS 形成两套难以同步的官网文案。
 
 ## SEO 限制
 
