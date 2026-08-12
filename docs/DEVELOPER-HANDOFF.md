@@ -27,7 +27,7 @@
 
 ## 2. GitHub 加入与权限
 
-仓库：`cvcingcvc-code/guanzhi-oriental-website`（私有）  
+仓库：`cvcingcvc-code/guanzhi-oriental-website`（私有）
 默认分支：`master`
 
 仓库管理员执行：
