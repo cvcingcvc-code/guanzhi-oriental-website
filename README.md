@@ -25,6 +25,10 @@
 - API 说明：[`docs/backend/API.md`](docs/backend/API.md)
 - 配置与部署：[`docs/backend/CONFIGURATION.md`](docs/backend/CONFIGURATION.md)
 - 内容协议与首批接入：[`docs/content-contract.md`](docs/content-contract.md)
+- Homepage CMS Editor：[`docs/homepage-cms.md`](docs/homepage-cms.md)
+- 新窗口与多人开发交接：[`docs/NEW-WINDOW-HANDOFF.md`](docs/NEW-WINDOW-HANDOFF.md)
+- 前端替换与 API 接入声明：[`docs/frontend-replacement-guide.md`](docs/frontend-replacement-guide.md)
+- 多人 Git 协作约定：[`CONTRIBUTING.md`](CONTRIBUTING.md)
 - Docker 配置模板：`.env.docker.example`
 
 本地启动后端：
@@ -125,6 +129,16 @@ npm run preview
 
 本阶段沿用现有 PostgreSQL JSONB Content Document，没有修改数据库 Schema，也没有新增 Migration。
 
+## Homepage CMS Editor
+
+后台本阶段只提供 Homepage Editor 最小闭环，不是 Dashboard 或通用 Page Builder。管理员与编辑员登录后可在 `/admin/homepage` 读取完整中英文首页、编辑固定七个 Typed Blocks、从媒体库选择或上传文件，并以一份双语草稿原子保存。只有 `ADMIN` 可以发布；发布前的保存不会改变公共官网正在读取的 `page_translations`。
+
+后台前端把 JWT 保存在当前浏览器标签页的 `sessionStorage`，启动时通过 `/api/v1/admin/auth/me` 恢复会话；退出或收到 `401` 后清除会话。它不会把 token 写入 URL、Content Document 或长期 `localStorage`。
+
+草稿保存使用 revision optimistic lock：页面加载所得 `revision` 必须作为 `baseRevision` 回传。其他会话先保存后，旧编辑器会收到 `409`，必须重新读取并人工处理冲突，不能静默覆盖新内容。发布同样要求提交当前 `revision`。
+
+详细边界、接口、草稿/发布模型和最终 QA 清单见 [`docs/homepage-cms.md`](docs/homepage-cms.md)。本阶段明确不建设 News、Projects、Cases、Dashboard、通用 Page Builder、复杂审批流或媒体 DAM。
+
 ### Fallback 策略
 
 迁移期间保留完整中文首页静态 fallback 和公开 Settings fallback，保证初次请求或 API 故障时仍有可用页面；语言切换失败则保留切换前的完整 Document。正式 CMS 编辑、发布和可用性监控稳定后，应逐步移除代码中与 CMS 重复的七块正式正文，只长期保留最小品牌/联系信息、通用故障提示和“保留当前已加载内容”的容错逻辑，避免维护两套独立官网文案。
@@ -137,7 +151,7 @@ npm run preview
 | P0 | 微信二维码（替换 Contact 占位） |
 | P1 | 多页面路由（/about, /products, /contact） |
 | P1 | 甲方确认 About 之外六个英文首页 block 的 draft 文案 |
-| P1 | 首页 Content Editor UI（继续复用现有 Typed Contract） |
+| P1 | 甲方验收 Homepage CMS Editor，并确认后续生产认证与监控策略 |
 | P2 | 测试体系 |
 | P2 | 图片优化管线（WebP/AVIF） |
 

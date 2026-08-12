@@ -163,6 +163,12 @@ test('homepage contract rejects missing, duplicate, extra valid, raw HTML and un
   const allDisabled = structuredClone(homeZh);
   for (const block of allDisabled.blocks) block.enabled = false;
   assert.throws(() => homeContentDocumentSchema.parse(allDisabled), /至少启用一个/);
+
+  const hiddenHero = structuredClone(homeZh);
+  const requiredHero = hiddenHero.blocks.find((block) => block.type === 'hero');
+  if (!requiredHero) throw new Error('hero fixture missing');
+  requiredHero.enabled = false;
+  assert.throws(() => homeContentDocumentSchema.parse(hiddenHero), /Hero 必须启用/);
 });
 
 test('Public DTO sorts blocks and items, filters disabled content, and strips Contact identity fields', () => {

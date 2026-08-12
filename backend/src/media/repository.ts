@@ -16,8 +16,17 @@ export interface MediaRepository {
   listActive(): Promise<MediaAsset[]>;
   findActive(id: string): Promise<MediaAsset | undefined>;
   create(input: NewMediaAsset): Promise<MediaAsset>;
-  softDelete(id: string): Promise<void>;
   isReferenced(id: string): Promise<boolean>;
+  softDeleteIfUnreferenced(id: string): Promise<
+    { status: 'deleted'; row: MediaAsset } | { status: 'not-found' } | { status: 'referenced' }
+  >;
+}
+
+export function activeMediaForUpdateQuery(executor: Pick<typeof db, 'select'>, id: string) {
+  return executor.select().from(mediaAssets)
+    .where(and(eq(mediaAssets.id, id), isNull(mediaAssets.deletedAt)))
+    .limit(1)
+    .for('update');
 }
 
 export const mediaRepository: MediaRepository = {
@@ -33,11 +42,18 @@ export const mediaRepository: MediaRepository = {
     if (!row) throw new Error('Failed to save media');
     return row;
   },
-  async softDelete(id) {
-    await db.update(mediaAssets).set({ deletedAt: new Date() }).where(eq(mediaAssets.id, id));
-  },
   async isReferenced(id) {
     const rows = await db.select({ blocks: pageTranslations.blocks }).from(pageTranslations);
     return rows.some((row) => containsAssetId(row.blocks, id));
+  },
+  async softDeleteIfUnreferenced(id) {
+    return db.transaction(async (tx) => {
+      const [row] = await activeMediaForUpdateQuery(tx, id);
+      if (!row) return { status: 'not-found' };
+      const rows = await tx.select({ blocks: pageTranslations.blocks }).from(pageTranslations);
+      if (rows.some((translation) => containsAssetId(translation.blocks, id))) return { status: 'referenced' };
+      await tx.update(mediaAssets).set({ deletedAt: new Date() }).where(and(eq(mediaAssets.id, id), isNull(mediaAssets.deletedAt)));
+      return { status: 'deleted', row };
+    });
   },
 };

@@ -15,6 +15,8 @@ process.env.PUBLIC_BASE_URL = 'http://localhost:8080';
 const { HttpError } = await import('../src/lib/http.js');
 const { MAX_MEDIA_UPLOAD_BYTES, MEDIA_LIMITS, MediaService } = await import('../src/media/service.js');
 const { createAdminMediaRoutes } = await import('../src/routes/admin-media.js');
+const { activeMediaForUpdateQuery } = await import('../src/media/repository.js');
+const { db } = await import('../src/db/client.js');
 
 const userId = '00000000-0000-4000-8000-000000000010';
 const mediaId = '00000000-0000-4000-8000-000000000020';
@@ -40,8 +42,14 @@ class MemoryRepository implements MediaRepository {
     this.rows.push(row);
     return row;
   }
-  async softDelete(id: string) { const row = this.rows.find((item) => item.id === id); if (row) row.deletedAt = new Date(); }
   async isReferenced() { return this.referenced; }
+  async softDeleteIfUnreferenced(id: string) {
+    const row = this.rows.find((item) => item.id === id && !item.deletedAt);
+    if (!row) return { status: 'not-found' as const };
+    if (this.referenced) return { status: 'referenced' as const };
+    row.deletedAt = new Date();
+    return { status: 'deleted' as const, row };
+  }
 }
 
 async function png() {
@@ -128,6 +136,23 @@ test('未引用媒体可软删除，已引用媒体被阻止', async () => {
   await service.delete(mediaId);
   assert.ok(repository.rows[0]?.deletedAt);
   assert.deepEqual(await service.list(), []);
+});
+
+test('删除决策与软删除由 repository 原子完成，不依赖预先 isReferenced 结果', async () => {
+  const { service, repository } = setup();
+  await service.upload({ data: await png(), declaredMimeType: 'image/png', originalName: 'race.png', uploadedBy: userId });
+  let directReferenceChecks = 0;
+  repository.isReferenced = async () => { directReferenceChecks += 1; return false; };
+  repository.referenced = true;
+  await assert.rejects(() => service.delete(mediaId), (error: unknown) => error instanceof HttpError && error.statusCode === 409);
+  assert.equal(directReferenceChecks, 0);
+  assert.equal(repository.rows[0]?.deletedAt, null);
+});
+
+test('原子媒体删除查询锁定 active asset 行', () => {
+  const query = activeMediaForUpdateQuery(db, mediaId).toSQL();
+  assert.match(query.sql, /deleted_at.*is null/i);
+  assert.match(query.sql, /for update/i);
 });
 
 test('storage URL resolver 不泄露本地根路径', async () => {

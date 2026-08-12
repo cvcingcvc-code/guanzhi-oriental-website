@@ -85,6 +85,65 @@ GET /content/pages/home?locale=en
 
 ## 4. 页面内容
 
+### Homepage Editor 专用闭环
+
+Homepage CMS 只使用以下专用端点：
+
+| 方法 | 路径 | 权限 | 说明 |
+| --- | --- | --- | --- |
+| GET | `/admin/homepage` | ADMIN / EDITOR | 读取最新草稿；没有未发布草稿时读取当前发布投影 |
+| PUT | `/admin/homepage/draft` | ADMIN / EDITOR | 以 `baseRevision` 原子保存完整双语草稿 |
+| POST | `/admin/homepage/publish` | ADMIN | 发布指定的当前最新 revision |
+
+三个端点统一返回：
+
+```json
+{
+  "ok": true,
+  "data": {
+    "page": {
+      "id": "uuid",
+      "slug": "home",
+      "status": "PUBLISHED",
+      "publishedAt": "2026-08-12T00:00:00.000Z",
+      "updatedAt": "2026-08-12T00:00:00.000Z"
+    },
+    "revision": 4,
+    "savedAt": "2026-08-12T00:00:00.000Z",
+    "source": "draft",
+    "translations": []
+  }
+}
+```
+
+保存请求（缩略结构；`blocks` 占位必须替换为完整七个 Typed Blocks）：
+
+```json
+{
+  "baseRevision": 3,
+  "translations": [
+    { "locale": "zh-CN", "title": "观止东方", "seoTitle": null, "seoDescription": null, "blocks": { "version": 1, "blocks": ["<完整七个 Typed Blocks，示例省略>"] } },
+    { "locale": "en", "title": "Guanzhi Oriental", "seoTitle": null, "seoDescription": null, "blocks": { "version": 1, "blocks": ["<完整七个 Typed Blocks，示例省略>"] } }
+  ]
+}
+```
+
+发布请求：
+
+```json
+{ "revision": 4 }
+```
+
+`translations` 必须同时包含且只包含一份 `zh-CN` 和一份 `en`，每份都必须通过完整 Homepage Typed Contract。保存只写入 `page_revisions` 草稿快照，不改变公共 API 所读取的 `page_translations`；发布才在事务内把指定完整双语 revision 提升为发布投影。
+
+`baseRevision`/`revision` 是 optimistic lock。服务端 revision 已变化时返回 `409`；客户端必须重新读取并人工处理，不可自动覆盖。GET/PUT 接受 `ADMIN` 和 `EDITOR`，publish 必须由服务端限制为 `ADMIN`。`contentStatus` 只是文案审批元数据，不阻止发布。
+
+后台 UI 使用登录 JWT，保存在当前标签页 `sessionStorage`，刷新时调用 `/admin/auth/me` 校验；退出或 `401` 时清除。完整编辑与 QA 约定见 [`../homepage-cms.md`](../homepage-cms.md)。
+
+### 既有通用页面 API
+
+以下接口继续保留为后端基础能力，但本阶段 Homepage Editor 不提供通用 Page Builder、新建页面或其他页面管理 UI：
+
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
 | GET | `/admin/pages` | 页面列表 |
@@ -144,6 +203,8 @@ Contact block 的 Public DTO 只包含 heading/kicker/description/CTA 等页面�
 
 本阶段沿用 `page_translations.blocks` 的 JSONB 结构，没有数据库 Schema 变更，也没有新增 Migration。
 
+Homepage 草稿隔离同样复用现有结构：`page_translations` 是已发布投影，`page_revisions.snapshot` 保存完整双语草稿。无需为最小闭环增加 draft 表或 published revision 列。
+
 ## 5. 媒体、线索与设置
 
 | 方法 | 路径 | 说明 |
@@ -175,7 +236,7 @@ Contact block 的 Public DTO 只包含 heading/kicker/description/CTA 等页面�
 | 401 | 未登录或 token 无效 |
 | 403 | 角色权限不足 |
 | 404 | 资源不存在 |
-| 409 | 唯一字段冲突 |
+| 409 | 唯一字段冲突或 revision optimistic-lock 冲突 |
 | 413/415 | 文件过大/类型不支持 |
 | 422 | 输入校验失败 |
 | 429 | 请求过于频繁 |

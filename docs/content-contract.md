@@ -88,6 +88,22 @@ Seed 已集中维护正式 `brand.name`、`company.legalName`、`flagship.name`�
 
 本次完整首页接入只调整 `page_translations.blocks` 内的 JSONB Content Document 与 Seed 内容。现有表结构已满足需求，因此未修改数据库 Schema，也没有新增 Migration。
 
+## Homepage CMS 草稿契约
+
+Homepage Editor 保存的是一份原子双语快照，不是某个输入框或单一 locale 的 patch。请求必须同时且仅包含 `zh-CN` 与 `en`，每份都通过相同的 Homepage Contract；任一语言失败则整次保存失败。
+
+草稿与发布使用现有数据结构隔离：
+
+- `page_translations.blocks` 始终代表公共官网可见的已发布投影。
+- `page_revisions.snapshot` 保存 Homepage Editor 每次成功保存的完整双语草稿。
+- PUT draft 不修改 `page_translations`；POST publish 才在事务内提升指定 revision。
+
+客户端加载时取得 `revision`，保存时作为 `baseRevision` 提交；发布时提交 `revision`。服务端只接受当前最新 revision，否则返回 `409`，避免两个编辑会话发生静默覆盖。API 返回的 `source: published | draft` 是草稿来源的权威判断，客户端不根据时间或 `contentStatus` 猜测。
+
+`contentStatus` 与这个生命周期严格分离：它表示某个 block 的文案是否已获甲方确认，不代表数据库记录是草稿，也不自动阻止整页发布。当前英文六个非 About block 仍可保留 `draft` 状态随首页发布。
+
+该策略复用现有 JSONB 和 revision 表，不需要 Schema 或 Migration。详细端点、权限、媒体选择和 QA 见 [`homepage-cms.md`](homepage-cms.md)。
+
 ## 双语首页请求与切换
 
 两个 locale 使用同一个公共端点：
@@ -95,7 +111,7 @@ Seed 已集中维护正式 `brand.name`、`company.legalName`、`flagship.name`�
 - `GET /api/v1/content/pages/home?locale=zh-CN`
 - `GET /api/v1/content/pages/home?locale=en`
 
-数据库中的 Homepage Document 固定包含七种唯一 block，并按规定的视觉区块顺序使用不重复 `order`，且至少启用一个 block。Public DTO 会按 `enabled` 过滤 block/item 并按 `order` 排序；React 接受这一非空可见子集并条件渲染。Footer 独立于 Contact 的 enabled 状态，始终由 Public Settings 组合。每个 locale 仍只发一次请求，不为 Hero、About、Capabilities、Motifs、Jiangnan、Partners 和 Contact 分别请求。
+数据库中的 Homepage Document 固定包含七种唯一 block，并按规定的视觉区块顺序使用不重复 `order`。Hero 是首页与前端 fallback 的必显入口，Contract 要求 `hero.enabled=true`；其余六块可以按需显隐。Public DTO 会按 `enabled` 过滤 block/item 并按 `order` 排序；React 条件渲染其余可见子集。Footer 独立于 Contact 的 enabled 状态，始终由 Public Settings 组合。每个 locale 仍只发一次请求，不为 Hero、About、Capabilities、Motifs、Jiangnan、Partners 和 Contact 分别请求。
 
 切换时先继续显示当前 Document，再请求目标 locale；响应的可见 block 子集及其嵌套字段全部通过校验后一次性替换。目标 locale 请求失败、响应 locale 不一致或内容不满足协议时，保留切换前内容并显示非侵入式错误状态，不产生整页空白。
 

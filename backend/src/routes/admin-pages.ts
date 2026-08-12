@@ -26,6 +26,17 @@ const pageWriteSchema = z.object({ slug: z.string().trim().regex(/^[a-z0-9]+(?:-
   });
 const idSchema = z.uuid();
 
+export function preventGenericHomepageWrite(currentSlug: string | undefined, requestedSlug?: string) {
+  if (currentSlug === 'home' || requestedSlug === 'home') {
+    throw new HttpError(409, '首页只能通过 /api/v1/admin/homepage 专用接口编辑和发布');
+  }
+}
+
+function requestedHomepage(input: unknown) {
+  return Boolean(input && typeof input === 'object' && typeof (input as { slug?: unknown }).slug === 'string'
+    && (input as { slug: string }).slug.trim() === 'home');
+}
+
 async function getPage(id: string) {
   const [page] = await db.select().from(pages).where(eq(pages.id, id)).limit(1);
   if (!page) throw new HttpError(404, '页面不存在');
@@ -53,7 +64,9 @@ const routes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/', { schema: { tags: ['后台-页面'], summary: '新建双语页面', security: [{ bearerAuth: [] }] } }, async (request, reply) => {
+    if (requestedHomepage(request.body)) preventGenericHomepageWrite(undefined, 'home');
     const input = parse(pageWriteSchema, request.body);
+    preventGenericHomepageWrite(undefined, input.slug);
     const created = await db.transaction(async (tx) => {
       const [page] = await tx.insert(pages).values({ slug: input.slug, createdBy: request.user.sub, updatedBy: request.user.sub }).returning();
       if (!page) throw new Error('Failed to create page');
@@ -67,8 +80,10 @@ const routes: FastifyPluginAsync = async (app) => {
 
   app.put('/:id', { schema: { tags: ['后台-页面'], summary: '更新页面并保留版本', security: [{ bearerAuth: [] }] } }, async (request) => {
     const id = parse(idSchema, (request.params as { id: string }).id);
-    const input = parse(pageWriteSchema, request.body);
     const before = await getPage(id);
+    preventGenericHomepageWrite(before.slug, requestedHomepage(request.body) ? 'home' : undefined);
+    const input = parse(pageWriteSchema, request.body);
+    preventGenericHomepageWrite(undefined, input.slug);
     await db.transaction(async (tx) => {
       await tx.update(pages).set({ slug: input.slug, updatedBy: request.user.sub }).where(eq(pages.id, id));
       for (const translation of input.translations) {
@@ -87,6 +102,7 @@ const routes: FastifyPluginAsync = async (app) => {
   app.post('/:id/publish', { schema: { tags: ['后台-页面'], summary: '发布页面', security: [{ bearerAuth: [] }] } }, async (request) => {
     const id = parse(idSchema, (request.params as { id: string }).id);
     const before = await getPage(id);
+    preventGenericHomepageWrite(before.slug);
     const locales = new Set(before.translations.map((item) => item.locale));
     if (!locales.has('zh-CN') || !locales.has('en')) throw new HttpError(422, '发布前必须同时提供中文和英文内容');
     await db.update(pages).set({ status: 'PUBLISHED', publishedAt: new Date(), updatedBy: request.user.sub }).where(eq(pages.id, id));
@@ -97,6 +113,8 @@ const routes: FastifyPluginAsync = async (app) => {
 
   app.post('/:id/unpublish', { schema: { tags: ['后台-页面'], summary: '撤回为草稿', security: [{ bearerAuth: [] }] } }, async (request) => {
     const id = parse(idSchema, (request.params as { id: string }).id);
+    const before = await getPage(id);
+    preventGenericHomepageWrite(before.slug);
     await db.update(pages).set({ status: 'DRAFT', updatedBy: request.user.sub }).where(eq(pages.id, id));
     await audit(request, 'UNPUBLISH', 'page', id);
     return { ok: true, data: await getPage(id) };

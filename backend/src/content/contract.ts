@@ -203,6 +203,10 @@ export const homeContentDocumentSchema = contentDocumentSchema.superRefine((docu
   if (!document.blocks.some((block) => block.enabled)) {
     context.addIssue({ code: 'custom', path: ['blocks'], message: '首页必须至少启用一个 block' });
   }
+  const hero = document.blocks.find((block) => block.type === 'hero');
+  if (hero && !hero.enabled) {
+    context.addIssue({ code: 'custom', path: ['blocks'], message: '首页 Hero 必须启用' });
+  }
 });
 
 export type ContentDocument = z.infer<typeof contentDocumentSchema>;

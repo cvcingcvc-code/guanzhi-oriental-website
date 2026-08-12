@@ -19,6 +19,7 @@ import adminMediaRoutes from './routes/admin-media.js';
 import adminInquiriesRoutes from './routes/admin-inquiries.js';
 import adminSettingsRoutes from './routes/admin-settings.js';
 import adminUsersRoutes from './routes/admin-users.js';
+import adminHomepageRoutes from './routes/admin-homepage.js';
 import { HttpError } from './lib/http.js';
 import { mediaStorage } from './media/index.js';
 import { MAX_MEDIA_UPLOAD_BYTES } from './media/service.js';
@@ -54,6 +55,7 @@ export async function buildApp() {
   await app.register(publicRoutes, { prefix: '/api/v1' });
   await app.register(contentRoutes, { prefix: '/api/v1' });
   await app.register(authRoutes, { prefix: '/api/v1/admin/auth' });
+  await app.register(adminHomepageRoutes, { prefix: '/api/v1/admin/homepage' });
   await app.register(adminPagesRoutes, { prefix: '/api/v1/admin/pages' });
   await app.register(adminMediaRoutes, { prefix: '/api/v1/admin/media' });
   await app.register(adminInquiriesRoutes, { prefix: '/api/v1/admin/inquiries' });

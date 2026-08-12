@@ -137,10 +137,9 @@ export class MediaService {
   }
 
   async delete(id: string) {
-    const row = await this.repository.findActive(id);
-    if (!row) throw new HttpError(404, '媒体不存在');
-    if (await this.repository.isReferenced(id)) throw new HttpError(409, '媒体正在被页面内容引用，不能删除');
-    await this.repository.softDelete(id);
-    return row;
+    const result = await this.repository.softDeleteIfUnreferenced(id);
+    if (result.status === 'not-found') throw new HttpError(404, '媒体不存在');
+    if (result.status === 'referenced') throw new HttpError(409, '媒体正在被页面内容引用，不能删除');
+    return result.row;
   }
 }
