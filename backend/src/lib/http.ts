@@ -22,6 +22,10 @@ export function ipHash(request: FastifyRequest) {
 export function toCsv(rows: Array<Record<string, unknown>>) {
   if (rows.length === 0) return '\uFEFF';
   const headers = Object.keys(rows[0] ?? {});
-  const quote = (value: unknown) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+  const quote = (value: unknown) => {
+    const text = String(value ?? '');
+    const spreadsheetSafe = /^\s*[=+\-@]/.test(text) ? `'${text}` : text;
+    return `"${spreadsheetSafe.replaceAll('"', '""')}"`;
+  };
   return `\uFEFF${headers.map(quote).join(',')}\r\n${rows.map((row) => headers.map((key) => quote(row[key])).join(',')).join('\r\n')}`;
 }
