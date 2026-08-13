@@ -15,6 +15,7 @@ function containsAssetId(value: unknown, assetId: string): boolean {
 export interface MediaRepository {
   listActive(): Promise<MediaAsset[]>;
   findActive(id: string): Promise<MediaAsset | undefined>;
+  findActiveByStorageKey(storageKey: string): Promise<MediaAsset | undefined>;
   create(input: NewMediaAsset): Promise<MediaAsset>;
   isReferenced(id: string): Promise<boolean>;
   softDeleteIfUnreferenced(id: string): Promise<
@@ -35,6 +36,10 @@ export const mediaRepository: MediaRepository = {
   },
   async findActive(id) {
     const [row] = await db.select().from(mediaAssets).where(and(eq(mediaAssets.id, id), isNull(mediaAssets.deletedAt))).limit(1);
+    return row;
+  },
+  async findActiveByStorageKey(storageKey) {
+    const [row] = await db.select().from(mediaAssets).where(and(eq(mediaAssets.storageKey, storageKey), isNull(mediaAssets.deletedAt))).limit(1);
     return row;
   },
   async create(input) {

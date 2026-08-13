@@ -140,6 +140,7 @@ export class MediaService {
     const result = await this.repository.softDeleteIfUnreferenced(id);
     if (result.status === 'not-found') throw new HttpError(404, '媒体不存在');
     if (result.status === 'referenced') throw new HttpError(409, '媒体正在被页面内容引用，不能删除');
+    await this.storage.delete(result.row.storageKey);
     return result.row;
   }
 }

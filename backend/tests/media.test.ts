@@ -35,6 +35,7 @@ class MemoryRepository implements MediaRepository {
   failCreate = false;
   async listActive() { return this.rows.filter((row) => !row.deletedAt); }
   async findActive(id: string) { return this.rows.find((row) => row.id === id && !row.deletedAt); }
+  async findActiveByStorageKey(storageKey: string) { return this.rows.find((row) => row.storageKey === storageKey && !row.deletedAt); }
   async create(input: NewMediaAsset) {
     if (this.failCreate) throw new Error('database unavailable');
     const now = new Date('2026-08-11T00:00:00.000Z');
@@ -126,15 +127,19 @@ test('数据库写入失败会清理已经保存的对象', async () => {
   assert.equal(storage.deleted.length, 1);
 });
 
-test('未引用媒体可软删除，已引用媒体被阻止', async () => {
-  const { service, repository } = setup();
+test('未引用媒体可软删除并移除公开对象，已引用媒体被阻止', async () => {
+  const { service, repository, storage } = setup();
   await service.upload({ data: await png(), declaredMimeType: 'image/png', originalName: 'used.png', uploadedBy: userId });
+  assert.equal(storage.files.size, 1);
   repository.referenced = true;
   await assert.rejects(() => service.delete(mediaId), (error: unknown) => error instanceof HttpError && error.statusCode === 409);
   assert.equal(repository.rows[0]?.deletedAt, null);
+  assert.equal(storage.files.size, 1);
   repository.referenced = false;
   await service.delete(mediaId);
   assert.ok(repository.rows[0]?.deletedAt);
+  assert.equal(storage.files.size, 0);
+  assert.equal(storage.deleted.length, 1);
   assert.deepEqual(await service.list(), []);
 });
 

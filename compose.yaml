@@ -4,16 +4,16 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-guanzhi}
-      POSTGRES_USER: ${POSTGRES_USER:-guanzhi}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-development-password}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       TZ: Asia/Shanghai
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-guanzhi} -d ${POSTGRES_DB:-guanzhi}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:?POSTGRES_USER is required} -d ${POSTGRES_DB:?POSTGRES_DB is required}"]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -27,16 +27,18 @@ services:
       HOST: 0.0.0.0
       PORT: 8080
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-guanzhi}:${POSTGRES_PASSWORD:-local-development-password}@db:5432/${POSTGRES_DB:-guanzhi}
+      DATABASE_URL: postgresql://${POSTGRES_USER:?POSTGRES_USER is required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@db:5432/${POSTGRES_DB:?POSTGRES_DB is required}
       DB_POOL_MAX: ${DB_POOL_MAX:-10}
-      JWT_SECRET: ${JWT_SECRET:-local-only-jwt-secret-replace-before-production}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@guanzhi.local}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-this-local-password}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?ADMIN_EMAIL is required}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:5173}
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
       UPLOAD_DIR: /app/data/uploads
-      IP_HASH_SALT: ${IP_HASH_SALT:-local-ip-hash-secret-replace-production}
+      IP_HASH_SALT: ${IP_HASH_SALT:?IP_HASH_SALT is required}
+      TRUST_PROXY_HOPS: ${TRUST_PROXY_HOPS:-0}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       NOTIFICATION_FROM: ${NOTIFICATION_FROM:-}
       NOTIFICATION_TO: ${NOTIFICATION_TO:-}
@@ -44,7 +46,7 @@ services:
     volumes:
       - backend_uploads:/app/data/uploads
     ports:
-      - "${API_PORT:-8080}:8080"
+      - "${API_BIND_HOST:-127.0.0.1}:${API_PORT:-8080}:8080"
     depends_on:
       db:
         condition: service_healthy
