@@ -77,6 +77,8 @@ npm run db:migrate
 | `PUBLIC_BASE_URL` | 是 | `https://api.example.com` | 媒体绝对地址和 OpenAPI server |
 | `UPLOAD_DIR` | 是 | `/app/data/uploads` | 上传目录 |
 | `IP_HASH_SALT` | 是 | 无 | 至少 16 字符，用于 IP 摘要 |
+| `TRUST_PROXY_HOPS` | 否 | `0` | 可信反向代理跳数；直连开发保持 0，单层 Nginx/Caddy 设为 1 |
+| `SWAGGER_ENABLED` | 否 | 开发 `true`、生产 `false` | 是否注册 `/docs` |
 | `RESEND_API_KEY` | 否 | 空 | 新线索邮件通知 |
 | `NOTIFICATION_FROM` | 邮件启用时 | 空 | 已验证发件地址 |
 | `NOTIFICATION_TO` | 邮件启用时 | 空 | 接收通知地址 |
@@ -92,12 +94,12 @@ npm run db:migrate
 建议 Ubuntu/Debian 云服务器安装 Docker Engine 和 Compose Plugin，项目通过 Git 拉取。生产环境：
 
 1. `.env` 只保存在服务器，不提交 Git。
-2. PostgreSQL 不映射公网端口；如无需从宿主机访问，可删除 `compose.yaml` 中数据库的 `ports`。
-3. 使用 Nginx 或 Caddy 提供 HTTPS，将 `/api/`、`/docs`、`/uploads/` 反向代理到 `127.0.0.1:8080`。
+2. PostgreSQL 只映射宿主回环地址；API 默认也只绑定 `127.0.0.1`，不要把容器端口直接暴露公网。
+3. 使用 Nginx 或 Caddy 提供 HTTPS，将 `/api/` 和 `/uploads/` 反向代理到 `127.0.0.1:8080`；单层受控代理设置 `TRUST_PROXY_HOPS=1`。
 4. 防火墙只开放 22、80、443；SSH 最好限制来源并禁用密码登录。
 5. 每日执行 `pg_dump`，同时备份上传 volume；定期做恢复演练。
 6. 新版本先备份，再 `git pull` 和 `docker compose up --build -d`；迁移由 API 容器启动前自动执行。
-7. 正式上线后限制或关闭公网 `/docs`，也可由反向代理增加基础认证。
+7. 生产默认不注册 `/docs`；确需开放时显式设置 `SWAGGER_ENABLED=true` 并由反向代理增加认证。
 
 ## 5. 从本地文件存储迁移到对象存储
 
@@ -114,3 +116,5 @@ npm run db:migrate
 - HTTPS、数据库备份、上传文件备份已验证。
 - `/health`、提交合作需求、后台读取线索均通过。
 - 日志中没有数据库连接串、密码或 JWT。
+- `TRUST_PROXY_HOPS` 与实际受控代理层数一致，API 端口不可绕过代理访问。
+- 生产保持 `SWAGGER_ENABLED=false`，除非已配置额外访问控制。

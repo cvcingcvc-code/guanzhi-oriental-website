@@ -14,6 +14,23 @@ test('CSV 带 UTF-8 BOM 并正确转义引号', () => {
   assert.match(csv, /""hello""/);
 });
 
+test('CSV 将用户可控的表格公式转为文本', () => {
+  const csv = toCsv([{
+    equals: '=HYPERLINK("https://evil.example")',
+    plus: '+cmd',
+    minus: '-2+3',
+    at: '@SUM(1,1)',
+    spaced: '  =1+1',
+    safe: 'ordinary text',
+  }]);
+  assert.match(csv, /"'=HYPERLINK\(""https:\/\/evil\.example""\)"/);
+  assert.match(csv, /"'\+cmd"/);
+  assert.match(csv, /"'-2\+3"/);
+  assert.match(csv, /"'@SUM\(1,1\)"/);
+  assert.match(csv, /"'  =1\+1"/);
+  assert.match(csv, /"ordinary text"/);
+});
+
 test('空列表返回可被 Excel 识别的 UTF-8 BOM', () => {
   assert.equal(toCsv([]), '\uFEFF');
 });

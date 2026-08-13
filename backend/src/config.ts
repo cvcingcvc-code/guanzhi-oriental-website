@@ -17,15 +17,42 @@ const envSchema = z.object({
   NOTIFICATION_FROM: z.string().optional(),
   NOTIFICATION_TO: z.string().optional(),
   IP_HASH_SALT: z.string().min(16),
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
+  SWAGGER_ENABLED: z.enum(['true', 'false']).optional(),
 });
 
-const result = envSchema.safeParse(process.env);
-if (!result.success) {
-  console.error('Invalid environment configuration', z.flattenError(result.error).fieldErrors);
-  process.exit(1);
+export function parseConfig(environment: NodeJS.ProcessEnv) {
+  const result = envSchema.safeParse(environment);
+  if (!result.success) {
+    throw new Error(`Invalid environment configuration: ${JSON.stringify(z.flattenError(result.error).fieldErrors)}`);
+  }
+
+  const insecureProductionValues = [
+    result.data.DATABASE_URL.includes('local-development-password'),
+    result.data.DATABASE_URL.includes('change-me'),
+    result.data.JWT_SECRET.includes('local-only-jwt-secret'),
+    result.data.JWT_SECRET.includes('change-this'),
+    result.data.JWT_SECRET.includes('replace-with'),
+    result.data.IP_HASH_SALT.includes('local-ip-hash-secret'),
+    result.data.IP_HASH_SALT.includes('change-this'),
+    result.data.IP_HASH_SALT.includes('replace-with'),
+    result.data.CORS_ORIGINS.split(',').some((origin) => origin.trim() === '*'),
+  ];
+  if (result.data.NODE_ENV === 'production' && insecureProductionValues.some(Boolean)) {
+    throw new Error('Invalid environment configuration: production secrets must not use local/example values');
+  }
+
+  return {
+    ...result.data,
+    corsOrigins: result.data.CORS_ORIGINS.split(',').map((item) => item.trim()).filter(Boolean),
+    swaggerEnabled: result.data.SWAGGER_ENABLED ? result.data.SWAGGER_ENABLED === 'true' : result.data.NODE_ENV !== 'production',
+  };
 }
 
-export const config = {
-  ...result.data,
-  corsOrigins: result.data.CORS_ORIGINS.split(',').map((item) => item.trim()).filter(Boolean),
-};
+export let config: ReturnType<typeof parseConfig>;
+try {
+  config = parseConfig(process.env);
+} catch (error) {
+  console.error(error instanceof Error ? error.message : 'Invalid environment configuration');
+  process.exit(1);
+}

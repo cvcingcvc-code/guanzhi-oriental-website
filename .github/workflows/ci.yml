@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  backend:
+    name: Backend checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  diff-check:
+    name: Whitespace check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check pull request diff
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git diff --check "$BASE_SHA...HEAD"
+
+  clean-deploy-smoke:
+    name: Clean deployment smoke test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create disposable deployment configuration
+        run: |
+          cp .env.docker.example .env
+          sed -i 's/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=ci-postgres-password-7f6c4e2a/' .env
+          sed -i 's/^JWT_SECRET=.*/JWT_SECRET=ci-jwt-secret-7f6c4e2a9b1d3f5h7j9l2n4p6r8t0v2x/' .env
+          sed -i 's/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=ci-admin-password-7f6c4e2a/' .env
+          sed -i 's/^IP_HASH_SALT=.*/IP_HASH_SALT=ci-ip-hash-salt-7f6c4e2a/' .env
+          sed -i 's/^SWAGGER_ENABLED=.*/SWAGGER_ENABLED=false/' .env
+      - name: Build and start clean deployment
+        run: docker compose up --build -d --wait
+      - name: Verify public health and production Swagger boundary
+        run: |
+          curl --fail --silent --show-error http://127.0.0.1:8080/api/v1/health
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:8080/docs)" = "404"
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Remove disposable deployment
+        if: always()
+        run: docker compose down --volumes --remove-orphans

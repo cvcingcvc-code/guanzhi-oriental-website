@@ -27,6 +27,7 @@
 - 内容协议与首批接入：[`docs/content-contract.md`](docs/content-contract.md)
 - Homepage CMS Editor：[`docs/homepage-cms.md`](docs/homepage-cms.md)
 - 新窗口与多人开发交接：[`docs/NEW-WINDOW-HANDOFF.md`](docs/NEW-WINDOW-HANDOFF.md)
+- 新成员从 GitHub 加入、完整启动、前端替换到最终交付：[`docs/DEVELOPER-HANDOFF.md`](docs/DEVELOPER-HANDOFF.md)
 - 前端替换与 API 接入声明：[`docs/frontend-replacement-guide.md`](docs/frontend-replacement-guide.md)
 - 多人 Git 协作约定：[`CONTRIBUTING.md`](CONTRIBUTING.md)
 - Docker 配置模板：`.env.docker.example`

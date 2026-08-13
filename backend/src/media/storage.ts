@@ -8,7 +8,7 @@ export interface StorageAdapter {
   readonly localRoot?: string;
 }
 
-function normalizedKey(key: string) {
+export function normalizedStorageKey(key: string) {
   const normalized = key.replaceAll('\\', '/');
   if (!/^[a-zA-Z0-9/_-]+\.[a-z0-9]+$/.test(normalized) || normalized.includes('..') || normalized.startsWith('/')) {
     throw new Error('Invalid storage key');
@@ -24,7 +24,7 @@ export class LocalStorageAdapter implements StorageAdapter {
   }
 
   private resolve(key: string) {
-    const target = path.resolve(this.localRoot, normalizedKey(key));
+    const target = path.resolve(this.localRoot, normalizedStorageKey(key));
     if (target !== this.localRoot && !target.startsWith(`${this.localRoot}${path.sep}`)) throw new Error('Storage key escapes upload root');
     return target;
   }
@@ -42,6 +42,6 @@ export class LocalStorageAdapter implements StorageAdapter {
   }
 
   publicUrl(key: string) {
-    return `${this.baseUrl.replace(/\/$/, '')}/uploads/${normalizedKey(key).split('/').map(encodeURIComponent).join('/')}`;
+    return `${this.baseUrl.replace(/\/$/, '')}/uploads/${normalizedStorageKey(key).split('/').map(encodeURIComponent).join('/')}`;
   }
 }

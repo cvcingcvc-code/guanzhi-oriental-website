@@ -1,12 +1,9 @@
-import { mkdir } from 'node:fs/promises';
-import path from 'node:path';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import jwt from '@fastify/jwt';
 import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
-import fastifyStatic from '@fastify/static';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import { config } from './config.js';
@@ -20,37 +17,40 @@ import adminInquiriesRoutes from './routes/admin-inquiries.js';
 import adminSettingsRoutes from './routes/admin-settings.js';
 import adminUsersRoutes from './routes/admin-users.js';
 import adminHomepageRoutes from './routes/admin-homepage.js';
+import publicMediaRoutes from './routes/public-media.js';
 import { HttpError } from './lib/http.js';
-import { mediaStorage } from './media/index.js';
 import { MAX_MEDIA_UPLOAD_BYTES } from './media/service.js';
 
 export async function buildApp() {
-  const app = Fastify({ logger: config.LOG_LEVEL === 'silent' ? false : { level: config.LOG_LEVEL }, trustProxy: true, bodyLimit: 1024 * 1024 });
+  const app = Fastify({
+    logger: config.LOG_LEVEL === 'silent' ? false : { level: config.LOG_LEVEL },
+    trustProxy: config.TRUST_PROXY_HOPS > 0 ? config.TRUST_PROXY_HOPS : false,
+    bodyLimit: 1024 * 1024,
+  });
 
   await app.register(helmet, { contentSecurityPolicy: false });
   await app.register(cors, {
     origin(origin, callback) {
       if (!origin || config.corsOrigins.includes(origin)) return callback(null, true);
-      callback(new Error('Origin not allowed'), false);
+      callback(new HttpError(403, '请求来源不在 CORS 白名单中'), false);
     },
   });
   await app.register(rateLimit, { global: false });
   await app.register(jwt, { secret: config.JWT_SECRET });
   await app.register(multipart, { limits: { files: 1, fileSize: MAX_MEDIA_UPLOAD_BYTES, fields: 5 } });
-  await app.register(swagger, {
-    openapi: {
-      info: { title: '观止东方官网 API', description: '轻量 CMS、双语内容、媒体与合作线索接口', version: '1.0.0' },
-      servers: [{ url: config.PUBLIC_BASE_URL }],
-      components: { securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' } } },
-    },
-  });
-  await app.register(swaggerUi, { routePrefix: '/docs' });
+  if (config.swaggerEnabled) {
+    await app.register(swagger, {
+      openapi: {
+        info: { title: '观止东方官网 API', description: '轻量 CMS、双语内容、媒体与合作线索接口', version: '1.0.0' },
+        servers: [{ url: config.PUBLIC_BASE_URL }],
+        components: { securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' } } },
+      },
+    });
+    await app.register(swaggerUi, { routePrefix: '/docs' });
+  }
   await app.register(authPlugin);
 
-  if (mediaStorage.localRoot) {
-    await mkdir(mediaStorage.localRoot, { recursive: true });
-    await app.register(fastifyStatic, { root: path.resolve(mediaStorage.localRoot), prefix: '/uploads/', decorateReply: false });
-  }
+  await app.register(publicMediaRoutes);
 
   await app.register(publicRoutes, { prefix: '/api/v1' });
   await app.register(contentRoutes, { prefix: '/api/v1' });
