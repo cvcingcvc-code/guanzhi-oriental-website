@@ -4,10 +4,9 @@
 
 ## 1. 当前状态
 
-- 稳定主线基线：`master@ed253edcf6e39b86f4409c933e2925268a82305a`
-- P2 基线：`codex/p2-maintenance@607791da7813013ff9026550ce8152a3321991b3`
-- P2 PR：`#6 chore: harden P2 maintenance baseline`，OPEN、Draft、CI 全绿；不得由本交接任务自动合并。
-- 本轮联调分支：`codex/fullstack-integration`，基于上述 P2 HEAD 创建。
+- 稳定主线基线：`master@b5513addcc5945295d5c18dceddd61d1226044c3`
+- P2 维护已通过 PR #6 以 Squash Merge 合并；对应 master CI 与 Clean deployment smoke 均通过。
+- 本轮联调分支：`codex/fullstack-integration`，最初基于 `codex/p2-maintenance@607791da7813013ff9026550ce8152a3321991b3` 创建，现已同步上述 master。
 - 本地已实际跑通 Browser → React/Vite → Fastify → Zod → Drizzle → PostgreSQL → response → UI；这不代表生产环境已经部署。
 
 ## 2. 技术栈
