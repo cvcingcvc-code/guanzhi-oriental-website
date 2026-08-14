@@ -31,6 +31,7 @@
 - 前端替换与 API 接入声明：[`docs/frontend-replacement-guide.md`](docs/frontend-replacement-guide.md)
 - 多人 Git 协作约定：[`CONTRIBUTING.md`](CONTRIBUTING.md)
 - Docker 配置模板：`.env.docker.example`
+- 本地全链路联调与后续开发交接：[`docs/fullstack-development-handoff.md`](docs/fullstack-development-handoff.md)
 
 本地启动后端：
 
@@ -38,6 +39,22 @@
 cp .env.docker.example .env
 docker compose up --build -d
 ```
+
+### 本地全栈快速启动
+
+要求 Node.js 24、npm、Docker Engine 与 Docker Compose。不要把本地 `.env`、密码、JWT、上传文件或数据库导出提交到 Git。
+
+```bash
+npm ci
+cd backend && npm ci && cd ..
+cp .env.docker.example .env
+docker compose up --build -d
+npm run dev
+```
+
+默认前端为 `http://localhost:3000`，Fastify 为 `http://127.0.0.1:8080`，健康检查为 `GET /api/v1/health`。Vite 将 `/api` 请求代理到 Fastify；PostgreSQL 只由 Backend 通过 Drizzle 访问。详细启动、迁移、联调和故障排查见[全栈开发交接](docs/fullstack-development-handoff.md)。
+
+前端 UI 可以重构或整体替换，但必须继续通过 HTTP API / Public DTO 获取业务数据，不得导入 `backend/src`、直接访问数据库或用数据库 Schema 驱动 UI。API Contract 变更须使用独立 PR 并经过 Backend Review。
 
 ## 本地开发
 
