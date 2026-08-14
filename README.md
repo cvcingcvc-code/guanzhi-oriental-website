@@ -15,11 +15,11 @@
 | 样式 | Tailwind CSS 3 + CSS Custom Properties |
 | 动效 | GSAP 3 (ScrollTrigger) |
 | 字体 | Google Fonts: Noto Serif SC + Cormorant Garamond |
-| 部署 | Cloudflare Pages (静态站点) |
+| 部署 | 尚未确认生产平台；本地与 CI 使用 Docker Compose 验证 PostgreSQL + API |
 
 ### 后端基础框架
 
-后端已按独立服务放在 `backend/`，不影响当前 React 单页前端。技术栈为 Node.js 24、TypeScript、Fastify、PostgreSQL、Drizzle ORM、JWT 和 Docker Compose，覆盖双语 CMS、媒体、合作线索、账号权限和操作日志。
+后端已按独立服务放在 `backend/`，与 React 多路由 SPA 共同组成当前应用。技术栈为 Node.js 24、TypeScript、Fastify、PostgreSQL、Drizzle ORM、JWT 和 Docker Compose，覆盖双语 CMS、媒体、合作线索、账号权限和操作日志。
 
 - 架构与项目结构：[`docs/backend/README.md`](docs/backend/README.md)
 - API 说明：[`docs/backend/API.md`](docs/backend/API.md)
@@ -42,15 +42,15 @@ docker compose up --build -d
 ## 本地开发
 
 ```bash
-# 安装依赖
-npm install
+# 安装锁文件依赖（需要 Node.js 24）
+npm ci
 
 # 启动开发服务器
 npm run dev
 # → http://localhost:3000
 
-# 类型检查
-npx tsc --noEmit
+# 前端测试
+npm test
 
 # 生产构建
 npm run build
@@ -164,10 +164,8 @@ npm run preview
 |--------|------|
 | P0 | 真实产品摄影图片（替换 Lab 卡片渐变占位） |
 | P0 | 微信二维码（替换 Contact 占位） |
-| P1 | 多页面路由（/about, /products, /contact） |
 | P1 | 甲方确认 About 之外六个英文首页 block 的 draft 文案 |
 | P1 | 甲方验收 Homepage CMS Editor，并确认后续生产认证与监控策略 |
-| P2 | 测试体系 |
 | P2 | 图片优化管线（WebP/AVIF） |
 
 ---

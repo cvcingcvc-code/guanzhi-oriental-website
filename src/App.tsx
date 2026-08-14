@@ -42,7 +42,7 @@ function heading(lines: string[]) {
 }
 
 function PageImage({ path, alt, eager = false }: { path: keyof typeof pageImages; alt: string; eager?: boolean }) {
-  return <div className="page-visual"><img src={pageImages[path]} alt={alt} loading={eager ? 'eager' : 'lazy'} fetchPriority={eager ? 'high' : 'auto'} decoding="async" /></div>;
+  return <div className="page-visual"><img src={pageImages[path]} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" /></div>;
 }
 
 function CtaButton({ cta, run, className = 'primary-action' }: { cta?: ContentCta; run: (cta: ContentCta, trigger: HTMLElement) => void; className?: string }) {
