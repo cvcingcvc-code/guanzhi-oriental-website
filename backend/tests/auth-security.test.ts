@@ -9,6 +9,7 @@ process.env.JWT_SECRET = 'test-jwt-secret-that-is-longer-than-32-chars';
 process.env.IP_HASH_SALT = 'test-ip-hash-salt-long-enough';
 
 const { createAuthPlugin } = await import('../src/plugins/auth.js');
+const { installDatabaseUnavailableErrorHandler } = await import('../src/app.js');
 
 const id = '00000000-0000-4000-8000-000000000040';
 
@@ -49,5 +50,21 @@ test('无效或缺失 JWT 被统一拒绝', async () => {
   const { app } = await setup({ id, email: 'admin@example.test', displayName: 'Admin', role: 'ADMIN', active: true });
   assert.equal((await app.inject('/protected')).statusCode, 401);
   assert.equal((await app.inject({ url: '/protected', headers: { authorization: 'Bearer invalid' } })).statusCode, 401);
+  await app.close();
+});
+
+test('数据库不可用不会被认证 hook 伪装成 401', async () => {
+  const app = Fastify();
+  installDatabaseUnavailableErrorHandler(app);
+  await app.register(jwt, { secret: process.env.JWT_SECRET! });
+  await app.register(createAuthPlugin(async () => {
+    throw Object.assign(new Error('connection failed'), { code: 'ECONNREFUSED' });
+  }));
+  app.get('/protected', { preHandler: app.authenticate }, async () => ({ ok: true }));
+  const token = app.jwt.sign({ sub: id, email: 'admin@example.test', role: 'ADMIN', name: 'Admin' });
+
+  const response = await app.inject({ url: '/protected', headers: { authorization: `Bearer ${token}` } });
+  assert.equal(response.statusCode, 503);
+  assert.equal(response.json().error.code, 'SERVICE_UNAVAILABLE');
   await app.close();
 });
