@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import Fastify, { type FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import jwt from '@fastify/jwt';
@@ -20,6 +20,16 @@ import adminHomepageRoutes from './routes/admin-homepage.js';
 import publicMediaRoutes from './routes/public-media.js';
 import { HttpError } from './lib/http.js';
 import { MAX_MEDIA_UPLOAD_BYTES } from './media/service.js';
+import { configureDatabasePoolLogger } from './db/client.js';
+import { databaseErrorMetadata, isDatabaseUnavailableError } from './db/errors.js';
+
+export function installDatabaseUnavailableErrorHandler(app: FastifyInstance) {
+  app.setErrorHandler((error, request, reply) => {
+    if (!isDatabaseUnavailableError(error)) throw error;
+    request.log.error({ databaseError: databaseErrorMetadata(error) }, 'database request unavailable');
+    return reply.code(503).send({ ok: false, error: { code: 'SERVICE_UNAVAILABLE', message: '服务暂时不可用' } });
+  });
+}
 
 export async function buildApp() {
   const app = Fastify({
@@ -27,6 +37,7 @@ export async function buildApp() {
     trustProxy: config.TRUST_PROXY_HOPS > 0 ? config.TRUST_PROXY_HOPS : false,
     bodyLimit: 1024 * 1024,
   });
+  configureDatabasePoolLogger(app.log);
 
   await app.register(helmet, { contentSecurityPolicy: false });
   await app.register(cors, {
@@ -50,17 +61,20 @@ export async function buildApp() {
   }
   await app.register(authPlugin);
 
-  await app.register(publicMediaRoutes);
+  await app.register(async (api) => {
+    installDatabaseUnavailableErrorHandler(api);
 
-  await app.register(publicRoutes, { prefix: '/api/v1' });
-  await app.register(contentRoutes, { prefix: '/api/v1' });
-  await app.register(authRoutes, { prefix: '/api/v1/admin/auth' });
-  await app.register(adminHomepageRoutes, { prefix: '/api/v1/admin/homepage' });
-  await app.register(adminPagesRoutes, { prefix: '/api/v1/admin/pages' });
-  await app.register(adminMediaRoutes, { prefix: '/api/v1/admin/media' });
-  await app.register(adminInquiriesRoutes, { prefix: '/api/v1/admin/inquiries' });
-  await app.register(adminSettingsRoutes, { prefix: '/api/v1/admin/settings' });
-  await app.register(adminUsersRoutes, { prefix: '/api/v1/admin/users' });
+    await api.register(publicMediaRoutes);
+    await api.register(publicRoutes, { prefix: '/api/v1' });
+    await api.register(contentRoutes, { prefix: '/api/v1' });
+    await api.register(authRoutes, { prefix: '/api/v1/admin/auth' });
+    await api.register(adminHomepageRoutes, { prefix: '/api/v1/admin/homepage' });
+    await api.register(adminPagesRoutes, { prefix: '/api/v1/admin/pages' });
+    await api.register(adminMediaRoutes, { prefix: '/api/v1/admin/media' });
+    await api.register(adminInquiriesRoutes, { prefix: '/api/v1/admin/inquiries' });
+    await api.register(adminSettingsRoutes, { prefix: '/api/v1/admin/settings' });
+    await api.register(adminUsersRoutes, { prefix: '/api/v1/admin/users' });
+  });
 
   app.setNotFoundHandler((_request, reply) => reply.code(404).send({ ok: false, error: { code: 'NOT_FOUND', message: '接口不存在' } }));
   app.setErrorHandler((error, request, reply) => {

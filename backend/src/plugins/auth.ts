@@ -2,6 +2,7 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import { eq } from 'drizzle-orm';
 import { db } from '../db/client.js';
+import { isDatabaseUnavailableError } from '../db/errors.js';
 import { users } from '../db/schema.js';
 
 export type CurrentAuthUser = {
@@ -37,7 +38,8 @@ export function createAuthPlugin(findCurrentUser: CurrentUserLoader = loadCurren
     app.decorate('authenticate', async function authenticate(request, reply) {
       try {
         await verifyCurrentUser(request);
-      } catch {
+      } catch (error) {
+        if (isDatabaseUnavailableError(error)) throw error;
         return reply.code(401).send({ ok: false, error: { code: 'UNAUTHORIZED', message: '请先登录' } });
       }
     });
@@ -48,7 +50,8 @@ export function createAuthPlugin(findCurrentUser: CurrentUserLoader = loadCurren
         if (request.user.role !== 'ADMIN') {
           return reply.code(403).send({ ok: false, error: { code: 'FORBIDDEN', message: '需要管理员权限' } });
         }
-      } catch {
+      } catch (error) {
+        if (isDatabaseUnavailableError(error)) throw error;
         if (!reply.sent) return reply.code(401).send({ ok: false, error: { code: 'UNAUTHORIZED', message: '请先登录' } });
       }
     });
