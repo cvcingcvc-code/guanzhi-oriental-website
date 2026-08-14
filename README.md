@@ -71,7 +71,8 @@ npm run preview
 │       └── hero-loop.mp4   # Hero 背景视频
 ├── src/
 │   ├── main.tsx            # React 入口
-│   ├── App.tsx             # 当前根组件（7个主区块单页布局）
+│   ├── App.tsx             # 公共多路由网站与共享导航外壳
+│   ├── public/             # 页面模型、CTA dispatcher、咨询 Dialog 与测试
 │   ├── index.css           # 全局设计系统 + Tailwind
 │   └── components/
 │       └── *.tsx             # Legacy：历史页面组件，当前 App.tsx 未导入
@@ -98,7 +99,20 @@ npm run preview
 
 字体栈：`Noto Serif SC`（中文衬线）+ `Cormorant Garamond`（英文斜体）+ 系统无衬线（UI）
 
-## 当前首页区块
+## 当前公共网站
+
+公共端使用 React Router 提供六个独立 URL：
+
+- `/`：Hero 与已启用 CMS 内容的摘要入口
+- `/about`：About
+- `/capabilities`：Capabilities + Motifs
+- `/into-jiangnan`：Jiangnan
+- `/partners`：Partners
+- `/contact`：Contact 与合作咨询入口
+
+路由和导航由 Public API 已过滤的 blocks 统一派生。CMS 禁用 block 后，对应内容和导航入口一起消失；`scroll` CTA 的历史 target 会兼容映射到相应路由，`inquiry` 打开咨询 Dialog，`link` 仅执行 Contract 已允许的 HTTPS 或 mailto 地址。`/admin/homepage` 继续由独立入口加载，不经过公共 Router。
+
+## Homepage CMS 区块
 
 1. **Hero** — 视频背景 + 品牌宣言
 2. **About** — 机构介绍
@@ -108,7 +122,7 @@ npm run preview
 6. **For Partners** — 合作对象
 7. **Contact** — 合作 CTA、联系方式、Footer 与咨询弹窗
 
-页面布局、动画、响应式和交互仍由 `src/App.tsx` 控制；以下七个区块的展示内容来自同一个经过校验的 Homepage Content Document：
+页面布局、响应式和交互由 `src/App.tsx` 与 `src/public/` 控制；以下七个区块的展示内容来自同一个经过校验的 Homepage Content Document：
 
 - `hero`
 - `about`

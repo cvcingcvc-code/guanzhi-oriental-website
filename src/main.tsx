@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 
 const isHomepageAdmin = window.location.pathname === '/admin/homepage' || window.location.pathname === '/admin/homepage/';
 
@@ -10,7 +11,7 @@ async function render() {
 
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-      <Root />
+      {isHomepageAdmin ? <Root /> : <BrowserRouter><Root /></BrowserRouter>}
     </React.StrictMode>,
   );
 }
