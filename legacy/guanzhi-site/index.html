@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- ============================================================
+     观止东方 GUANZHI ORIENTAL — 品牌官网（单文件版）
+     修改指引：
+     1. 品牌色 / 字号 → 见下方 <style> 中的 :root 与 tailwind.config
+     2. 文案 → 各 <section> 内，均有中文注释标记
+     3. 图片 → 搜索 data-img 标记，替换 src 即可
+     4. 表单 → 见页面底部 FORM ENDPOINT 注释
+     ============================================================ -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ---------- SEO ---------- -->
+    <title>观止东方 | 东方文化深度体验产品研发与供应商</title>
+    <meta name="description" content="观止东方为入境旅行社、DMC、酒店与度假品牌、会员机构与目的地提供东方文化深度体验产品研发、内容授权、联合出品与交付支持。">
+    <meta name="keywords" content="文化深度体验,产品研发,入境旅游,DMC,内容授权,联合出品,江南,园林,昆曲,观止东方">
+    <meta name="author" content="观止东方">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#F5F0E8">
+    <link rel="canonical" href="https://example.com/">
+
+    <!-- ---------- Open Graph ---------- -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="观止东方 Guanzhi Oriental">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:title" content="观止东方 | 把东方文化，转化为可以进入的旅行体验">
+    <meta property="og:description" content="为旅行社、酒店、会员机构与目的地提供文化深度体验产品研发、内容授权、联合出品与交付支持。">
+    <meta property="og:url" content="https://example.com/">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1582726924480-ca9b0c8e07b7?w=1200&q=80">
+
+    <!-- ---------- Twitter ---------- -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="观止东方 | 东方文化深度体验产品研发与供应商">
+    <meta name="twitter:description" content="Turning Chinese culture into travel experiences people can enter, understand and remember.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1582726924480-ca9b0c8e07b7?w=1200&q=80">
+
+    <!-- ---------- 结构化数据 ---------- -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "观止东方",
+      "alternateName": "Guanzhi Oriental",
+      "url": "https://example.com/",
+      "description": "东方文化深度体验产品研发与供应商",
+      "email": "contact@example.com"
+    }
+    </script>
+
+    <!-- ---------- 字体与样式 ---------- -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      /* Tailwind 主题：品牌色集中在此，改这里即可全站生效 */
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              paper:    '#F5F0E8',   /* 宣纸米白 — 大面积背景 */
+              paperAlt: '#EFE9DF',   /* 次级背景 */
+              ink:      '#2D3436',   /* 墨色 — 标题正文 */
+              inkDeep:  '#232829',   /* 深色区块底 */
+              celadon:  '#7A8B7F',   /* 青瓷灰绿 — 辅助色 */
+              celadonL: '#8FA393',   /* 青瓷浅 */
+              cinnabar: '#C45C48'    /* 朱砂 — CTA */
+            },
+            fontFamily: {
+              serifsc: ["'Noto Serif SC'", 'Georgia', 'serif'],
+              sanssc:  ["'Noto Sans SC'", 'system-ui', 'sans-serif'],
+              en:      ["'Cormorant Garamond'", 'Georgia', 'serif']
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      :root{
+        --paper:#F5F0E8; --ink:#2D3436; --celadon:#7A8B7F; --cinnabar:#C45C48;
+      }
+      html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+      body{
+        font-family:'Noto Sans SC',system-ui,sans-serif;
+        background:var(--paper); color:var(--ink);
+        font-weight:300; line-height:1.9; letter-spacing:.02em;
+      }
+      h1,h2,h3,h4{ font-family:'Noto Serif SC',Georgia,serif; font-weight:500; letter-spacing:.04em; }
+      h1{ line-height:1.35; }
+      h2{ line-height:1.45; }
+      .en{ font-family:'Cormorant Garamond',Georgia,serif; letter-spacing:.06em; }
+
+      /* 栏目英文小标 — 编辑式排版节奏 */
+      .kicker{
+        font-family:'Cormorant Garamond',Georgia,serif;
+        font-size:.8rem; letter-spacing:.28em; text-transform:uppercase;
+        color:var(--celadon);
+      }
+      /* 细分割线 */
+      .rule{ height:1px; background:rgba(122,139,127,.28); }
+      .rule-short{ width:2.5rem; height:1px; background:var(--cinnabar); }
+
+      /* 卡片：克制的 hover，仅边框与底色轻微变化 */
+      .card{
+        background:rgba(255,255,255,.62);
+        border:1px solid rgba(122,139,127,.2);
+        transition:border-color .35s ease, background-color .35s ease, transform .35s ease;
+      }
+      .card:hover{
+        border-color:rgba(122,139,127,.45);
+        background:rgba(255,255,255,.85);
+        transform:translateY(-2px);
+      }
+      /* 深色区卡片 */
+      .card-dark{
+        background:rgba(255,255,255,.04);
+        border:1px solid rgba(143,163,147,.16);
+        transition:border-color .35s ease, background-color .35s ease;
+      }
+      .card-dark:hover{ border-color:rgba(196,92,72,.4); background:rgba(255,255,255,.07); }
+
+      /* 图片质感：轻微去饱和 + 暖色叠加，hover 缓慢还原 */
+      .img-tone{
+        filter:saturate(.78) contrast(1.04) brightness(.96);
+        transition:filter .7s ease, transform .7s ease;
+      }
+      .img-frame:hover .img-tone{ filter:saturate(.95) contrast(1.02) brightness(1); transform:scale(1.02); }
+      .img-frame{ overflow:hidden; position:relative; }
+      .img-frame::after{
+        content:''; position:absolute; inset:0;
+        background:linear-gradient(180deg,rgba(45,52,54,0) 45%,rgba(35,40,41,.42) 100%);
+        pointer-events:none;
+      }
+
+      /* 按钮 */
+      .btn-primary{
+        background:var(--cinnabar); color:#fff;
+        transition:background-color .3s ease, transform .3s ease;
+      }
+      .btn-primary:hover{ background:#B85450; }
+      .btn-primary:active{ transform:translateY(1px); }
+      .btn-ghost{
+        border:1px solid rgba(122,139,127,.5); color:var(--ink);
+        transition:border-color .3s ease, color .3s ease;
+      }
+      .btn-ghost:hover{ border-color:var(--cinnabar); color:var(--cinnabar); }
+
+      /* 导航链接下划线 */
+      .nav-link{ position:relative; color:var(--ink); transition:color .3s ease; }
+      .nav-link::after{
+        content:''; position:absolute; left:0; bottom:-6px; width:0; height:1px;
+        background:var(--cinnabar); transition:width .35s ease;
+      }
+      .nav-link:hover{ color:var(--cinnabar); }
+      .nav-link:hover::after{ width:100%; }
+      .nav-link.is-active{ color:var(--cinnabar); }
+
+      /* 入场动画：仅淡入 + 轻微上移 */
+      .reveal{ opacity:0; transform:translateY(14px); transition:opacity .8s ease, transform .8s ease; }
+      .reveal.in{ opacity:1; transform:none; }
+      @media (prefers-reduced-motion:reduce){
+        html{ scroll-behavior:auto; }
+        .reveal{ opacity:1; transform:none; transition:none; }
+        .img-tone{ transition:none; }
+      }
+
+      /* 表单 */
+      .field{
+        background:var(--paper); border:1px solid rgba(122,139,127,.32);
+        transition:border-color .3s ease, box-shadow .3s ease;
+      }
+      .field:focus{
+        outline:none; border-color:var(--cinnabar);
+        box-shadow:0 0 0 3px rgba(196,92,72,.1);
+      }
+      /* 移动端触控目标不小于 44px */
+      @media (max-width:767px){
+        .nav-link{ display:block; padding:.7rem 0; }
+      }
+      ::selection{ background:rgba(196,92,72,.18); }
+    </style>
+</head>
+<body class="antialiased bg-paper text-ink">
+
+<!-- 跳过导航（无障碍） -->
+<a href="#home" class="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:left-4 focus:top-4 focus:bg-white focus:px-4 focus:py-2 focus:text-sm">跳到主要内容</a>
+
+<!-- ============================================================
+     NAV 导航
+     ============================================================ -->
+<header id="site-nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-500 bg-paper/80 backdrop-blur-md border-b border-transparent">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="flex items-center justify-between h-16 md:h-20">
+      <a href="#home" class="group flex flex-col leading-none">
+        <span class="font-serifsc text-lg md:text-xl tracking-[.18em]">观止东方</span>
+        <span class="en text-[.62rem] md:text-[.68rem] tracking-[.3em] text-celadon mt-1">GUANZHI ORIENTAL</span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-9 text-[.82rem]" aria-label="主导航">
+        <a href="#home"     class="nav-link">首页</a>
+        <a href="#about"    class="nav-link">关于观止东方</a>
+        <a href="#services" class="nav-link">产品与解决方案</a>
+        <a href="#lab"      class="nav-link">产品实验室</a>
+        <a href="#jiangnan" class="nav-link">入江南</a>
+        <a href="#contact"  class="nav-link">合作与联系</a>
+      </nav>
+
+      <button id="menu-btn" type="button"
+              class="md:hidden -mr-2 w-11 h-11 flex items-center justify-center text-ink"
+              aria-label="打开导航菜单" aria-expanded="false" aria-controls="mobile-menu">
+        <svg id="icon-open" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" d="M3.5 7h17M3.5 12h17M3.5 17h17"/>
+        </svg>
+        <svg id="icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="md:hidden overflow-hidden max-h-0 transition-[max-height] duration-500 ease-in-out">
+      <div class="rule mb-1"></div>
+      <nav class="py-2 text-[.95rem] divide-y divide-celadon/15" aria-label="移动端导航">
+        <a href="#home"     class="nav-link">首页</a>
+        <a href="#about"    class="nav-link">关于观止东方</a>
+        <a href="#services" class="nav-link">产品与解决方案</a>
+        <a href="#lab"      class="nav-link">产品实验室</a>
+        <a href="#jiangnan" class="nav-link">入江南</a>
+        <a href="#contact"  class="nav-link">合作与联系</a>
+      </nav>
+      <a href="#contact" class="btn-primary block text-center text-sm rounded-full py-3 my-4">联系我们 / Contact</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO 首页第一屏
+     ============================================================ -->
+<main>
+<section id="home" class="pt-28 md:pt-40 pb-20 md:pb-28 px-5 sm:px-8">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="reveal max-w-3xl">
+      <p class="kicker mb-6">Cultural Experience Product Studio</p>
+      <h1 class="text-[2rem] leading-[1.4] sm:text-4xl md:text-[3.4rem] md:leading-[1.32] mb-8">
+        把东方文化，<br class="hidden sm:block">转化为可以进入的<br class="hidden sm:block">旅行体验
+      </h1>
+      <div class="rule-short mb-8"></div>
+      <p class="text-[.95rem] md:text-lg text-ink/75 leading-[2] mb-6 max-w-2xl">
+        观止东方为旅行社、酒店、会员机构与目的地提供文化深度体验产品研发、内容授权、联合出品与交付支持。
+      </p>
+      <p class="en italic text-base md:text-xl text-celadon leading-relaxed max-w-2xl">
+        Turning Chinese culture into travel experiences people can enter, understand and remember.
+      </p>
+      <p class="mt-8 text-sm text-celadon">
+        我们不是旅行社，而是文化体验产品的研发方与供应方。
+      </p>
+
+      <div class="mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <a href="#services" class="btn-primary text-center text-sm rounded-full px-8 py-4 tracking-wider">查看产品与解决方案</a>
+        <a href="#contact"  class="btn-ghost text-center text-sm rounded-full px-8 py-4 tracking-wider">洽谈合作</a>
+      </div>
+    </div>
+
+    <!-- Hero 主图 -->
+    <figure class="reveal img-frame rounded-sm mt-16 md:mt-24">
+      <img data-img="hero"
+           src="https://images.unsplash.com/photo-1545048702-79362596cdc9?w=1600&q=80"
+           alt="清晨的江南园林回廊，光线穿过木格窗落在石阶上"
+           loading="lazy" decoding="async"
+           class="img-tone w-full h-[240px] sm:h-[360px] md:h-[460px] object-cover">
+    </figure>
+    <figcaption class="reveal mt-3 text-xs text-celadon">园林清晨 · 非游客时刻的江南</figcaption>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     服务对象
+     ============================================================ -->
+<section class="py-16 md:py-24 px-5 sm:px-8 border-t border-celadon/15">
+  <div class="max-w-5xl mx-auto">
+    <div class="reveal mb-10 md:mb-14">
+      <p class="kicker mb-4">Who We Work With</p>
+      <h2 class="text-2xl md:text-3xl">我们服务的对象</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-celadon/15 reveal">
+      <!-- 服务对象列表：增删条目时保持同一结构 -->
+      <div class="bg-paper hover:bg-white/60 transition-colors duration-500 px-6 py-8">
+        <p class="text-[.92rem]">入境旅行社及 DMC</p>
+        <p class="en text-xs text-celadon mt-2">Inbound Operators &amp; DMC</p>
+      </div>
+      <div class="bg-paper hover:bg-white/60 transition-colors duration-500 px-6 py-8">
+        <p class="text-[.92rem]">高端定制机构</p>
+        <p class="en text-xs text-celadon mt-2">Bespoke Travel Designers</p>
+      </div>
+      <div class="bg-paper hover:bg-white/60 transition-colors duration-500 px-6 py-8">
+        <p class="text-[.92rem]">酒店与度假品牌</p>
+        <p class="en text-xs text-celadon mt-2">Hotels &amp; Resorts</p>
+      </div>
+      <div class="bg-paper hover:bg-white/60 transition-colors duration-500 px-6 py-8">
+        <p class="text-[.92rem]">银行 / 企业 / 会员机构</p>
+        <p class="en text-xs text-celadon mt-2">Banks, Corporates &amp; Clubs</p>
+      </div>
+      <div class="bg-paper hover:bg-white/60 transition-colors duration-500 px-6 py-8">
+        <p class="text-[.92rem]">目的地与文旅机构</p>
+        <p class="en text-xs text-celadon mt-2">Destinations &amp; Cultural Bodies</p>
+      </div>
+      <div class="bg-paper hover:bg-white/60 transition-colors duration-500 px-6 py-8">
+        <p class="text-[.92rem]">海外旅行社与文化教育机构</p>
+        <p class="en text-xs text-celadon mt-2">Overseas Agencies &amp; Educators</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     核心能力
+     ============================================================ -->
+<section class="py-16 md:py-24 px-5 sm:px-8 bg-paperAlt/60">
+  <div class="max-w-5xl mx-auto">
+    <div class="reveal mb-10 md:mb-16">
+      <p class="kicker mb-4">Core Capabilities</p>
+      <h2 class="text-2xl md:text-3xl mb-5">四项核心能力</h2>
+      <p class="text-sm md:text-base text-ink/70 max-w-2xl leading-[2]">
+        从文化母题到可交付的现场体验，我们提供一条完整的产品链路，而不是单点的内容服务。
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 reveal">
+      <article class="card rounded-sm p-8 md:p-10">
+        <span class="en text-xs tracking-[.2em] text-celadon">01</span>
+        <h3 class="text-xl mt-4 mb-4">文化产品研发</h3>
+        <p class="text-sm text-ink/70 leading-[2]">文化主题提炼、叙事系统搭建、体验流程设计、场景与人物资源配置。</p>
+      </article>
+      <article class="card rounded-sm p-8 md:p-10">
+        <span class="en text-xs tracking-[.2em] text-celadon">02</span>
+        <h3 class="text-xl mt-4 mb-4">标准体验模块</h3>
+        <p class="text-sm text-ink/70 leading-[2]">90 分钟 / 半日 / 一日 / 多日的模块化主题产品，适配不同客群与销售场景。</p>
+      </article>
+      <article class="card rounded-sm p-8 md:p-10">
+        <span class="en text-xs tracking-[.2em] text-celadon">03</span>
+        <h3 class="text-xl mt-4 mb-4">国际化文化转译</h3>
+        <p class="text-sm text-ink/70 leading-[2]">多语言内容、外国游客认知入口设计、销售文案与外语讲解体系。</p>
+      </article>
+      <article class="card rounded-sm p-8 md:p-10">
+        <span class="en text-xs tracking-[.2em] text-celadon">04</span>
+        <h3 class="text-xl mt-4 mb-4">交付与培训</h3>
+        <p class="text-sm text-ink/70 leading-[2]">导游与文化主理人培训、产品手册、交付 SOP、质量评估与持续迭代。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     代表性研发方向（首页概览）
+     ============================================================ -->
+<section class="py-16 md:py-24 px-5 sm:px-8">
+  <div class="max-w-5xl mx-auto">
+    <div class="reveal mb-10 md:mb-14">
+      <p class="kicker mb-4">Research Directions</p>
+      <h2 class="text-2xl md:text-3xl">代表性研发方向</h2>
+    </div>
+    <div class="reveal flex flex-wrap gap-3">
+      <span class="btn-ghost rounded-full px-6 py-3 text-sm">园林</span>
+      <span class="btn-ghost rounded-full px-6 py-3 text-sm">藏书楼</span>
+      <span class="btn-ghost rounded-full px-6 py-3 text-sm">茶与丝绸</span>
+      <span class="btn-ghost rounded-full px-6 py-3 text-sm">运河</span>
+      <span class="btn-ghost rounded-full px-6 py-3 text-sm">昆曲</span>
+    </div>
+    <p class="reveal mt-8 text-sm text-celadon">详见 <a href="#lab" class="text-cinnabar underline decoration-cinnabar/30 underline-offset-4 hover:decoration-cinnabar transition">产品实验室</a></p>
+  </div>
+</section>
+
+<!-- ============================================================
+     合作方式速览
+     ============================================================ -->
+<section class="py-16 md:py-24 px-5 sm:px-8 bg-inkDeep text-paper">
+  <div class="max-w-5xl mx-auto">
+    <div class="reveal mb-10 md:mb-14">
+      <p class="kicker mb-4 text-celadonL">How We Collaborate</p>
+      <h2 class="text-2xl md:text-3xl mb-5">合作方式</h2>
+      <p class="text-sm md:text-base text-paper/65 max-w-2xl leading-[2]">
+        我们以供应方与研发方的角色介入，既可作为幕后产品支持，也可联合署名出品。
+      </p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-px bg-white/10 reveal">
+      <div class="bg-inkDeep px-5 py-7 md:px-6 md:py-8"><p class="text-sm">委托研发</p></div>
+      <div class="bg-inkDeep px-5 py-7 md:px-6 md:py-8"><p class="text-sm">联合出品</p></div>
+      <div class="bg-inkDeep px-5 py-7 md:px-6 md:py-8"><p class="text-sm">内容授权</p></div>
+      <div class="bg-inkDeep px-5 py-7 md:px-6 md:py-8"><p class="text-sm">白标产品</p></div>
+      <div class="bg-inkDeep px-5 py-7 md:px-6 md:py-8"><p class="text-sm">按团 / 按人结算</p></div>
+      <div class="bg-inkDeep px-5 py-7 md:px-6 md:py-8"><p class="text-sm">培训与交付支持</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ABOUT 关于观止东方
+     ============================================================ -->
+<section id="about" class="py-20 md:py-32 px-5 sm:px-8">
+  <div class="max-w-3xl mx-auto">
+
+    <div class="reveal mb-12 md:mb-16">
+      <p class="kicker mb-4">About Us</p>
+      <h2 class="text-2xl md:text-4xl mb-6">关于观止东方</h2>
+      <div class="rule-short"></div>
+    </div>
+
+    <!-- 定位 -->
+    <div class="reveal mb-14">
+      <p class="text-base md:text-lg leading-[2.1] text-ink/85">
+        观止东方是一家东方文化深度体验产品的研发与供应机构。我们不直接面向散客销售线路，而是把文化资源转化为结构完整、可交付、可复用的体验产品，供旅行社、酒店、会员机构与目的地使用。
+      </p>
+    </div>
+
+    <div class="rule mb-14"></div>
+
+    <!-- 为什么成立 -->
+    <article class="reveal mb-14">
+      <h3 class="text-xl md:text-2xl mb-6">为什么成立观止东方</h3>
+      <div class="space-y-5 text-[.95rem] text-ink/75 leading-[2.1]">
+        <p>中国的文化资源足够丰厚，但在转化为旅行体验这件事上，中间一环长期缺位。大量行程停留在"到场 + 讲解"的层面：内容是外挂的，体验是松散的，客人离开时记住的是照片，而不是理解。</p>
+        <p>问题不在于资源不好，而在于缺少产品化的方法：谁来提炼主题，谁来设计进入的顺序，谁来配置空间与人物，谁来保证第二次交付和第一次一样好。这些工作既不属于传统旅行社的采购职能，也不属于内容团队的写作职能。</p>
+        <p>观止东方要补的正是这一段：建立可复制、可授权、可持续迭代的东方文化深度体验产品研发与供应体系。</p>
+      </div>
+    </article>
+
+    <!-- 我们的理解 -->
+    <article class="reveal mb-14">
+      <h3 class="text-xl md:text-2xl mb-6">我们对文化深度体验的理解</h3>
+      <div class="space-y-5 text-[.95rem] text-ink/75 leading-[2.1]">
+        <p>文化深度体验不是知识科普的加长版，也不是把讲解词写得更长。它的核心是让人在具体的空间、器物、声音和时间里，进入一种文化的内在逻辑。</p>
+        <p>我们认为一个成立的文化体验产品，至少要回答四件事：这次进入的是什么母题；用什么顺序让人逐步理解；由谁在现场承接这种理解；以及离场之后留下了什么。</p>
+      </div>
+      <ul class="mt-8 space-y-4 text-[.92rem] text-ink/75">
+        <li class="flex gap-4"><span class="en text-celadon text-xs pt-1.5">01</span><span><strong class="font-normal text-ink">母题清晰</strong> — 一次体验只解决一个文化命题，不做拼盘。</span></li>
+        <li class="flex gap-4"><span class="en text-celadon text-xs pt-1.5">02</span><span><strong class="font-normal text-ink">路径可感</strong> — 从进入到离场，节奏与信息量都被设计过。</span></li>
+        <li class="flex gap-4"><span class="en text-celadon text-xs pt-1.5">03</span><span><strong class="font-normal text-ink">现场有人</strong> — 由具备文化理解力的主理人承接，而非背诵讲解。</span></li>
+        <li class="flex gap-4"><span class="en text-celadon text-xs pt-1.5">04</span><span><strong class="font-normal text-ink">可被带走</strong> — 留下能继续延伸的认知，而不只是纪念品。</span></li>
+      </ul>
+    </article>
+
+    <!-- 愿景 -->
+    <article class="reveal mb-14 bg-white/55 border border-celadon/20 rounded-sm p-8 md:p-10">
+      <p class="kicker mb-4">Vision</p>
+      <h3 class="text-xl md:text-2xl mb-6">愿景</h3>
+      <p class="text-[.95rem] text-ink/80 leading-[2.1]">
+        致力于建设中国领先的东方文化深度体验产品研发与供应体系，让东方文化以专业、可持续的方式进入国际与国内高知客群的旅行选择。
+      </p>
+      <div class="rule my-7"></div>
+      <p class="text-sm text-ink/70 leading-[2]">
+        中期目标是围绕江南建立完整的产品谱系，形成可授权、可白标、可跨机构复用的标准体验模块，并逐步向其他文化区域延伸。
+      </p>
+    </article>
+
+    <!-- 创始人 -->
+    <article class="reveal mb-14">
+      <h3 class="text-xl md:text-2xl mb-6">创始人背景</h3>
+      <div class="space-y-5 text-[.95rem] text-ink/75 leading-[2.1]">
+        <p>创始人长期从事文化内容策划与资源整合工作，具备把复杂文化命题转化为大众可理解表达的实践经验，并在出版、内容制作与文化资源合作方面积累了稳定的协作网络。</p>
+        <p>曾发起并主导传统文化项目「国风小注」，策划出版先贤系列图书五本：</p>
+      </div>
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-px bg-celadon/15">
+        <div class="bg-paper px-5 py-4 text-sm">《您好，孔夫子》</div>
+        <div class="bg-paper px-5 py-4 text-sm">《您好，孟子》</div>
+        <div class="bg-paper px-5 py-4 text-sm">《您好，庄子》</div>
+        <div class="bg-paper px-5 py-4 text-sm">《您好，荀子》</div>
+        <div class="bg-paper px-5 py-4 text-sm sm:col-span-2">《您好，韩非子》</div>
+      </div>
+      <p class="mt-6 text-sm text-ink/70 leading-[2]">
+        这套图书处理的正是文化转译的核心问题：如何让原本有门槛的思想，被没有专业背景的读者真正读进去。这一方法同样构成观止东方产品研发的底层逻辑。
+      </p>
+    </article>
+
+    <!-- 资质 -->
+    <div class="reveal">
+      <div class="rule mb-7"></div>
+      <p class="kicker mb-4">Legal Entity</p>
+      <p class="text-sm text-ink/70 leading-[2]">
+        公司主体：<span class="text-ink">[公司全称占位]</span><br>
+        持有旅行社业务经营许可证：<span class="text-ink">[许可证号占位]</span><br>
+        具备合规签约、开票与团队业务承接能力。
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     SERVICES 产品与解决方案
+     ============================================================ -->
+<section id="services" class="py-20 md:py-32 px-5 sm:px-8 bg-paperAlt/60 border-t border-celadon/15">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="reveal mb-14 md:mb-20 max-w-2xl">
+      <p class="kicker mb-4">Products &amp; Solutions</p>
+      <h2 class="text-2xl md:text-4xl mb-6">产品与解决方案</h2>
+      <div class="rule-short mb-8"></div>
+      <p class="text-[.95rem] md:text-base text-ink/75 leading-[2.1]">
+        四个板块构成一条完整链路：从母题研发，到模块化产品，到面向国际客群的转译，再到落地交付与人员培训。可整体承接，也可按单项介入。
+      </p>
+    </div>
+
+    <div class="space-y-5 md:space-y-6">
+
+      <!-- 板块 A -->
+      <article class="card reveal rounded-sm p-8 md:p-12">
+        <div class="md:flex md:gap-12">
+          <div class="md:w-1/3 mb-6 md:mb-0">
+            <span class="en text-xs tracking-[.22em] text-celadon">A</span>
+            <h3 class="text-xl md:text-2xl mt-3">文化产品研发</h3>
+            <p class="en text-xs text-celadon mt-3 tracking-wider">Product Development</p>
+          </div>
+          <div class="md:w-2/3">
+            <p class="text-sm text-ink/75 leading-[2.1] mb-7">
+              从一个文化母题出发，完成从研究到可执行方案的全过程。交付物不是一份行程表，而是一套能被不同团队反复执行的产品文件。
+            </p>
+            <ul class="space-y-4 text-sm text-ink/75">
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">主题提炼与定位</strong>：确定这次体验要解决的文化命题，以及它对目标客群的意义。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">叙事系统设计</strong>：搭建贯穿全程的叙事主线、信息层级与关键节点。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">体验流程构建</strong>：动线、节奏、停留时长、互动与留白的安排。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">场景与人物资源配置</strong>：空间选址、匠人与学者对接、器物与道具方案。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">可行性与成本结构</strong>：接待容量、季节限制、人力配置与成本模型。</span></li>
+            </ul>
+            <div class="rule my-7"></div>
+            <p class="text-xs text-celadon leading-relaxed">交付物：产品定义书 · 叙事脚本 · 流程与动线方案 · 资源清单 · 成本与报价结构</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 板块 B -->
+      <article class="card reveal rounded-sm p-8 md:p-12">
+        <div class="md:flex md:gap-12">
+          <div class="md:w-1/3 mb-6 md:mb-0">
+            <span class="en text-xs tracking-[.22em] text-celadon">B</span>
+            <h3 class="text-xl md:text-2xl mt-3">标准体验模块</h3>
+            <p class="en text-xs text-celadon mt-3 tracking-wider">Modular Experiences</p>
+          </div>
+          <div class="md:w-2/3">
+            <p class="text-sm text-ink/75 leading-[2.1] mb-7">
+              把文化母题拆解为不同时长的标准模块，便于合作方按客群、预算与行程结构自由组合，而不必每次重新定制。
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-px bg-celadon/15 mb-7">
+              <div class="bg-paper px-5 py-5">
+                <p class="text-sm text-ink">90 分钟</p>
+                <p class="text-xs text-celadon mt-2 leading-relaxed">单一切口的深度片段，可嵌入既有行程或酒店住中体验。</p>
+              </div>
+              <div class="bg-paper px-5 py-5">
+                <p class="text-sm text-ink">半日</p>
+                <p class="text-xs text-celadon mt-2 leading-relaxed">一个完整母题的进入与收束，适合高端定制行程的核心段落。</p>
+              </div>
+              <div class="bg-paper px-5 py-5">
+                <p class="text-sm text-ink">一日</p>
+                <p class="text-xs text-celadon mt-2 leading-relaxed">母题 + 相邻语境，包含餐饮与节奏安排的完整一日。</p>
+              </div>
+              <div class="bg-paper px-5 py-5">
+                <p class="text-sm text-ink">多日</p>
+                <p class="text-xs text-celadon mt-2 leading-relaxed">跨母题的递进式旅程，形成层层深入的认知结构。</p>
+              </div>
+            </div>
+            <ul class="space-y-4 text-sm text-ink/75">
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span>按客群适配：入境高端、国内高知、企业与会员客群、教育与研学。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span>可组合、可替换、可升级，支持淡旺季与不同接待规模。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span>提供清晰的模块说明与售卖要点，便于合作方直接进入销售。</span></li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- 板块 C -->
+      <article class="card reveal rounded-sm p-8 md:p-12">
+        <div class="md:flex md:gap-12">
+          <div class="md:w-1/3 mb-6 md:mb-0">
+            <span class="en text-xs tracking-[.22em] text-celadon">C</span>
+            <h3 class="text-xl md:text-2xl mt-3">国际化文化转译</h3>
+            <p class="en text-xs text-celadon mt-3 tracking-wider">Cultural Translation</p>
+          </div>
+          <div class="md:w-2/3">
+            <p class="text-sm text-ink/75 leading-[2.1] mb-7">
+              转译不是翻译。同一处园林，对本地客人与对欧美客人，需要不同的进入方式与参照系。我们负责搭建这个认知入口。
+            </p>
+            <ul class="space-y-4 text-sm text-ink/75">
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">认知入口设计</strong>：为不同文化背景的客人建立可类比、可理解的切入角度。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">多语言内容开发</strong>：中英为主，可扩展其他语种，术语与专名统一。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">销售文案与素材</strong>：面向海外渠道的产品描述、卖点与图文素材。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">行前内容</strong>：预读材料与期待管理，让客人到场前已完成第一步理解。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">外语讲解体系</strong>：讲解框架、常见提问应答、文化敏感点处理。</span></li>
+            </ul>
+            <div class="rule my-7"></div>
+            <p class="text-xs text-celadon leading-relaxed">交付物：双语内容包 · 讲解框架 · 渠道销售文案 · 行前材料 · 术语表</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 板块 D -->
+      <article class="card reveal rounded-sm p-8 md:p-12">
+        <div class="md:flex md:gap-12">
+          <div class="md:w-1/3 mb-6 md:mb-0">
+            <span class="en text-xs tracking-[.22em] text-celadon">D</span>
+            <h3 class="text-xl md:text-2xl mt-3">交付与培训</h3>
+            <p class="en text-xs text-celadon mt-3 tracking-wider">Delivery &amp; Training</p>
+          </div>
+          <div class="md:w-2/3">
+            <p class="text-sm text-ink/75 leading-[2.1] mb-7">
+              产品的价值最终由现场决定。我们把交付标准写下来，把人训出来，并在运行后持续修正。
+            </p>
+            <ul class="space-y-4 text-sm text-ink/75">
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">导游与文化主理人培训</strong>：内容理解、叙事把控、现场应变与提问处理。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">产品手册</strong>：面向执行团队的完整操作文档与内容底稿。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">交付 SOP</strong>：从对接、准备到收尾的标准流程与责任划分。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">质量评估</strong>：客人反馈机制与执行质量核查表。</span></li>
+              <li class="flex gap-3"><span class="text-cinnabar mt-0.5">—</span><span><strong class="font-normal text-ink">持续迭代</strong>：按周期回看运行数据与反馈，更新内容与流程。</span></li>
+            </ul>
+            <div class="rule my-7"></div>
+            <p class="text-xs text-celadon leading-relaxed">交付物：培训课程 · 产品手册 · 交付 SOP · 质量核查表 · 迭代记录</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     LAB 产品实验室
+     ============================================================ -->
+<section id="lab" class="py-20 md:py-32 px-5 sm:px-8 bg-inkDeep text-paper">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="reveal mb-14 md:mb-20 max-w-2xl">
+      <p class="kicker mb-4 text-celadonL">Product Studio</p>
+      <h2 class="text-2xl md:text-4xl mb-6">文化体验产品实验室</h2>
+      <div class="rule-short mb-8"></div>
+      <p class="text-[.95rem] md:text-base text-paper/70 leading-[2.1]">
+        以下是我们正在研发的文化母题。它们处于不同阶段，尚未全部形成成熟产品——我们选择如实标注，而不是先做成宣传。
+      </p>
+      <p class="en italic text-sm text-celadonL mt-5">
+        Themes currently in research and co-development.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+
+      <article class="card-dark reveal rounded-sm overflow-hidden">
+        <div class="img-frame">
+          <img data-img="lab-garden"
+               src="https://images.unsplash.com/photo-1582726924480-ca9b0c8e07b7?w=900&q=80"
+               alt="江南园林的洞门与漏窗，光影落在地面形成层叠的空间关系"
+               loading="lazy" decoding="async"
+               class="img-tone w-full h-52 object-cover">
+        </div>
+        <div class="p-7">
+          <span class="en text-xs tracking-[.22em] text-celadonL">01</span>
+          <h3 class="text-lg mt-3 mb-3">园林</h3>
+          <p class="text-sm text-paper/65 leading-[1.95]">如何走进一首中国式的诗</p>
+          <p class="mt-5 inline-block border border-cinnabar/40 text-cinnabar text-[.7rem] px-3 py-1 rounded-full">重点研发方向</p>
+        </div>
+      </article>
+
+      <article class="card-dark reveal rounded-sm overflow-hidden">
+        <div class="img-frame">
+          <img data-img="lab-library"
+               src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=900&q=80"
+               alt="旧藏书阁的书架与线装书册，窗光斜入"
+               loading="lazy" decoding="async"
+               class="img-tone w-full h-52 object-cover">
+        </div>
+        <div class="p-7">
+          <span class="en text-xs tracking-[.22em] text-celadonL">02</span>
+          <h3 class="text-lg mt-3 mb-3">藏书楼</h3>
+          <p class="text-sm text-paper/65 leading-[1.95]">文人如何保存知识与精神世界</p>
+          <p class="mt-5 inline-block border border-cinnabar/40 text-cinnabar text-[.7rem] px-3 py-1 rounded-full">重点研发方向</p>
+        </div>
+      </article>
+
+      <article class="card-dark reveal rounded-sm overflow-hidden">
+        <div class="img-frame">
+          <img data-img="lab-tea"
+               src="https://images.unsplash.com/photo-1563822249366-3efb23b8e0c9?w=900&q=80"
+               alt="匠人双手在工作台前处理茶叶与织物，动作细节清晰"
+               loading="lazy" decoding="async"
+               class="img-tone w-full h-52 object-cover">
+        </div>
+        <div class="p-7">
+          <span class="en text-xs tracking-[.22em] text-celadonL">03</span>
+          <h3 class="text-lg mt-3 mb-3">茶与丝绸</h3>
+          <p class="text-sm text-paper/65 leading-[1.95]">江南日常生活中的时间和手艺</p>
+          <p class="mt-5 inline-block border border-celadonL/40 text-celadonL text-[.7rem] px-3 py-1 rounded-full">合作开发中</p>
+        </div>
+      </article>
+
+      <article class="card-dark reveal rounded-sm overflow-hidden">
+        <div class="img-frame">
+          <img data-img="lab-canal"
+               src="https://images.unsplash.com/photo-1598887142487-3c854d51eabb?w=900&q=80"
+               alt="雨天的运河水巷，石桥与临水民居在灰白光线中"
+               loading="lazy" decoding="async"
+               class="img-tone w-full h-52 object-cover">
+        </div>
+        <div class="p-7">
+          <span class="en text-xs tracking-[.22em] text-celadonL">04</span>
+          <h3 class="text-lg mt-3 mb-3">运河</h3>
+          <p class="text-sm text-paper/65 leading-[1.95]">一条水路如何塑造江南商业文明</p>
+          <p class="mt-5 inline-block border border-cinnabar/40 text-cinnabar text-[.7rem] px-3 py-1 rounded-full">重点研发方向</p>
+        </div>
+      </article>
+
+      <article class="card-dark reveal rounded-sm overflow-hidden">
+        <div class="img-frame">
+          <img data-img="lab-kunqu"
+               src="https://images.unsplash.com/photo-1516307365426-bea591f05011?w=900&q=80"
+               alt="夜晚戏台一角，乐器与灯光形成安静的舞台空间"
+               loading="lazy" decoding="async"
+               class="img-tone w-full h-52 object-cover">
+        </div>
+        <div class="p-7">
+          <span class="en text-xs tracking-[.22em] text-celadonL">05</span>
+          <h3 class="text-lg mt-3 mb-3">昆曲</h3>
+          <p class="text-sm text-paper/65 leading-[1.95]">如何听懂中国古典戏剧的一段声音</p>
+          <p class="mt-5 inline-block border border-celadonL/40 text-celadonL text-[.7rem] px-3 py-1 rounded-full">合作开发中</p>
+        </div>
+      </article>
+
+      <!-- 邀约卡 -->
+      <article class="card-dark reveal rounded-sm p-7 flex flex-col justify-center">
+        <p class="kicker mb-4 text-celadonL">Open Call</p>
+        <h3 class="text-lg mb-4">共同开发</h3>
+        <p class="text-sm text-paper/65 leading-[1.95] mb-6">
+          如果你的机构在某一母题上有空间、匠人或客群资源，我们欢迎以联合出品的方式共同开发。
+        </p>
+        <a href="#contact" class="text-cinnabar text-sm underline decoration-cinnabar/30 underline-offset-4 hover:decoration-cinnabar transition">发起洽谈 →</a>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     JIANGNAN 入江南
+     ============================================================ -->
+<section id="jiangnan" class="py-20 md:py-32 px-5 sm:px-8">
+  <div class="max-w-3xl mx-auto">
+
+    <div class="reveal mb-12 md:mb-16">
+      <p class="kicker mb-4">Into Jiangnan</p>
+      <h2 class="text-2xl md:text-4xl mb-6">入江南</h2>
+      <div class="rule-short mb-8"></div>
+      <p class="text-base md:text-lg text-ink/85 leading-[2.1]">
+        「入江南」不是一条景点线路，而是一套进入中国审美与生活方式的文化体验产品。
+      </p>
+      <p class="en italic text-sm md:text-base text-celadon mt-5">
+        Not an itinerary, but a way into a Chinese aesthetic of everyday life.
+      </p>
+    </div>
+
+    <figure class="reveal img-frame rounded-sm mb-14">
+      <img data-img="jiangnan"
+           src="https://images.unsplash.com/photo-1528181304800-259b08848526?w=1400&q=80"
+           alt="雨后水乡的白墙、瓦顶与水面倒影，画面安静无人"
+           loading="lazy" decoding="async"
+           class="img-tone w-full h-[220px] sm:h-[320px] md:h-[400px] object-cover">
+    </figure>
+
+    <article class="reveal mb-14">
+      <h3 class="text-xl md:text-2xl mb-6">什么是江南</h3>
+      <div class="space-y-5 text-[.95rem] text-ink/75 leading-[2.1]">
+        <p>江南是一个地理范围，但更是一套审美系统与生活方式。它的特点不在于宏大，而在于精确：如何在有限的空间里安排景致，如何在日常的器物里安放讲究，如何把季节的变化变成生活的节奏。</p>
+        <p>从园林到书房，从茶席到戏台，江南呈现的是中国文人阶层如何把日常生活本身当作一件需要经营的作品。</p>
+      </div>
+    </article>
+
+    <div class="rule mb-14"></div>
+
+    <article class="reveal mb-14">
+      <h3 class="text-xl md:text-2xl mb-6">为什么值得理解江南</h3>
+      <div class="space-y-5 text-[.95rem] text-ink/75 leading-[2.1]">
+        <p>对海外客人而言，江南提供了一个不依赖宫廷叙事的中国入口。它讨论的是尺度、含蓄、留白与克制——这些概念可以与西方的园林、室内乐、手工传统建立对话，理解门槛低，回味空间大。</p>
+        <p>对国内高知客群而言，江南是一次重新细读的机会。很多人到过这些地方，但没有被带着看懂过：为什么这扇窗开在这里，为什么这段唱腔慢到近乎停顿，为什么一顿饭要跟着节气走。</p>
+      </div>
+    </article>
+
+    <article class="reveal mb-14">
+      <h3 class="text-xl md:text-2xl mb-6">我们如何进入江南</h3>
+      <p class="text-[.95rem] text-ink/75 leading-[2.1] mb-8">
+        我们从五个母题切入，每个母题都是一个独立的进入口，也可以互相组合成递进结构。
+      </p>
+      <div class="space-y-px bg-celadon/15">
+        <div class="bg-paper px-6 py-6">
+          <p class="text-sm text-ink mb-2">园林</p>
+          <p class="text-sm text-ink/70 leading-[1.95]">如何在有限空间中创造无限意境：借景、对景、步移景异的空间语法。</p>
+        </div>
+        <div class="bg-paper px-6 py-6">
+          <p class="text-sm text-ink mb-2">藏书</p>
+          <p class="text-sm text-ink/70 leading-[1.95]">文人如何保存与传递知识：从抄写、刻印到藏书楼的制度与执念。</p>
+        </div>
+        <div class="bg-paper px-6 py-6">
+          <p class="text-sm text-ink mb-2">昆曲</p>
+          <p class="text-sm text-ink/70 leading-[1.95]">中国古典戏剧的声音美学：为什么慢，慢在哪里，慢有什么用。</p>
+        </div>
+        <div class="bg-paper px-6 py-6">
+          <p class="text-sm text-ink mb-2">饮食与节气</p>
+          <p class="text-sm text-ink/70 leading-[1.95]">江南如何把自然时序转化为餐桌节奏与生活秩序。</p>
+        </div>
+        <div class="bg-paper px-6 py-6">
+          <p class="text-sm text-ink mb-2">日常生活</p>
+          <p class="text-sm text-ink/70 leading-[1.95]">茶、丝、器物与手艺：讲究如何进入普通人的一天。</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="reveal mb-14">
+      <h3 class="text-xl md:text-2xl mb-6">未来的产品层级</h3>
+      <p class="text-[.95rem] text-ink/75 leading-[2.1] mb-8">
+        同一套内容体系可以按深度与时长展开为不同层级，服务不同客群与预算。
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div class="card rounded-sm p-6">
+          <p class="en text-xs tracking-[.2em] text-celadon mb-3">Level 01</p>
+          <p class="text-sm text-ink mb-2">单一母题片段</p>
+          <p class="text-xs text-ink/70 leading-[1.9]">90 分钟至半日，可嵌入既有行程或酒店住中体验。</p>
+        </div>
+        <div class="card rounded-sm p-6">
+          <p class="en text-xs tracking-[.2em] text-celadon mb-3">Level 02</p>
+          <p class="text-sm text-ink mb-2">主题一日</p>
+          <p class="text-xs text-ink/70 leading-[1.9]">一个母题的完整进入，含餐饮与节奏设计。</p>
+        </div>
+        <div class="card rounded-sm p-6">
+          <p class="en text-xs tracking-[.2em] text-celadon mb-3">Level 03</p>
+          <p class="text-sm text-ink mb-2">递进式多日旅程</p>
+          <p class="text-xs text-ink/70 leading-[1.9]">跨母题组合，形成层层深入的认知路径。</p>
+        </div>
+        <div class="card rounded-sm p-6">
+          <p class="en text-xs tracking-[.2em] text-celadon mb-3">Level 04</p>
+          <p class="text-sm text-ink mb-2">机构定制与驻留</p>
+          <p class="text-xs text-ink/70 leading-[1.9]">面向会员机构、企业与教育项目的长周期定制。</p>
+        </div>
+      </div>
+    </article>
+
+    <div class="reveal bg-white/55 border border-celadon/20 rounded-sm p-8 md:p-10">
+      <p class="text-[.95rem] text-ink/80 leading-[2.1]">
+        我们希望客人离开江南时，带走的不是"去过哪些园子"，而是一套可以继续使用的观察方式。
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACT 合作与联系
+     ============================================================ -->
+<section id="contact" class="py-20 md:py-32 px-5 sm:px-8 bg-paperAlt/60 border-t border-celadon/15">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="reveal mb-14 md:mb-20 max-w-2xl">
+      <p class="kicker mb-4">Partnership &amp; Contact</p>
+      <h2 class="text-2xl md:text-4xl mb-6">合作与联系</h2>
+      <div class="rule-short mb-8"></div>
+      <p class="text-[.95rem] md:text-base text-ink/75 leading-[2.1]">
+        无论是既有产品的内容升级，还是从零开发一个文化母题，都可以先聊需求与边界，再谈形式。
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 mb-16 reveal">
+      <div>
+        <h3 class="text-lg mb-6">合作对象 <span class="en text-xs text-celadon tracking-wider ml-2">Partners</span></h3>
+        <ul class="space-y-3.5 text-sm text-ink/75">
+          <li class="flex gap-3"><span class="text-celadon">—</span>入境旅行社及 DMC</li>
+          <li class="flex gap-3"><span class="text-celadon">—</span>高端定制机构</li>
+          <li class="flex gap-3"><span class="text-celadon">—</span>酒店与度假品牌</li>
+          <li class="flex gap-3"><span class="text-celadon">—</span>银行 / 企业 / 会员机构</li>
+          <li class="flex gap-3"><span class="text-celadon">—</span>目的地与文旅机构</li>
+          <li class="flex gap-3"><span class="text-celadon">—</span>海外旅行社与文化教育机构</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-lg mb-6">合作方式 <span class="en text-xs text-celadon tracking-wider ml-2">Models</span></h3>
+        <ul class="space-y-3.5 text-sm text-ink/75">
+          <li class="flex gap-3"><span class="text-cinnabar">—</span>委托研发</li>
+          <li class="flex gap-3"><span class="text-cinnabar">—</span>联合出品</li>
+          <li class="flex gap-3"><span class="text-cinnabar">—</span>内容授权</li>
+          <li class="flex gap-3"><span class="text-cinnabar">—</span>白标产品</li>
+          <li class="flex gap-3"><span class="text-cinnabar">—</span>按团或按人结算</li>
+          <li class="flex gap-3"><span class="text-cinnabar">—</span>培训与交付支持</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 联系方式 + 表单 -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-px bg-celadon/15 reveal">
+
+      <!-- 左：联系信息 -->
+      <div class="lg:col-span-2 bg-paper p-8 md:p-10">
+        <h3 class="text-lg mb-8">联系方式 <span class="en text-xs text-celadon tracking-wider ml-2">Get in Touch</span></h3>
+
+        <div class="space-y-7 text-sm">
+          <div>
+            <p class="kicker mb-2">Email</p>
+            <a href="mailto:contact@example.com" class="text-ink hover:text-cinnabar transition-colors break-all">contact@example.com</a>
+          </div>
+          <div>
+            <p class="kicker mb-2">Phone</p>
+            <a href="tel:+86000000000" class="text-ink hover:text-cinnabar transition-colors">+86 000 0000 0000</a>
+          </div>
+          <div>
+            <p class="kicker mb-2">WeChat</p>
+            <div class="mt-3 w-28 h-28 border border-dashed border-celadon/45 rounded-sm flex items-center justify-center text-[.7rem] text-celadon text-center leading-relaxed">
+              二维码<br>占位区
+            </div>
+          </div>
+          <div>
+            <p class="kicker mb-2">Entity</p>
+            <p class="text-ink/70 leading-[1.95]">[公司全称占位]<br>[许可证号占位]</p>
+          </div>
+        </div>
+
+        <div class="rule my-8"></div>
+
+        <p class="kicker mb-4">Company Profile</p>
+        <div class="space-y-3">
+          <!-- 替换 href 为实际 PDF 路径 -->
+          <a href="#" class="btn-ghost block text-center text-xs rounded-full py-3">下载公司介绍（中文 · PDF）</a>
+          <a href="#" class="btn-ghost block text-center text-xs rounded-full py-3">Company Profile (EN · PDF)</a>
+        </div>
+      </div>
+
+      <!-- 右：表单 -->
+      <div class="lg:col-span-3 bg-paper p-8 md:p-10">
+        <h3 class="text-lg mb-2">合作需求 <span class="en text-xs text-celadon tracking-wider ml-2">Enquiry</span></h3>
+        <p class="text-xs text-celadon leading-relaxed mb-8">
+          请留下基本信息，我们会在 2 个工作日内回复。<br>
+          <span class="en italic">We usually reply within two business days.</span>
+        </p>
+
+        <!-- FORM ENDPOINT：上线时把 action 指向后端接口或第三方表单服务，
+             并删除下方 JS 中的 preventDefault 拦截 -->
+        <form id="enquiry-form" novalidate class="space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label for="f-name" class="block text-xs text-ink/80 mb-2">姓名 <span class="en text-celadon">/ Name</span> <span class="text-cinnabar">*</span></label>
+              <input id="f-name" name="name" type="text" required autocomplete="name"
+                     class="field w-full rounded-sm px-4 py-3.5 text-sm">
+            </div>
+            <div>
+              <label for="f-company" class="block text-xs text-ink/80 mb-2">公司 <span class="en text-celadon">/ Company</span> <span class="text-cinnabar">*</span></label>
+              <input id="f-company" name="company" type="text" required autocomplete="organization"
+                     class="field w-full rounded-sm px-4 py-3.5 text-sm">
+            </div>
+          </div>
+
+          <div>
+            <label for="f-email" class="block text-xs text-ink/80 mb-2">邮箱 <span class="en text-celadon">/ Email</span> <span class="text-cinnabar">*</span></label>
+            <input id="f-email" name="email" type="email" required autocomplete="email"
+                   class="field w-full rounded-sm px-4 py-3.5 text-sm">
+          </div>
+
+          <div>
+            <label for="f-intent" class="block text-xs text-ink/80 mb-2">合作意向 <span class="en text-celadon">/ Cooperation Intent</span></label>
+            <select id="f-intent" name="intent" class="field w-full rounded-sm px-4 py-3.5 text-sm">
+              <option value="委托研发">委托研发 / Commissioned Development</option>
+              <option value="联合出品">联合出品 / Co-production</option>
+              <option value="内容授权">内容授权 / Content Licensing</option>
+              <option value="白标产品">白标产品 / White-label</option>
+              <option value="培训与交付">培训与交付 / Training &amp; Delivery</option>
+              <option value="其他">其他 / Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="f-message" class="block text-xs text-ink/80 mb-2">留言 <span class="en text-celadon">/ Message</span></label>
+            <textarea id="f-message" name="message" rows="5" placeholder="可简述客群、目的地、时间与预期形式"
+                      class="field w-full rounded-sm px-4 py-3.5 text-sm resize-y"></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary w-full rounded-full py-4 text-sm tracking-wider">
+            提交需求 / Submit Enquiry
+          </button>
+
+          <!-- 状态提示 -->
+          <p id="form-status" role="status" aria-live="polite" class="text-xs leading-relaxed text-center min-h-[2.5rem]"></p>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+</main>
+
+<!-- ============================================================
+     FOOTER 页脚
+     ============================================================ -->
+<footer class="bg-inkDeep text-paper px-5 sm:px-8 pt-16 md:pt-20 pb-10">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8 mb-14">
+
+      <!-- 品牌 -->
+      <div class="md:col-span-2">
+        <p class="font-serifsc text-lg tracking-[.18em]">观止东方</p>
+        <p class="en text-[.65rem] tracking-[.3em] text-celadonL mt-2">GUANZHI ORIENTAL</p>
+        <p class="text-sm text-paper/60 leading-[2] mt-6 max-w-sm">
+          把东方文化，转化为可以进入的旅行体验。
+        </p>
+        <p class="en italic text-sm text-celadonL leading-relaxed mt-3 max-w-sm">
+          Turning Chinese culture into travel experiences people can enter, understand and remember.
+        </p>
+      </div>
+
+      <!-- 导航 -->
+      <nav aria-label="页脚导航">
+        <p class="kicker mb-5 text-celadonL">Navigate</p>
+        <ul class="space-y-3 text-sm">
+          <li><a href="#home"     class="text-paper/65 hover:text-cinnabar transition-colors">首页</a></li>
+          <li><a href="#about"    class="text-paper/65 hover:text-cinnabar transition-colors">关于观止东方</a></li>
+          <li><a href="#services" class="text-paper/65 hover:text-cinnabar transition-colors">产品与解决方案</a></li>
+          <li><a href="#lab"      class="text-paper/65 hover:text-cinnabar transition-colors">产品实验室</a></li>
+          <li><a href="#jiangnan" class="text-paper/65 hover:text-cinnabar transition-colors">入江南</a></li>
+          <li><a href="#contact"  class="text-paper/65 hover:text-cinnabar transition-colors">合作与联系</a></li>
+        </ul>
+      </nav>
+
+      <!-- 联系 -->
+      <div>
+        <p class="kicker mb-5 text-celadonL">Contact</p>
+        <ul class="space-y-3 text-sm text-paper/65">
+          <li><a href="mailto:contact@example.com" class="hover:text-cinnabar transition-colors break-all">contact@example.com</a></li>
+          <li><a href="tel:+86000000000" class="hover:text-cinnabar transition-colors">+86 000 0000 0000</a></li>
+          <li class="leading-[1.9]">[公司地址占位]</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="h-px bg-white/10 mb-8"></div>
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-paper/45 leading-[1.9]">
+      <p>© <span id="year">2026</span> 观止东方 Guanzhi Oriental. 保留所有权利 All Rights Reserved.</p>
+      <p>公司主体：[公司全称占位] · 许可证：[许可证号占位] · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="hover:text-cinnabar transition-colors">[ICP 备案号占位]</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- 1. 移动端汉堡菜单 ---------- */
+  var btn      = document.getElementById('menu-btn');
+  var menu     = document.getElementById('mobile-menu');
+  var iconOpen = document.getElementById('icon-open');
+  var iconClose= document.getElementById('icon-close');
+
+  function openMenu() {
+    menu.style.maxHeight = menu.scrollHeight + 'px';
+    btn.setAttribute('aria-expanded', 'true');
+    btn.setAttribute('aria-label', '关闭导航菜单');
+    iconOpen.classList.add('hidden');
+    iconClose.classList.remove('hidden');
+  }
+  function closeMenu() {
+    menu.style.maxHeight = '0px';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-label', '打开导航菜单');
+    iconOpen.classList.remove('hidden');
+    iconClose.classList.add('hidden');
+  }
+  function isOpen() { return btn.getAttribute('aria-expanded') === 'true'; }
+
+  btn.addEventListener('click', function () { isOpen() ? closeMenu() : openMenu(); });
+
+  /* 点击菜单内链接后自动收起 */
+  menu.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', closeMenu);
+  });
+
+  /* Esc 关闭 / 点击页面其他区域关闭 */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && isOpen()) { closeMenu(); btn.focus(); }
+  });
+  document.addEventListener('click', function (e) {
+    if (isOpen() && !menu.contains(e.target) && !btn.contains(e.target)) closeMenu();
+  });
+  /* 切换到桌面宽度时重置 */
+  window.addEventListener('resize', function () {
+    if (window.innerWidth >= 768 && isOpen()) closeMenu();
+  });
+
+  /* ---------- 2. 导航栏滚动状态 ---------- */
+  var nav = document.getElementById('site-nav');
+  function onScroll() {
+    if (window.scrollY > 24) {
+      nav.classList.add('bg-paper/95', 'border-celadon/20', 'shadow-[0_1px_20px_rgba(45,52,54,.05)]');
+      nav.classList.remove('bg-paper/80', 'border-transparent');
+    } else {
+      nav.classList.add('bg-paper/80', 'border-transparent');
+      nav.classList.remove('bg-paper/95', 'border-celadon/20', 'shadow-[0_1px_20px_rgba(45,52,54,.05)]');
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- 3. 平滑滚动（补偿固定导航高度） ---------- */
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var href = this.getAttribute('href');
+      if (!href || href === '#') return;
+      var target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      var offset = window.innerWidth < 768 ? 64 : 80;
+      window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - offset, behavior: 'smooth' });
+    });
+  });
+
+  /* ---------- 4. 当前栏目高亮 ---------- */
+  var sections = ['home', 'about', 'services', 'lab', 'jiangnan', 'contact'];
+  var navLinks = document.querySelectorAll('#site-nav nav a[href^="#"]');
+  if ('IntersectionObserver' in window) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        navLinks.forEach(function (l) {
+          l.classList.toggle('is-active', l.getAttribute('href') === '#' + en.target.id);
+        });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    sections.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) spy.observe(el);
+    });
+  }
+
+  /* ---------- 5. 入场淡入 ---------- */
+  var reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); obs.unobserve(en.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    reveals.forEach(function (el) { io.observe(el); });
+  } else {
+    reveals.forEach(function (el) { el.classList.add('in'); });
+  }
+
+  /* ---------- 6. 表单（前端校验 + 占位提交） ---------- */
+  var form   = document.getElementById('enquiry-form');
+  var status = document.getElementById('form-status');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();   /* 接入后端后删除此行 */
+
+    var name    = form.name.value.trim();
+    var company = form.company.value.trim();
+    var email   = form.email.value.trim();
+
+    function fail(msg) {
+      status.textContent = msg;
+      status.className = 'text-xs leading-relaxed text-center min-h-[2.5rem] text-cinnabar';
+    }
+    if (!name)    return fail('请填写姓名 / Please enter your name.');
+    if (!company) return fail('请填写公司名称 / Please enter your company.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return fail('请填写有效的邮箱地址 / Please enter a valid email address.');
+    }
+
+    status.innerHTML = '表单后端尚未接入，请直接发送邮件至 <a href="mailto:contact@example.com" class="underline underline-offset-2">contact@example.com</a>。' +
+                       '<br><span class="en italic">Form backend not connected yet — please email us directly.</span>';
+    status.className = 'text-xs leading-relaxed text-center min-h-[2.5rem] text-celadon';
+  });
+
+  /* ---------- 7. 年份 ---------- */
+  document.getElementById('year').textContent = new Date().getFullYear();
+})();
+</script>
+
+</body>
+</html>
