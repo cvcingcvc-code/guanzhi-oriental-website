@@ -1,0 +1,7 @@
+interface:
+  display_name: "Database Verifier"
+  short_description: "Verify real database reads writes and constraints"
+  default_prompt: "Use $database-verifier to verify this workflow against the real development database safely."
+
+policy:
+  allow_implicit_invocation: true

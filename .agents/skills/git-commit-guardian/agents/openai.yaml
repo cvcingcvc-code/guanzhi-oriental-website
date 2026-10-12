@@ -1,0 +1,7 @@
+interface:
+  display_name: "Git Commit Guardian"
+  short_description: "Check scope secrets and gates before committing"
+  default_prompt: "Use $git-commit-guardian to decide whether the current changes are ready to commit."
+
+policy:
+  allow_implicit_invocation: true

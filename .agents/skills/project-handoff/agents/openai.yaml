@@ -1,0 +1,7 @@
+interface:
+  display_name: "Project Handoff"
+  short_description: "Generate a source-grounded project handoff"
+  default_prompt: "Use $project-handoff to create a current handoff for a new Codex task."
+
+policy:
+  allow_implicit_invocation: true

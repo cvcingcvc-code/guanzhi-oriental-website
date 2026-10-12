@@ -1,0 +1,7 @@
+interface:
+  display_name: "Feature Planner"
+  short_description: "Plan repository-aware feature work before coding"
+  default_prompt: "Use $feature-planner to analyze this feature and produce an implementation plan."
+
+policy:
+  allow_implicit_invocation: true

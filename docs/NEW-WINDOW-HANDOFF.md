@@ -1,390 +1,249 @@
-# 观止东方官网｜新窗口与多人开发交接文档
+# 观止东方官网｜后端优先新窗口交接
 
-更新时间：2026-08-12
+更新时间：2026-08-13
 项目目录：`C:\Users\lin\projects\guanzhi-dongfang`
 
-> 本文可直接交给新的 Codex 窗口或外部开发者。开始工作前必须先阅读本文、根目录 `README.md`、`docs/homepage-cms.md`、`docs/content-contract.md` 和 `docs/backend/API.md`，再以磁盘代码、Git 状态、数据库与实际页面为准复核，不要只依赖文字报告。
-
-## 1. 新窗口可直接使用的接手指令
-
-复制下面整段给新窗口：
-
-```text
-继续接手「观止东方官网」项目。
-
-项目目录：C:\Users\lin\projects\guanzhi-dongfang
-首先完整阅读：
-1. docs/NEW-WINDOW-HANDOFF.md
-2. README.md
-3. docs/homepage-cms.md
-4. docs/content-contract.md
-5. docs/backend/API.md
-
-不要重新开始，不要撤销现有修改。先检查 git status、git log、git remote、compose 服务、数据库事实、Public API 和实际页面。
-
-当前重点是登录 http://localhost:3000/admin/homepage 验证 Homepage CMS：
-- 登录与会话恢复
-- 中英文固定七区块
-- 保存草稿不会改变公开官网
-- revision 冲突保护
-- ADMIN 发布后中英文公共 API 同时更新
-- Media 空态、上传与选择
-- 390px 和桌面页面
-
-如需提交测试数据，先说明会写入哪些内容；只使用可恢复的测试标记，记录修改前值，验证后恢复。不要泄露或输出账号密码、JWT、.env、数据库连接密码。未经明确要求不要部署、推送远程或扩展 News / Projects / Cases / Dashboard / 通用 Page Builder。
-```
-
-## 2. 当前完成状态
-
-当前 Homepage CMS Editor 最小闭环已经在工作区实现：
-
-- 后台入口仅为 `/admin/homepage`。
-- JWT 只保存在当前标签页 `sessionStorage`；刷新时通过 `/api/v1/admin/auth/me` 重新验证。
-- 同一编辑会话管理 `zh-CN` 与 `en` 两份完整首页内容。
-- 每种语言固定包含 Hero、About、Capabilities、Motifs、Into Jiangnan、Partners、Contact 七个 Typed Blocks。
-- Hero 是首页必显结构；其余六块可以按需显隐。
-- 保存草稿只写 `page_revisions`，不影响公共官网读取的 `page_translations`。
-- `baseRevision` / `revision` 实现乐观锁，冲突返回 `409`，不会静默覆盖他人内容。
-- `ADMIN` 可以保存和发布；`EDITOR` 可以保存、不能发布。
-- 发布时双语原子提升，并验证引用媒体仍存在且未软删除。
-- 草稿、发布和审计写入处于同一数据库事务。
-- 发布与媒体删除使用数据库行锁，避免并发删除造成官网媒体失效。
-- 通用 `/admin/pages` 写入、发布、撤回接口不能绕过专用 Homepage API 修改 `home`。
-- 媒体库当前允许安全上传和选择，但本地数据库目前没有媒体资产，首页仍使用静态 `fallbackUrl`。
-
-最近完整门禁：Frontend build 通过；Backend typecheck/build 通过；Backend tests 32/32 通过；`git diff --check` 通过。
-
-## 3. 当前 Git 与远程协作
-
-本地 Git 仓库：
-
-```text
-C:\Users\lin\projects\guanzhi-dongfang\.git
-```
-
-当前分支：`master`
-本阶段父基线：`6e4584d0a53ffc5844dfdc7551352596473ee142`
-父基线提交：`feat: complete bilingual homepage content pipeline`
-
-GitHub 私有仓库：[cvcingcvc-code/guanzhi-oriental-website](https://github.com/cvcingcvc-code/guanzhi-oriental-website)。本地 `origin` 指向该仓库，实际最新提交以 `git log -1` 为准。
-
-### 推荐的多人协作方式
-
-1. 由仓库所有者在 GitHub 设置中邀请协作者。
-2. 首次克隆：
-
-```powershell
-git clone https://github.com/cvcingcvc-code/guanzhi-oriental-website.git
-cd guanzhi-oriental-website
-```
-
-3. 多人开发不要长期直接写 `master`。建议每人使用短分支：
-
-```powershell
-git switch master
-git pull --ff-only
-git switch -c feature/<短任务名>
-# 完成后：typecheck、test、build
-git push -u origin feature/<短任务名>
-```
-
-4. 通过 Pull Request 合并，并在仓库设置中保护 `master`，要求测试通过和至少一人审核。
-5. 遵循根目录 [`CONTRIBUTING.md`](../CONTRIBUTING.md)。
-
-禁止把 `.env`、真实账号密码、JWT、数据库备份、上传目录、`node_modules` 或 `dist` 提交到远程。
-
-## 4. 环境要求
-
-- Git
-- Node.js：前端至少 18，推荐与后端统一使用 Node.js 22 或 24
-- npm
-- Docker Desktop（推荐，提供 PostgreSQL 与 Backend API）
-- Windows PowerShell
-
-端口：
-
-- Frontend Vite：`3000`
-- Backend API：`8080`
-- PostgreSQL：仅本机 `127.0.0.1:5432`
-
-## 5. 首次启动：推荐 Docker 后端 + 本机前端
-
-### 5.1 准备本地配置
-
-在项目根目录执行：
-
-```powershell
-Copy-Item .env.docker.example .env
-```
-
-编辑 `.env`，至少替换：
-
-- `POSTGRES_PASSWORD`
-- `JWT_SECRET`（至少 32 字符）
-- `ADMIN_EMAIL`
-- `ADMIN_PASSWORD`（至少 12 字符）
-- `IP_HASH_SALT`（至少 16 字符）
-
-`.env` 已被 Git 忽略，不要发送给其他人。每位开发者应创建自己的本地密码。生成随机值可用：
-
-```powershell
-[Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(48))
-```
-
-### 5.2 启动 PostgreSQL 与 Backend
-
-```powershell
-docker compose up --build -d
-docker compose ps
-docker compose logs -f api
-```
-
-看到 API 正常启动后按 `Ctrl+C` 退出日志跟随，不会停止容器。
-
-首次启动会执行 migration 与安全的 bootstrap Seed。Bootstrap 只补缺失数据，不覆盖 CMS 已编辑内容。
-
-验证：
-
-```powershell
-Invoke-RestMethod http://localhost:8080/api/v1/health
-```
-
-浏览器地址：
-
-- API Health：`http://localhost:8080/api/v1/health`
-- Swagger：`http://localhost:8080/docs`
-
-### 5.3 启动 Frontend
-
-打开另一个 PowerShell：
-
-```powershell
-Set-Location C:\Users\lin\projects\guanzhi-dongfang
-npm install
-npm run dev
-```
-
-访问：
-
-- 公开官网：`http://localhost:3000/`
-- Homepage CMS：`http://localhost:3000/admin/homepage`
-
-Vite 会把 `/api` 代理到 `http://127.0.0.1:8080`，因此前端代码使用相对 API 路径。
-
-### 5.4 停止服务
-
-Frontend 终端按 `Ctrl+C`。后端与数据库：
-
-```powershell
-docker compose down
-```
-
-不要随意执行 `docker compose down -v`，它会删除数据库和上传文件对应的 Docker volumes。
-
-## 6. 不使用 Docker 的 Backend 启动方式
-
-先准备 PostgreSQL，然后：
-
-```powershell
-Set-Location C:\Users\lin\projects\guanzhi-dongfang\backend
-Copy-Item .env.example .env
-# 编辑 backend/.env，填入自己的本地配置
-npm install
-npm run db:migrate
-npm run db:seed
-npm run dev
-```
-
-不要在生产环境使用 `SEED_CONTENT_MODE=refresh`。它只用于显式刷新本地开发数据库，并且生产模式会拒绝执行。
-
-## 7. 后台登录与手工验证
-
-后台账号来自你本机 `.env` 中的 `ADMIN_EMAIL` 与 `ADMIN_PASSWORD`。本文和源码包不包含真实密码。若数据库已经初始化过，修改 `.env` 不会自动修改既有账号密码；应使用原账号，或在独立开发库中重新初始化。
-
-### 7.1 只读验证
-
-1. 打开 `http://localhost:3000/`，确认中文首页正常。
-2. 切换 EN，再切回中文，确认没有白屏。
-3. 打开 `http://localhost:3000/admin/homepage` 并登录。
-4. 确认顶部显示 Revision 与 `已发布来源` 或 `草稿来源`。
-5. 分别查看中文与 English，每种语言应有七个区块。
-6. English About 应为正式四段英文；其余六个英文区块应标记 `draft`。
-7. 打开媒体选择器；空媒体库应显示空态，不应白屏。
-8. 浏览器刷新，确认通过 `/auth/me` 恢复会话。
-
-### 7.2 安全验证“保存草稿不改官网”
-
-必须在开发数据库操作，不要直接在生产环境测试。
-
-1. 记录中文页面标题原值。
-2. 在 CMS 页面标题末尾加入明显测试标记，例如 ` [CMS-TEST]`。
-3. 点击“保存草稿”，记录返回的 Revision。
-4. 刷新公开官网，确认公开标题仍是原值。
-5. 请求公共 API，确认仍是原值：
-
-```powershell
-Invoke-RestMethod 'http://localhost:8080/api/v1/content/pages/home?locale=zh-CN'
-Invoke-RestMethod 'http://localhost:8080/api/v1/content/pages/home?locale=en'
-```
-
-### 7.3 安全验证发布
-
-只有 `ADMIN` 可执行：
-
-1. 草稿保存成功且页面没有未保存修改时，点击“发布到官网”。
-2. 同时检查中文和英文公共 API；二者应在一次发布后保持完整。
-3. 刷新公开官网验证内容。
-4. 立即把测试标题改回之前记录的正式值，再次保存和发布。
-5. 最后重新读取中英文公共 API，确认正式内容已恢复。
-
-不要通过数据库直接改 `page_translations` 验证 CMS；这会绕开 Typed Contract、revision、权限和审计。
-
-### 7.4 媒体验证
-
-1. 只上传无隐私、可删除的测试图片。
-2. 支持 JPEG、PNG、WebP、AVIF，图片上限 12 MiB；MP4 上限 50 MiB；SVG 禁止。
-3. 填写中文 alt；选择资产后草稿只保存 `assetId`，不暴露 `storageKey`。
-4. 保存草稿不会修改公开站；发布前服务端会检查资产仍处于 active 状态。
-5. 当前没有媒体管理删除 UI。需要测试删除 API 时应由开发者使用 Swagger，并先确认资产没有被正式页面引用。
-
-## 8. 提交数据与多人并发注意事项
-
-- CMS 保存的是完整双语快照，不是单个输入框 patch。
-- 一个编辑者保存后 revision 会增加；另一个基于旧 revision 保存会收到 `409`。
-- 收到冲突时不要自动覆盖，应保留本地内容、重新读取并人工比较。
-- `contentStatus=draft` 表示文案尚待甲方确认，不等于数据库草稿，也不会自动阻止整页发布。
-- 英文 About 已正式确认；英文 Hero、Capabilities、Motifs、Jiangnan、Partners、Contact 仍待甲方确认。
-- 所在地仍未确认，不要把北京或杭州作为官网正式 location 写入。
-- 未发布草稿引用的媒体可被删除，但发布时会返回 `422` 阻止失效引用进入官网。
-
-## 9. 前端还能否优化或更换
-
-可以，而且公开官网和后台编辑器可以分别更换。
-
-完整的架构边界、请求契约、三种替换方案、实施顺序和上线验收见：[前端替换与 API 接入声明](./frontend-replacement-guide.md)。
-
-### 9.1 只改视觉，通常不需要调整 Backend API
-
-以下改动可在保持 API 不变时完成：
-
-- 重做公开官网布局、色彩、字体、动效与响应式。
-- 把 `src/App.tsx` 拆分为更清晰的 section 组件。
-- 更换 CMS 后台视觉、表单布局和交互方式。
-- 增加前端预览、骨架屏、错误提示、键盘操作和可访问性。
-- 在 React、Vue 等 SPA 技术之间迁移，只要继续消费相同 DTO。
-
-公开站应继续调用：
-
+【项目目标】
+
+当前阶段暂停公开官网前端 UI 继续迭代，改为优先完成后端收口、真实数据库联调、生产化准备和服务器部署方案。前端允许由团队其他成员在独立分支中替换，但必须继续消费既有 API DTO，不能绕过 Homepage Contract、CMS 发布语义、权限或媒体安全边界。
+
+后端阶段的完成定义不是“能够构建”，而是：全部门禁通过；PostgreSQL 真实读写闭环可复现；迁移、seed、权限、CMS 草稿/发布、媒体、咨询线索均通过安全验证；Staging 的 HTTPS、CORS、备份、恢复和回滚完成演练；得到明确服务器信息与发布授权后再部署正式环境。
+
+【当前技术栈】
+
+- 前端：React 18、TypeScript、Vite 6；公开站与 `/admin/homepage` 共用前端工程。
+- 后端：Node.js 24、TypeScript、Fastify 5、Zod 4。
+- 数据库：PostgreSQL 17、Drizzle ORM/Drizzle Kit。
+- 认证：JWT + bcrypt；后台 token 当前存于浏览器 `sessionStorage`。
+- 媒体：Storage Adapter；当前实现为本地持久化目录/Docker volume。
+- 基础设施：Docker Compose 当前编排 PostgreSQL 与 API；前端不在 Compose 中。
+- API 文档：Swagger UI，开发环境路径 `/docs`。
+
+【项目结构】
+
+- `src/App.tsx`：公开站真实 React 渲染入口；当前存在暂停中的 UI 工作树改动。
+- `src/content/public-content.ts`：Public DTO 校验、中文 fallback、Settings fallback；当前存在暂停中的文案/素材改动。
+- `src/admin/`：Homepage CMS 前端、登录与 API client。
+- `backend/src/app.ts`：Fastify 插件与路由注册。
+- `backend/src/server.ts`：API 进程入口。
+- `backend/src/config.ts`：环境变量唯一校验入口。
+- `backend/src/db/schema.ts`：Drizzle schema。
+- `backend/src/content/contract.ts`：Homepage 七类 typed blocks 与通用内容 Contract。
+- `backend/src/content/public-dto.ts`：数据库内容到公开 DTO 的安全投影。
+- `backend/src/homepage/repository.ts`：双语草稿、revision 乐观锁、原子发布。
+- `backend/src/media/`：媒体校验、存储和软删除。
+- `backend/src/routes/`：公共与后台 API。
+- `backend/drizzle/0000_whole_jack_flag.sql`：当前唯一正式 migration。
+- `compose.yaml`、`backend/Dockerfile`：本地/服务器容器基础。
+- `docs/backend/`：API、配置和部署基线。
+
+【已经完成】
+
+- 公共内容 API 可一次返回指定 locale 的整份 Homepage Content Document。
+- Homepage 固定 `hero/about/capabilities/motifs/jiangnan/partners/contact` 七类且每类唯一。
+- Public DTO 会校验 Contract、解析媒体、过滤 disabled block/item，并避免暴露本机路径和 `storageKey`。
+- Public Settings 使用白名单 DTO，与 Contact block 身份信息分离。
+- Homepage CMS 支持双语整页读取、草稿保存、revision 冲突保护和 ADMIN 原子发布。
+- 草稿写入 `page_revisions`，不会直接改变公开 `page_translations`。
+- 发布校验媒体仍为 active，并使用事务与行锁降低并发发布/删除风险。
+- 媒体上传按文件真实内容识别 MIME，拒绝 SVG/伪造类型，具备大小限制和失败清理。
+- 合作咨询具备 Zod 校验、honeypot、IP hash、速率限制和后台管理 API。
+- ADMIN/EDITOR 基础权限、审计日志、账号管理与后台 JWT 已实现。
+- Docker Compose 配置可解析；API 容器启动流程为 migration → bootstrap seed → server。
+- 2026-08-13 后端 `typecheck` 与生产 `build` 通过。
+
+【关键架构决策】
+
+- 浏览器只能访问 API，不能直连 PostgreSQL 或拼接媒体 `storageKey`。
+- Homepage CMS 不是通用 Page Builder；现阶段不扩展 News、Projects、Cases、Dashboard 或复杂 DAM。
+- Homepage 双语草稿作为同一 revision 原子保存、原子发布，不允许单语半套发布。
+- `contentStatus=draft|approved` 是甲方文案状态元数据，不等于数据库草稿状态。
+- 品牌名、法律主体、旗舰名称和联系邮箱来自 Settings，不复制进 Contact block。
+- 公共 API 故障时保留完整中文 fallback；语言切换失败保留当前已加载 Document。
+- 生产数据库只应用已提交 migration；禁止生产 `drizzle push` 和 `SEED_CONTENT_MODE=refresh`。
+- PostgreSQL 不暴露公网；外部流量由 Nginx/Caddy 终止 HTTPS 后代理 API。
+- 当前本地媒体适合首期小规模运行；规模扩大后通过 Storage Adapter 迁移对象存储。
+
+【数据库】
+
+当前 schema 包含：`users`、`pages`、`page_translations`、`page_revisions`、`media_assets`、`inquiries`、`inquiry_notes`、`site_settings`、`audit_logs`。
+
+当前 migration 只有 `backend/drizzle/0000_whole_jack_flag.sql`，本轮未修改 schema、未生成 migration、未写生产数据库。Docker volume 名为 `postgres_data` 和 `backend_uploads`。不要执行 `docker compose down -v`，除非明确要删除可丢弃的本地测试数据。
+
+截至本交接，仓库根目录没有 `.env`，因此没有启动真实 PostgreSQL、没有运行 migration/seed、没有进行数据库持久化端到端验证。下一位 Agent 必须使用独立、可删除的开发库或 Staging 库验证，不能为了通过测试连接生产数据库。
+
+【API】
+
+公共接口：
+
+- `GET /api/v1/health`
 - `GET /api/v1/content/pages/home?locale=zh-CN|en`
 - `GET /api/v1/content/settings`
 - `POST /api/v1/inquiries`
 
-Homepage CMS 应继续调用：
+Homepage CMS：
 
 - `POST /api/v1/admin/auth/login`
 - `GET /api/v1/admin/auth/me`
 - `GET /api/v1/admin/homepage`
 - `PUT /api/v1/admin/homepage/draft`
 - `POST /api/v1/admin/homepage/publish`
-- `GET/POST /api/v1/admin/media`
+- `GET|POST /api/v1/admin/media`
 
-### 9.2 以下变化需要前后端一起调整
+后端还保留通用 pages、media、inquiries、settings、users 管理 API，详见 `docs/backend/API.md`。前端团队替换 UI 时必须保持相对 `/api/v1` 调用、DTO 校验、locale 原子切换、fallback、Inquiry payload 与 Homepage CMS revision 语义。
 
-| 变化 | 是否需要 Backend / Contract 调整 |
-| --- | --- |
-| 只换颜色、字体、布局、动画 | 否 |
-| 重排现有七区块的视觉布局，但内容字段不变 | 通常否 |
-| 新增一个 CMS 可编辑字段 | 是，更新 Contract、DTO、Seed、API 测试和前端 |
-| 新增第八种 Homepage block | 是，完整更新 Contract、Repository、DTO、CMS 与公开站 |
-| 改变媒体引用方式 | 是，必须保持安全 resolver 或同步调整后端 |
-| 增加 News / Projects / Cases | 是，应单独设计内容模型与 API，不能硬塞进 Homepage |
-| 改为 Next.js / SSR | 需要重新设计部署、API 访问、缓存与 SEO，但数据库可以复用 |
-| 只替换 CMS 后台框架 | 通常不需要，只要遵守专用 Admin API |
+【认证与权限】
 
-建议不要让新前端直接读取数据库 JSONB，也不要让浏览器拼接 `storageKey`。以 Public DTO / Admin API 作为稳定边界，前端就能大幅重做而不破坏数据层。
+- 登录端点限速：同源 15 分钟最多 10 次。
+- 公共咨询端点限速：同 IP 每小时最多 5 次，并带空 `website` honeypot。
+- `ADMIN`：账号管理、首页发布、审计日志；同时可进行一般后台编辑操作。
+- `EDITOR`：可读写首页草稿，但不能发布；一般后台路由目前多为“已登录即可”。
+- `trustProxy=true`，生产反向代理必须正确覆盖客户端 IP，且代理链需受控。
+- CORS 只允许 `CORS_ORIGINS` 中的明确域名，生产禁止 `*`。
+- JWT secret 至少 32 字符；示例密码、示例 secret 不得用于 Staging/生产。
+- Swagger `/docs` 当前由应用公开注册。生产是否公开必须在安全复核中明确决定，不要默认暴露。
+- Helmet 当前关闭 CSP，由于前端与 API 可能分层部署，正式上线前必须明确 CSP 在应用或反向代理哪一层落实。
 
-## 10. 达到商业交付前的建议路线
+【CMS / 内容系统】
 
-### P0：交付前必须完成
+Homepage Editor 是最小闭环，不是页面搭建器。保存必须携带 `baseRevision`，服务端 revision 变化时返回 `409`，客户端不得静默覆盖。发布必须由 ADMIN 指定当前最新 revision；事务会同时提升中英文投影并写审计日志。
 
-- 配置 GitHub 协作者、PR 审查和分支保护。
-- 甲方确认 About 之外六个英文首页区块文案。
-- 替换真实品牌摄影、正式视频、Logo/Favicon 和微信二维码。
-- 确认正式域名、所在地是否展示、联系邮箱与隐私政策。
-- 建立生产管理员账号与密码轮换，不使用示例账号。
-- HTTPS、CORS、反向代理、数据库和上传文件备份。
-- 建立 staging 环境，先在 staging 验证 CMS 发布。
-- 对 Inquiry 做邮件通知、反垃圾、隐私同意和数据保留策略。
-- 浏览器兼容、移动端、SEO、性能、可访问性与安全验收。
-- 发布前做恢复演练：数据库备份、媒体备份、回滚版本。
+英文 About 已标记 `approved`；英文 Hero、Capabilities、Motifs、Jiangnan、Partners、Contact 仍为 `draft`，不能在交接中写成甲方已批准。当前静态中文 fallback 属迁移期副本，CMS 稳定后再逐步缩小，但在此之前必须与测试期望同步。
 
-### P1：提高运营效率
+【测试状态】
 
-- Homepage revision 历史查看与恢复 UI。
-- 媒体 alt 修改、草稿引用状态、删除确认和基础管理界面。
-- 可视化 Preview，但不要演变成任意 Page Builder。
-- 更完整的 Admin 审计查看、账号管理与操作告警。
-- 自动化 E2E：登录、保存草稿、冲突、发布、双语公共 API。
+2026-08-13 当前运行结果：
 
-### 暂时不要混入当前闭环
+- 根目录 `npm run build`：通过。
+- 后端 `npm run typecheck`：通过。
+- 后端 `npm run build`：通过。
+- 后端 `npm test`：32 项中 31 项通过、1 项失败。
+- `docker compose --env-file .env.docker.example config --quiet`：通过。
+- `git diff --check`：通过。
 
-- News、Projects、Cases、完整 DAM、复杂审批、视频转码、AI 图片处理。
-- 在没有明确商业需求前，不要为“通用性”重写成通用 Page Builder。
+唯一失败：`backend/tests/content.test.ts` 的 “initial API failures keep the complete Chinese homepage and official Settings fallbacks”。原因是工作树中的 `src/content/public-content.ts` 已缩短 About fallback 首段，而测试仍断言旧首段。这是当前后端收口的第一个明确修复点：先确定最新甲方中文 fallback，再同步 fixture/断言，不能只为了绿灯随意改文案。
 
-## 11. 开发者提交前门禁
+尚未验证：真实 PostgreSQL migration/seed、API health、登录、草稿不影响公开站、revision 冲突、双语发布、重启后持久化、媒体上传/软删除、Inquiry 写入后后台读取、数据库与上传目录备份/恢复、Staging HTTPS/CORS/反向代理。
 
-```powershell
-# Frontend
-Set-Location C:\Users\lin\projects\guanzhi-dongfang
-npm run build
+【最新 Git Commit】
 
-# Backend
-Set-Location C:\Users\lin\projects\guanzhi-dongfang\backend
-npm run typecheck
-npm test
-npm run build
+- 分支：`codex/developer-handoff`
+- Commit：`b98ba453a3aabbd451d61625e374c6e0ee5a6226`
+- Message：`docs: fix handoff formatting`
+- 提交时间：2026-08-12 19:11:14 +0800
+- 远端：`origin` → GitHub 私有仓库 `cvcingcvc-code/guanzhi-oriental-website`
+- 当前分支与 upstream：`0 behind / 0 ahead`
 
-# Git
-Set-Location C:\Users\lin\projects\guanzhi-dongfang
-git diff --check
-git status --short
+【当前 Git Status】
+
+当前工作树不是干净基线：
+
+- `M src/App.tsx`：包含此前多页面/公开 UI 改造与本轮暂停中的 Header/Hero Batch 1。
+- `M src/content/public-content.ts`：包含 fallback 文案与静态优化素材路径调整；触发当前唯一测试失败。
+- `M src/index.css`：包含暂停中的 Header/Hero 与设计 token 样式。
+- `?? .agents/skills/**`：项目级 Skills，当前未跟踪；不要当作后端业务改动混入提交。
+
+没有 staged 文件，也没有 commit/push/PR。不要 reset、checkout、clean、stash 或覆盖这些文件；它们属于尚待确认归属的前端工作。若后端与前端需要并行，优先让后端开发者从当前已提交 commit 新建独立 worktree/clone 和功能分支；前端负责人单独接管这三份工作树文件并核对 diff。
+
+【已知问题】
+
+- 后端测试有 1 项因前端 fallback 文案漂移失败。
+- 既有 `docs/NEW-WINDOW-HANDOFF.md` 曾声称 32/32 通过、分支为 master，已被本文件按真实状态替换。
+- 当前没有根 `.env`，真实数据库闭环尚未执行。
+- Swagger 与 `/uploads/` 的生产暴露策略还需安全审查。
+- CSP 当前关闭；反向代理安全头、请求体限制、日志脱敏和代理信任边界需生产复核。
+- 通用 admin pages/settings/inquiries/media 路由多为任意已登录角色可操作；是否符合最终运营权限模型需甲方确认，不要擅自扩大或收紧。
+- Inquiry 通知环境变量存在，但邮件通知、隐私同意、数据保留/删除策略尚未形成完整生产闭环。
+- 本地 volume 媒体没有对象存储级冗余，必须与数据库备份一起做恢复演练。
+
+【遗留风险】
+
+- 直接在当前 dirty working tree 开发后端会把暂停中的 UI diff 混入后端 PR。
+- 未进行真实数据库验证前，repository 单测不能证明迁移、锁、事务和重启持久化在部署环境成立。
+- Compose 默认值仅供本地；服务器若漏配 `.env`，会落入示例 secret/密码，属于上线阻断项。
+- API 容器启动自动执行 bootstrap seed；首次部署前必须确认 seed 的幂等性和正式内容来源。
+- 正式部署仍缺目标服务器规格、操作系统、域名/DNS、TLS、备份位置、告警渠道、维护窗口和回滚责任人。
+- 当前 UI 工作未完成；在后端上线前必须决定是只部署 API/Staging，还是等待替代前端一并验收。
+
+【下一阶段任务】
+
+1. 在独立后端分支/worktree 重现唯一测试失败，确认最新甲方 fallback 文案，再同步实现与断言，使 32/32 通过。
+2. 使用 `database-verifier` 在可删除的开发 PostgreSQL 上验证 migration → seed → API → repository → DB → API/readback 全链路，包含负向路径和重启持久化。
+3. 使用 `security-reviewer` 聚焦 auth、角色边界、CORS、trust proxy、Swagger、uploads、媒体、Inquiry、日志与生产 secrets；先报告再实施最小修复。
+4. 完成生产化差距清单：健康检查、graceful shutdown、迁移失败行为、日志、备份、恢复、反向代理、HTTPS、CORS、限速、监控、告警、回滚。
+5. 建立 Staging：只使用 Staging 数据库和账号；执行完整 CMS/媒体/Inquiry 手工闭环及备份恢复演练。
+6. 获取并记录目标服务器、域名、DNS、TLS、SSH/部署方式、备份存储、维护窗口；不要在文档或日志中写 secret。
+7. Staging 验收通过并获得明确发布授权后，部署固定 commit；先备份，再迁移、发布、health/smoke test，保留回滚版本。
+8. 前端由其他成员在独立分支替换时，只按 `docs/frontend-replacement-guide.md` 对接既有 DTO；不得改变后端 Contract 来迁就视觉实现。
+
+【禁止修改事项】
+
+- 未经批准不修改 Homepage 七类 typed blocks、Contract、API DTO、数据库 schema、权限模型或生产配置。
+- 不创建 News、Projects、Cases、Dashboard、通用 Page Builder、复杂 CMS/DAM/CRM。
+- 不直连或写生产数据库，不删除生产数据，不执行生产 seed refresh。
+- 不提交 `.env`、密码、JWT、数据库导出、上传目录、日志中的个人咨询数据或其他 secret。
+- 不擅自 reset/clean/stash 当前前端工作树，不覆盖其他成员改动。
+- 不自动 commit、push、PR 或生产部署；部署必须基于明确服务器范围、固定 commit、备份和用户授权。
+- 后端阶段暂停公开 UI 继续修改；需要修复 fallback 测试时，只在确认文案真值后做最小一致性修复。
+
+【推荐下一位 Agent 首先阅读的文件】
+
+1. `docs/NEW-WINDOW-HANDOFF.md`（本文件）
+2. `README.md`
+3. `CONTRIBUTING.md`
+4. `docs/backend/README.md`
+5. `docs/backend/API.md`
+6. `docs/backend/CONFIGURATION.md`
+7. `docs/content-contract.md`
+8. `docs/homepage-cms.md`
+9. `docs/frontend-replacement-guide.md`
+10. `compose.yaml`、`backend/Dockerfile`、`backend/.env.example`
+11. `backend/src/app.ts`、`backend/src/config.ts`、`backend/src/db/schema.ts`
+12. `backend/src/content/contract.ts`、`backend/src/content/public-dto.ts`
+13. `backend/src/homepage/repository.ts`、`backend/src/routes/admin-homepage.ts`
+14. `backend/tests/*.test.ts`
+
+【可直接复制给新的 Codex / ChatGPT 的交接 Prompt】
+
+```text
+继续接手“观止东方 · Guanzhi Oriental”官网项目。
+
+项目目录：C:\Users\lin\projects\guanzhi-dongfang
+
+当前阶段暂停公开前端 UI，优先完成后端收口、真实 PostgreSQL 全链路验证、生产化准备与服务器部署方案。前端将由其他成员在独立分支替换；你不要继续改 Header/Hero/About 等视觉，也不要覆盖当前工作树中的前端改动。
+
+开始前完整读取：
+1. docs/NEW-WINDOW-HANDOFF.md
+2. README.md
+3. CONTRIBUTING.md
+4. docs/backend/README.md
+5. docs/backend/API.md
+6. docs/backend/CONFIGURATION.md
+7. docs/content-contract.md
+8. docs/homepage-cms.md
+9. docs/frontend-replacement-guide.md
+10. compose.yaml、backend/Dockerfile、backend/.env.example
+
+然后以当前源码和 Git 事实复核：git branch、git log -1、git status、git diff、backend 路由、Contract、schema、migration 和 tests。不要只依赖历史文档。
+
+当前已知状态：分支 codex/developer-handoff；最新 commit b98ba453a3aabbd451d61625e374c6e0ee5a6226。工作树中的 src/App.tsx、src/content/public-content.ts、src/index.css 是暂停中的前端改动，.agents/skills 为未跟踪项目 Skills；没有 staged/commit/push。不要 reset、clean、stash 或混入后端 PR。需要并行开发时使用独立 worktree/clone 和后端功能分支。
+
+2026-08-13 实测：根目录 build 通过；backend typecheck/build 通过；backend tests 31/32，通过项覆盖 Contract、DTO、Homepage revision/publish、Inquiry、Media 等。唯一失败是 fallback About 首段在 src/content/public-content.ts 与 backend/tests/content.test.ts 的旧期望不一致。根目录没有 .env，尚未启动真实 PostgreSQL，数据库持久化、migration/seed、CMS、Media、Inquiry、备份恢复都未做真实端到端验证。
+
+必须使用项目级 Skills：
+- 先用 feature-planner 为“后端生产化与部署准备”制定仓库感知计划；用户已要求实施，所以计划后可继续。
+- 数据库真实闭环使用 database-verifier，只连接可删除的开发/Staging 数据库。
+- auth/CORS/uploads/Swagger/Inquiry/生产 secret 等使用 security-reviewer，先报告再修复。
+- 完成后使用 implementation-auditor 做门禁与真实路径复核。
+- 只有用户明确要求准备提交时才使用 git-commit-guardian。
+
+第一项具体行动：在独立后端分支/worktree 重现唯一失败测试，读取最新甲方资料与当前 fallback，确认哪一份中文 About 是真值；先输出差异和建议，不要为了测试绿灯擅自改文案。确认后做最小一致性修复并跑完整门禁。
+
+随后验证：migration → bootstrap seed → health → auth → CMS 草稿保存不影响公开 API → revision 冲突 → ADMIN 双语发布 → 媒体上传/读取/软删除边界 → Inquiry 写入并从后台读取 → 容器重启后持久化 → pg_dump 与上传 volume 备份/恢复。
+
+部署前必须拿到：目标服务器/系统、域名与 DNS、TLS、部署方式、Staging/生产数据库、备份存储、监控告警、维护窗口、回滚责任人。任何 secret 不得输出或写入仓库。先 Staging，验收通过且用户明确授权后再部署固定 commit；不要自行 commit、push、PR 或生产部署。
+
+保持既有 React/TypeScript/Vite、Homepage 七类 typed blocks、Contract、API、Settings、locale/fallback、Inquiry、schema 和权限边界。不要扩展 News/Projects/Cases/Dashboard/Page Builder/CMS/CRM。
+
+每轮报告：修改文件、真实执行路径、测试结果、数据库证据、安全发现、部署阻断项与下一步。若文档与源码冲突，以当前源码、测试、migration 和可复现实验为准，并更新交接事实。
 ```
-
-还应手工验证：公开中英文、CMS 登录、刷新恢复、保存草稿不影响官网、发布双语同步、媒体空态、390px、桌面和合作咨询。
-
-## 12. 核心代码入口
-
-- Public React：`src/App.tsx`
-- Public Content parser/fallback：`src/content/public-content.ts`
-- Admin 入口：`src/admin/AdminApp.tsx`
-- Homepage Editor：`src/admin/HomepageEditor.tsx`
-- Admin API client：`src/admin/api.ts`
-- Homepage Typed Contract：`backend/src/content/contract.ts`
-- Homepage draft/publish repository：`backend/src/homepage/repository.ts`
-- Homepage Admin routes：`backend/src/routes/admin-homepage.ts`
-- Public DTO：`backend/src/content/public-dto.ts`
-- Media service/storage：`backend/src/media/`
-- Database Schema：`backend/src/db/schema.ts`
-- Seed：`backend/src/scripts/seed.ts`
-- API 文档：`docs/backend/API.md`
-
-## 13. 当前已知边界与遗留问题
-
-- 当前只有 Homepage CMS UI；其他既有通用 Admin API 没有对应 Dashboard UI。
-- Media modal 的 Escape、焦点陷阱、关闭后焦点恢复仍可完善。
-- Locale tabs 可补方向键与更完整 ARIA 关联。
-- 当前数据库媒体库为空，公开首页仍依赖静态 fallback 文件。
-- 静态中文 fallback 仍是一套迁移期容错副本；正式 CMS 稳定后应逐步缩小。
-- 源码压缩包不包含 `.git` 历史、`.env`、密码、JWT、数据库内容、上传文件、依赖和构建产物。
-
-## 14. 外部开发者快速上手顺序
-
-1. 优先从 GitHub 私有仓库 clone；只有无法获得仓库权限时才解压源码包。
-2. 阅读本文及第 1 节列出的四份文档。
-3. 执行 `git status`；源码 ZIP 不含 `.git`，需要长期协作时不要在 ZIP 中建立另一套历史。
-4. 创建自己的 `.env`，不得索要或复制生产密码。
-5. `docker compose up --build -d` 启动 Backend 与 PostgreSQL。
-6. 根目录 `npm install && npm run dev` 启动 Frontend。
-7. 先做只读 API 与页面验证，再登录 CMS。
-8. 修改前创建功能分支；修改后运行全部门禁。
-9. 提交 PR 时说明 Contract/API 是否变化、是否有 Migration、如何测试和如何回滚。

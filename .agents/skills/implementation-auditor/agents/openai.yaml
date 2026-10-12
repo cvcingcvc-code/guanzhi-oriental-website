@@ -1,0 +1,7 @@
+interface:
+  display_name: "Implementation Auditor"
+  short_description: "Audit completed work across the full execution path"
+  default_prompt: "Use $implementation-auditor to verify whether this implementation is truly complete."
+
+policy:
+  allow_implicit_invocation: true

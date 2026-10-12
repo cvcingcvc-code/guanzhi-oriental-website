@@ -1,0 +1,7 @@
+interface:
+  display_name: "Security Reviewer"
+  short_description: "Review web changes for practical security risks"
+  default_prompt: "Use $security-reviewer to audit this authentication or data-changing workflow."
+
+policy:
+  allow_implicit_invocation: true
