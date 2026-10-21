@@ -13,15 +13,22 @@
 
 name: guanzhi-prod
 
+# 三个服务共用的日志轮转：单文件 10MB、最多 5 份（约 50MB 上限）
+x-default-logging: &default-logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "5" }
+
 services:
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
+    logging: *default-logging
     ports:
       - "80:80"
       - "443:443"
     environment:
-      SITE_DOMAIN: ${CORS_ORIGINS:-https://localhost}   # 用于 Caddyfile 域名，取第一个域名
+      # Caddyfile 域名：支持逗号分隔多域名（取第一个），与 CORS_ORIGINS 保持一致
+      SITE_DOMAIN: ${PROD_SITE_DOMAIN:-${CORS_ORIGINS:-https://localhost}}
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./dist/client:/srv/www:ro
@@ -42,6 +49,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     # 不对宿主机暴露端口；DB 仅容器网络内可达
+    logging: *default-logging
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:?POSTGRES_USER is required} -d ${POSTGRES_DB:?POSTGRES_DB is required}"]
       interval: 5s
@@ -52,6 +60,7 @@ services:
     build:
       context: ./backend
     restart: unless-stopped
+    logging: *default-logging
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0

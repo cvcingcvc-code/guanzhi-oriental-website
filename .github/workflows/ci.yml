@@ -83,3 +83,41 @@ jobs:
       - name: Remove disposable deployment
         if: always()
         run: docker compose down --volumes --remove-orphans
+
+  prod-compose-smoke:
+    name: Production compose validation
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build frontend artifact
+        run: |
+          npm ci
+          npm run build
+      - name: Create disposable production configuration
+        run: |
+          cp .env.production.example .env
+          sed -i 's|^CORS_ORIGINS=.*|CORS_ORIGINS=https://localhost|' .env
+          sed -i 's|^PUBLIC_BASE_URL=.*|PUBLIC_BASE_URL=https://localhost|' .env
+          sed -i 's/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=ci-postgres-password-7f6c4e2a/' .env
+          sed -i 's/^JWT_SECRET=.*/JWT_SECRET=ci-jwt-secret-7f6c4e2a9b1d3f5h7j9l2n4p6r8t0v2x/' .env
+          sed -i 's/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=ci-admin-password-7f6c4e2a/' .env
+          sed -i 's/^IP_HASH_SALT=.*/IP_HASH_SALT=ci-ip-hash-salt-7f6c4e2a/' .env
+      - name: Validate compose.prod.yaml configuration
+        run: docker compose -f compose.prod.yaml config --quiet
+      - name: Start production stack (HTTP only, no public TLS)
+        run: docker compose -f compose.prod.yaml up --build -d --wait api db
+      - name: Verify API health through Caddy
+        run: |
+          docker compose -f compose.prod.yaml up -d caddy --wait
+          sleep 5
+          curl --fail --silent --show-error --resolve your-domain.com:80:127.0.0.1 http://your-domain.com/api/v1/health || \
+            curl --fail --silent --show-error http://127.0.0.1:80/api/v1/health -H "Host: localhost"
+      - name: Verify Caddyfile syntax
+        run: docker compose -f compose.prod.yaml exec -T caddy caddy validate --config /etc/caddy/Caddyfile
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose -f compose.prod.yaml logs --no-color
+      - name: Remove disposable stack
+        if: always()
+        run: docker compose -f compose.prod.yaml down --volumes --remove-orphans
