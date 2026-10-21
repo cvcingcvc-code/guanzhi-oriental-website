@@ -105,7 +105,7 @@ export type PublicSiteSettings = {
   contact: { email?: string };
 };
 
-const fallbackMedia = (url: string, alt: string, mimeType = 'image/png'): PublicMediaReference => ({ url, alt, mimeType });
+const fallbackMedia = (url: string, alt: string, mimeType = 'image/webp'): PublicMediaReference => ({ url, alt, mimeType });
 
 export const FALLBACK_HOME_ZH: HomeContent = (() => {
   const blocks: HomeBlock[] = [
@@ -116,7 +116,7 @@ export const FALLBACK_HOME_ZH: HomeContent = (() => {
       description: 'Turning Chinese culture into travel experiences people can enter, understand and remember.',
       primaryCta: { label: '了解核心能力', action: 'scroll', target: 'solutions' },
       secondaryCta: { label: '发起合作咨询', action: 'inquiry', target: 'inquiry' },
-      media: { ...fallbackMedia('/videos/hero-loop.mp4', '东方文化旅行体验影像', 'video/mp4'), poster: fallbackMedia('/images/Gemini_Generated_Image_stds6ostds6ostds (1).png', '江南园林与文化体验场景') },
+      media: { ...fallbackMedia('/videos/hero-loop.mp4', '东方文化旅行体验影像', 'video/mp4'), poster: fallbackMedia('/images/optimized/hero.webp', '江南园林与文化体验场景') },
       meta: { brandCode: 'Guanzhi Oriental', locationAndYear: '2026' },
     },
     {
@@ -144,10 +144,10 @@ export const FALLBACK_HOME_ZH: HomeContent = (() => {
       type: 'motifs', enabled: true, order: 40, contentStatus: 'approved', headingLines: ['正在生长的', '文化体验母题'],
       intro: '不虚构成熟案例。以下方向正在研究、验证与联合开发中。',
       items: [
-        { id: 'garden', enabled: true, order: 10, title: '园林', titleEn: 'GARDEN', description: '如何走进一首中国式的诗', status: '合作开发中', media: fallbackMedia('/images/Gemini_Generated_Image_stds6ostds6ostds (1).png', '园林文化体验研发方向') },
-        { id: 'library', enabled: true, order: 20, title: '藏书楼', titleEn: 'LIBRARY', description: '文人如何保存知识与精神世界', status: '重点研发方向', media: fallbackMedia('/images/Gemini_Generated_Image_stds6ostds6ostds (4).png', '藏书楼文化体验研发方向') },
-        { id: 'tea-and-silk', enabled: true, order: 30, title: '茶与丝绸', titleEn: 'TEA & SILK', description: '江南日常生活中的时间和手艺', status: '合作开发中', media: fallbackMedia('/images/Gemini_Generated_Image_stds6ostds6ostds (5).png', '茶与丝绸文化体验研发方向') },
-        { id: 'kunqu', enabled: true, order: 40, title: '昆曲', titleEn: 'KUNQU', description: '如何听懂中国古典戏剧的一段声音', status: '重点研发方向', media: fallbackMedia('/images/Gemini_Generated_Image_stds6ostds6ostds (6).png', '昆曲文化体验研发方向') },
+        { id: 'garden', enabled: true, order: 10, title: '园林', titleEn: 'GARDEN', description: '如何走进一首中国式的诗', status: '合作开发中', media: fallbackMedia('/images/optimized/hero.webp', '园林文化体验研发方向') },
+        { id: 'library', enabled: true, order: 20, title: '藏书楼', titleEn: 'LIBRARY', description: '文人如何保存知识与精神世界', status: '重点研发方向', media: fallbackMedia('/images/optimized/motif-library.webp', '藏书楼文化体验研发方向') },
+        { id: 'tea-and-silk', enabled: true, order: 30, title: '茶与丝绸', titleEn: 'TEA & SILK', description: '江南日常生活中的时间和手艺', status: '合作开发中', media: fallbackMedia('/images/optimized/motif-tea-silk.webp', '茶与丝绸文化体验研发方向') },
+        { id: 'kunqu', enabled: true, order: 40, title: '昆曲', titleEn: 'KUNQU', description: '如何听懂中国古典戏剧的一段声音', status: '重点研发方向', media: fallbackMedia('/images/optimized/motif-kunqu.webp', '昆曲文化体验研发方向') },
       ],
     },
     {
@@ -155,17 +155,17 @@ export const FALLBACK_HOME_ZH: HomeContent = (() => {
       headingLines: ['不是一条景点线路，', '而是一套进入中国审美', '与生活方式的文化体验。'],
       description: '从园林、藏书、昆曲、饮食与日常生活进入江南。为海外游客与国内高知客群建立一条理解中国文化的安静入口。',
       cta: { label: '共同研发「入江南」', action: 'scroll', target: 'contact' },
-      media: fallbackMedia('/images/Gemini_Generated_Image_stds6ostds6ostds (7).png', '雾色江南水乡与舟船'),
+      media: fallbackMedia('/images/optimized/jiangnan.webp', '雾色江南水乡与舟船'),
     },
     {
       type: 'partners', enabled: true, order: 60, contentStatus: 'approved', heading: '为需要文化深度与稳定交付的机构服务',
       items: [
-        { id: 'inbound-dmc', enabled: true, order: 10, title: '入境旅行社及 DMC', media: fallbackMedia('/images/partners/partner-01.png', '旅行策划团队围绕地图共同研究江南文化路线') },
-        { id: 'bespoke-travel', enabled: true, order: 20, title: '高端定制机构', media: fallbackMedia('/images/partners/partner-02.png', '文化主理人在江南园林中准备高端定制体验') },
-        { id: 'hospitality', enabled: true, order: 30, title: '酒店和度假品牌', media: fallbackMedia('/images/partners/partner-03.png', '酒店庭院中的东方文化欢迎体验场景') },
-        { id: 'membership', enabled: true, order: 40, title: '银行、企业及会员机构', media: fallbackMedia('/images/partners/partner-04.png', '会员客户参加小型东方文化艺术沙龙') },
-        { id: 'destination', enabled: true, order: 50, title: '目的地与文旅机构', media: fallbackMedia('/images/partners/partner-05.png', '文旅团队围绕建筑模型规划目的地文化产品') },
-        { id: 'overseas-education', enabled: true, order: 60, title: '海外旅行社及文化教育机构', media: fallbackMedia('/images/partners/partner-06.png', '国际访客在中式藏书空间参加文化工作坊') },
+        { id: 'inbound-dmc', enabled: true, order: 10, title: '入境旅行社及 DMC', media: fallbackMedia('/images/optimized/partner-01.webp', '旅行策划团队围绕地图共同研究江南文化路线') },
+        { id: 'bespoke-travel', enabled: true, order: 20, title: '高端定制机构', media: fallbackMedia('/images/optimized/partner-02.webp', '文化主理人在江南园林中准备高端定制体验') },
+        { id: 'hospitality', enabled: true, order: 30, title: '酒店和度假品牌', media: fallbackMedia('/images/optimized/partner-03.webp', '酒店庭院中的东方文化欢迎体验场景') },
+        { id: 'membership', enabled: true, order: 40, title: '银行、企业及会员机构', media: fallbackMedia('/images/optimized/partner-04.webp', '会员客户参加小型东方文化艺术沙龙') },
+        { id: 'destination', enabled: true, order: 50, title: '目的地与文旅机构', media: fallbackMedia('/images/optimized/partner-05.webp', '文旅团队围绕建筑模型规划目的地文化产品') },
+        { id: 'overseas-education', enabled: true, order: 60, title: '海外旅行社及文化教育机构', media: fallbackMedia('/images/optimized/partner-06.webp', '国际访客在中式藏书空间参加文化工作坊') },
       ],
     },
     {
