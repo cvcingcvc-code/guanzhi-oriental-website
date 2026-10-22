@@ -104,18 +104,24 @@ jobs:
       - name: Validate compose.prod.yaml configuration
         run: docker compose -f compose.prod.yaml config --quiet
       # 无需手动构建前端：caddy 服务构建 Dockerfile.web（容器内 npm build）
-      - name: Start production stack (HTTP only, no public TLS)
+      - name: Start production stack
         run: docker compose -f compose.prod.yaml up --build -d --wait api db
-      - name: Verify API health through Caddy
+      # Caddy 域名块自动启用 HTTP->HTTPS 重定向：80 端口一律 308，验证必须走 HTTPS。
+      # CI 环境无公网域名，Caddy 会签发本地自签证书（issuer: local），用 -k 跳过校验。
+      - name: Verify API health through Caddy (HTTPS, expect 200)
         run: |
           docker compose -f compose.prod.yaml up -d caddy --wait
           sleep 5
-          curl --fail --silent --show-error --resolve your-domain.com:80:127.0.0.1 http://your-domain.com/api/v1/health || \
-            curl --fail --silent --show-error http://127.0.0.1:80/api/v1/health -H "Host: localhost"
+          test "$(curl -k --silent --output /dev/null --write-out '%{http_code}' --resolve your-domain.com:443:127.0.0.1 https://your-domain.com/api/v1/health)" = "200"
+          curl -k --fail --silent --show-error --resolve your-domain.com:443:127.0.0.1 https://your-domain.com/api/v1/health
+      - name: Verify HTTP redirects to HTTPS (Caddy auto-TLS behavior)
+        run: |
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' --resolve your-domain.com:80:127.0.0.1 http://your-domain.com/api/v1/health)"
+          test "$code" = "308" || test "$code" = "301"
       - name: Verify frontend served from image (no host dist needed)
         run: |
-          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:80/ -H 'Host: localhost')" = "200"
-          curl --fail --silent http://127.0.0.1:80/ -H 'Host: localhost' | grep -o '<div id="root"></div>'
+          test "$(curl -k --silent --output /dev/null --write-out '%{http_code}' --resolve your-domain.com:443:127.0.0.1 https://your-domain.com/)" = "200"
+          curl -k --fail --silent --resolve your-domain.com:443:127.0.0.1 https://your-domain.com/ | grep -o '<div id="root"></div>'
       - name: Verify Caddyfile syntax
         run: docker compose -f compose.prod.yaml exec -T caddy caddy validate --config /etc/caddy/Caddyfile
       - name: Show service logs on failure
