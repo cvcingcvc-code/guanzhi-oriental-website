@@ -60,7 +60,13 @@
 }
 .site-shell{--serif:"Noto Serif SC","Songti SC",STSong,serif;--display:"Source Serif","Noto Serif SC",serif;--sans:Manrope,"Noto Sans SC","PingFang SC",sans-serif}
 @font-face{font-family:"Noto Serif SC";src:url('/fonts/noto-serif-sc-regular.woff2') format('woff2');font-display:swap;font-weight:400}
-@font-face{font-family:"Source Serif";src:url('/fonts/source-serif-4-regular.woff2') format('woff2');font-display:swap;font-weight:400}
+@font-face{font-family:"Noto Serif SC";src:url('/fonts/noto-serif-sc-700.woff2') format('woff2');font-display:swap;font-weight:700}
+@font-face{font-family:"Source Serif";src:url('/fonts/source-serif-4-regular.woff2') format('woff2');font-display:swap;font-weight:400;font-style:normal}
+@font-face{font-family:"Source Serif";src:url('/fonts/source-serif-4-regular-italic.woff2') format('woff2');font-display:swap;font-weight:400;font-style:italic}
+@font-face{font-family:"Source Serif";src:url('/fonts/source-serif-4-500.woff2') format('woff2');font-display:swap;font-weight:500;font-style:normal}
+@font-face{font-family:"Source Serif";src:url('/fonts/source-serif-4-500-italic.woff2') format('woff2');font-display:swap;font-weight:500;font-style:italic}
+@font-face{font-family:"Source Serif";src:url('/fonts/source-serif-4-600.woff2') format('woff2');font-display:swap;font-weight:600;font-style:normal}
+@font-face{font-family:"Source Serif";src:url('/fonts/source-serif-4-600-italic.woff2') format('woff2');font-display:swap;font-weight:600;font-style:italic}
 
 /* Multipage public site. CMS content owns headings, body copy and CTA labels. */
 .multipage-shell{min-height:100vh;background:var(--ink);color:var(--paper)}

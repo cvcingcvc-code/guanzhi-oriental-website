@@ -1,0 +1,23 @@
+# 观止东方 · 前端静态产物 + Caddy 一体镜像
+#
+# 目的：服务器只需要 Docker，不需要 Node——前端 dist/client 在容器内构建，
+#       最终镜像 = Caddy 官方镜像 + 构建好的静态文件（/srv/www）。
+#
+# 构建/启动统一走 compose.prod.yaml：
+#   docker compose -f compose.prod.yaml up --build -d
+#
+# Caddyfile 不打进镜像（由 compose 挂载 deploy/Caddyfile），域名等配置改 Caddyfile 即可。
+
+FROM node:24-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY index.html vite.config.ts tsconfig.json ./
+COPY scripts ./scripts
+COPY src ./src
+COPY public ./public
+RUN npm run build
+
+FROM caddy:2-alpine AS runtime
+COPY --from=build /app/dist/client /srv/www
+# Caddy 官方镜像的 entrypoint/CMD 保持不变；静态文件在 /srv/www 由 Caddyfile file_server 使用

@@ -145,6 +145,37 @@ test('通用页面写入入口拒绝创建、更新、发布或撤回 home', () 
   assert.doesNotThrow(() => preventGenericHomepageWrite('about', 'brand-story'));
 });
 
+test('通用页面的发布与撤回仅 ADMIN 可用（与首页发布权限一致）', async () => {
+  const adminPagesRoutes = (await import('../src/routes/admin-pages.js')).default;
+  const buildApp = () => {
+    const app = Fastify();
+    app.decorate('authenticate', async (request: { user: unknown }) => {
+      request.user = { sub: actorId, email: 'user@example.test', role: 'EDITOR', name: 'User' };
+    });
+    app.decorate('requireAdmin', async (request: { user: unknown }, reply: { code(status: number): { send(body: unknown): unknown } }) => {
+      request.user = { sub: actorId, email: 'user@example.test', role: 'EDITOR', name: 'User' };
+      return reply.code(403).send({ ok: false, error: { code: 'FORBIDDEN', message: '需要管理员权限' } });
+    });
+    app.setErrorHandler((error, _request, reply) => {
+      if (error instanceof HttpError) return reply.code(error.statusCode).send({ ok: false, error: { message: error.message } });
+      return reply.send(error);
+    });
+    return app;
+  };
+  // EDITOR 触发 requireAdmin 403：发布与撤回在鉴权层即被拒绝（不需要真实页面数据）
+  const publishApp = buildApp();
+  await publishApp.register(adminPagesRoutes, { prefix: '/api/v1/admin/pages' });
+  const publish = await publishApp.inject({ method: 'POST', url: '/api/v1/admin/pages/00000000-0000-4000-8000-000000000001/publish' });
+  assert.equal(publish.statusCode, 403);
+  await publishApp.close();
+
+  const unpublishApp = buildApp();
+  await unpublishApp.register(adminPagesRoutes, { prefix: '/api/v1/admin/pages' });
+  const unpublish = await unpublishApp.inject({ method: 'POST', url: '/api/v1/admin/pages/00000000-0000-4000-8000-000000000001/unpublish' });
+  assert.equal(unpublish.statusCode, 403);
+  await unpublishApp.close();
+});
+
 test('规范化内容比较识别已发布状态，并完整收集去重的 assetId', () => {
   const left = translations('Same', assetId);
   const right = homepageTranslationsSchema.parse([...structuredClone(left)].reverse());

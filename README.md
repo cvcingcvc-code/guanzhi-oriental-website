@@ -1,106 +1,144 @@
 # 观止东方 · Guanzhi Oriental
 
-**东方文化深度体验产品研发与供应机构**
+**东方文化深度体验产品研发与供应机构** — 品牌官网 + 双语 CMS
 
 把东方文化，转化为可以进入的旅行体验。
 
+[![CI](https://github.com/cvcingcvc-code/guanzhi-oriental-website/actions/workflows/ci.yml/badge.svg)](https://github.com/cvcingcvc-code/guanzhi-oriental-website/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 ---
 
-## 技术栈
+## 这是什么
 
-| 层级 | 技术 |
-|------|------|
-| 框架 | React 18 + TypeScript |
-| 构建 | Vite 6 |
-| 样式 | Tailwind CSS 3 + CSS Custom Properties |
-| 动效 | GSAP 3 (ScrollTrigger) |
-| 字体 | Google Fonts: Noto Serif SC + Cormorant Garamond |
-| 部署 | 尚未确认生产平台；本地与 CI 使用 Docker Compose 验证 PostgreSQL + API |
+一个可以直接落地的**完整网站**：React 多路由官网 + Fastify 后端 + PostgreSQL 数据库 + Docker 一键部署。
 
-### 后端基础框架
+- **公共官网**：六个路由（首页/关于/能力/入江南/伙伴/联系），内容全部来自 CMS，支持中英双语
+- **后台 CMS**：`/admin/homepage` 管理首页七个区块，媒体库上传，草稿/发布双阶段，版本乐观锁
+- **合作线索**：公开询盘表单入库 + 后台管理 + CSV 导出 + 邮件通知
+- **生产部署**：一台服务器 + Docker，一条命令上线（自动 TLS、自动建表、自动种子数据）
 
-后端已按独立服务放在 `backend/`，与 React 多路由 SPA 共同组成当前应用。技术栈为 Node.js 24、TypeScript、Fastify、PostgreSQL、Drizzle ORM、JWT 和 Docker Compose，覆盖双语 CMS、媒体、合作线索、账号权限和操作日志。
+## 快速开始
 
-- 架构与项目结构：[`docs/backend/README.md`](docs/backend/README.md)
-- API 说明：[`docs/backend/API.md`](docs/backend/API.md)
-- 配置与部署：[`docs/backend/CONFIGURATION.md`](docs/backend/CONFIGURATION.md)
-- 内容协议与首批接入：[`docs/content-contract.md`](docs/content-contract.md)
-- Homepage CMS Editor：[`docs/homepage-cms.md`](docs/homepage-cms.md)
-- 新窗口与多人开发交接：[`docs/NEW-WINDOW-HANDOFF.md`](docs/NEW-WINDOW-HANDOFF.md)
-- 新成员从 GitHub 加入、完整启动、前端替换到最终交付：[`docs/DEVELOPER-HANDOFF.md`](docs/DEVELOPER-HANDOFF.md)
-- 前端替换与 API 接入声明：[`docs/frontend-replacement-guide.md`](docs/frontend-replacement-guide.md)
-- 多人 Git 协作约定：[`CONTRIBUTING.md`](CONTRIBUTING.md)
-- Docker 配置模板：`.env.docker.example`
-- 本地全链路联调与后续开发交接：[`docs/fullstack-development-handoff.md`](docs/fullstack-development-handoff.md)
+### 方式一：服务器一键部署（推荐，只需 Docker）
 
-本地启动后端：
+详见 [`docs/DEPLOY.md`](docs/DEPLOY.md)，核心三步：
 
 ```bash
-cp .env.docker.example .env
-docker compose up --build -d
+git clone https://github.com/cvcingcvc-code/guanzhi-oriental-website.git
+cd guanzhi-oriental-website
+cp .env.production.example .env   # 填入域名、数据库密码、JWT_SECRET、管理员账号
+docker compose -f compose.prod.yaml up --build -d
 ```
 
-### 本地全栈快速启动
+完成后 `https://你的域名` 即可访问（TLS 自动签发），`/api/v1/health` 返回 ok 表示后端就绪。
+前端在容器内构建，**服务器不需要 Node**。首次启动自动执行数据库 migration 与 seed（创建管理员和首页内容）。
 
-要求 Node.js 24、npm、Docker Engine 与 Docker Compose。不要把本地 `.env`、密码、JWT、上传文件或数据库导出提交到 Git。
+### 方式二：本地开发全栈联调
+
+要求 Node.js 24、npm、Docker Engine 与 Docker Compose。
 
 ```bash
 npm ci
 cd backend && npm ci && cd ..
 cp .env.docker.example .env
-docker compose up --build -d
-npm run dev
+docker compose up --build -d        # 启动 PostgreSQL + Fastify
+npm run dev                          # 前端 http://localhost:3000
 ```
 
-默认前端为 `http://localhost:3000`，Fastify 为 `http://127.0.0.1:8080`，健康检查为 `GET /api/v1/health`。Vite 将 `/api` 请求代理到 Fastify；PostgreSQL 只由 Backend 通过 Drizzle 访问。详细启动、迁移、联调和故障排查见[全栈开发交接](docs/fullstack-development-handoff.md)。
+- 前端：`http://localhost:3000`（Vite 将 `/api` 代理到 Fastify）
+- 后端：`http://127.0.0.1:8080`，健康检查 `GET /api/v1/health`
+- PostgreSQL：仅容器网络内可达
 
-前端 UI 可以重构或整体替换，但必须继续通过 HTTP API / Public DTO 获取业务数据，不得导入 `backend/src`、直接访问数据库或用数据库 Schema 驱动 UI。API Contract 变更须使用独立 PR 并经过 Backend Review。
+## 技术栈
 
-## 本地开发
-
-```bash
-# 安装锁文件依赖（需要 Node.js 24）
-npm ci
-
-# 启动开发服务器
-npm run dev
-# → http://localhost:3000
-
-# 前端测试
-npm test
-
-# 生产构建
-npm run build
-
-# 预览生产构建
-npm run preview
-```
+| 层级 | 技术 |
+|------|------|
+| 前端框架 | React 18 + TypeScript |
+| 构建 | Vite 6 |
+| 样式 | Tailwind CSS 3 + CSS Custom Properties |
+| 动效 | GSAP 3 (ScrollTrigger) |
+| 后端 | Node.js 24 + Fastify 5 + Zod |
+| 数据库 | PostgreSQL 17 + Drizzle ORM |
+| 认证 | JWT（每请求从 DB 重载用户）+ bcrypt |
+| 部署 | Docker Compose + Caddy（自动 TLS） |
+| CI | GitHub Actions（类型检查 + 测试 + 构建 + 依赖审计门禁 + 部署冒烟） |
 
 ## 项目结构
 
 ```
-├── index.html              # Vite 入口 HTML
-├── public/
-│   ├── images/             # 静态图片资源
-│   │   ├── hero-poster.svg
-│   │   └── Gemini_*.png    # AI 生成的文化场景图（8张）
-│   └── videos/
-│       └── hero-loop.mp4   # Hero 背景视频
+├── index.html                 # Vite 入口 HTML（字体预载 + OG meta）
+├── public/                    # 静态资源（构建时原样拷贝）
+│   ├── images/                # 图片（optimized webp + client-design 章节图）
+│   ├── videos/                # Hero 背景视频（hero-loop.mp4）
+│   └── fonts/                 # 自托管中英文字体（woff2）
 ├── src/
-│   ├── main.tsx            # React 入口
-│   ├── App.tsx             # 公共多路由网站与共享导航外壳
-│   ├── public/             # 页面模型、CTA dispatcher、咨询 Dialog 与测试
-│   ├── index.css           # 全局设计系统 + Tailwind
-│   └── components/
-│       └── *.tsx             # Legacy：历史页面组件，当前 App.tsx 未导入
-├── scripts/
-│   └── download-fonts.js   # 字体下载脚本
-├── assets/
-│   └── favicon.svg         # 网站图标
-├── tailwind.config.js      # Tailwind 配置（设计Token）
-├── tsconfig.json           # TypeScript 配置
-└── vite.config.ts          # Vite 配置
+│   ├── main.tsx               # React 入口
+│   ├── App.tsx                # 公共多路由网站与共享导航外壳
+│   ├── admin/                 # CMS 后台前端（/admin/homepage）
+│   ├── content/               # 前端内容层：API 客户端、fallback、DTO 解析（16 测试）
+│   ├── public/                # 页面模型、CTA dispatcher、咨询 Dialog 与测试
+│   ├── i18n/                  # 多语言 UI 文案
+│   └── index.css              # 全局设计系统 + Tailwind
+├── backend/
+│   ├── src/
+│   │   ├── app.ts             # Fastify 组装（helmet/CORS/限流/JWT/静态媒体）
+│   │   ├── routes/            # 公共内容、admin 页面/媒体/线索/设置/账号、认证
+│   │   ├── plugins/auth.ts    # authenticate / requireAdmin
+│   │   ├── media/             # 上传服务（魔数检测、路径穿越防护、SVG 禁令）
+│   │   ├── content/           # 内容协议验证与 Public DTO
+│   │   ├── db/                # Drizzle schema、连接池
+│   │   └── scripts/           # migrate.ts / seed.ts
+│   ├── tests/                 # 45 个后端测试（安全/认证/媒体/内容/韧性）
+│   ├── drizzle/               # 数据库 migration
+│   └── Dockerfile             # API 多阶段构建
+├── Dockerfile.web             # 前端+Caddy 一体镜像（服务器无需 Node）
+├── compose.yaml               # 本地：db + api
+├── compose.prod.yaml          # 生产：caddy + db + api
+├── deploy/
+│   ├── Caddyfile              # TLS、静态托管、/api 与 /uploads 反代、SPA 回退、CSP
+│   └── backup-db.sh           # 数据库每日备份
+├── docs/
+│   ├── DEPLOY.md              # 生产部署指南（3 步上线）
+│   ├── backend/               # 后端架构、API、配置文档
+│   ├── content-contract.md    # 内容协议
+│   └── homepage-cms.md        # CMS 边界与 QA 清单
+├── .github/workflows/ci.yml   # CI（5 个 job）
+├── LICENSE                    # MIT（代码）+ 内容版权边界
+└── CONTRIBUTING.md            # 协作开发指南
 ```
+
+## 测试与质量
+
+```bash
+npm test                       # 前端 26 测试（vitest + testing-library）
+cd backend && npm test         # 后端 45 测试（node:test）
+cd backend && npm run typecheck
+```
+
+- CI 门禁：PR 触发类型检查 + 测试 + 构建；push 到 master 额外跑生产依赖审计（high 级以上漏洞直接红）与两套 Docker 部署冒烟
+- 安全基线：生产启动拒绝弱密钥；上传 SVG 禁令 + 魔数检测；CSP/HSTS 等安全响应头；Swagger 生产关闭；IP 加盐哈希存储
+
+## 内容与 CMS 使用说明
+
+### 公共官网
+
+六个路由的内容由 `GET /api/v1/content/pages/:slug?locale=zh-CN|en` 统一提供；品牌名、联系邮箱等由 `GET /api/v1/content/settings` 提供。CMS 禁用 block 后对应内容和导航入口一起消失；语言切换失败时保留当前可用内容，不清空页面。API 故障时前端回退到内置中文兜底内容。
+
+### 后台 CMS（/admin/homepage）
+
+1. 用管理员账号登录（账号由部署时的 `ADMIN_EMAIL`/`ADMIN_PASSWORD` 种子创建）
+2. 读取完整中英文首页，编辑七个 Typed Blocks（hero/about/capabilities/motifs/jiangnan/partners/contact）
+3. 从媒体库选择或上传图片/视频/PDF（JPEG/PNG/WebP/AVIF/MP4/PDF，SVG 禁止）
+4. 保存双语草稿（不影线上）；`ADMIN` 点发布后官网立即可见
+5. 草稿使用 revision 乐观锁：他人先保存后旧编辑器收到 409，须重新读取处理冲突
+
+合作线索在后台查看、改状态、加跟进备注、导出 CSV；部署时可选配置 Resend 邮件通知。
+
+### 首次上线后必做
+
+- [ ] 立即修改种子管理员密码（用 `/admin/homepage` 登录后经 API 修改，或直接更新数据库）
+- [ ] 验收清单见 [`docs/DEPLOY.md`](docs/DEPLOY.md)（首页/健康检查/CMS/询盘/HTTPS）
 
 ## 设计系统
 
@@ -114,76 +152,35 @@ npm run preview
 | `--celadon` | `#A4B5A4` | 辅助色（青瓷） |
 | `--border` | `#C5C0B6` | 线条色 |
 
-字体栈：`Noto Serif SC`（中文衬线）+ `Cormorant Garamond`（英文斜体）+ 系统无衬线（UI）
+字体栈：`Noto Serif SC`（中文衬线）+ `Source Serif 4`（英文衬线）+ 系统无衬线（UI），全部自托管（woff2，预载关键字体）。
 
-## 当前公共网站
+## 更多文档
 
-公共端使用 React Router 提供六个独立 URL：
+| 文档 | 内容 |
+|------|------|
+| [`docs/DEPLOY.md`](docs/DEPLOY.md) | 生产部署（架构、3 步上线、运维、备份恢复、回滚） |
+| [`docs/backend/README.md`](docs/backend/README.md) | 后端架构与项目结构 |
+| [`docs/backend/API.md`](docs/backend/API.md) | API 接口说明 |
+| [`docs/backend/CONFIGURATION.md`](docs/backend/CONFIGURATION.md) | 环境变量与配置 |
+| [`docs/content-contract.md`](docs/content-contract.md) | 内容协议与接入方式 |
+| [`docs/homepage-cms.md`](docs/homepage-cms.md) | CMS 边界、草稿/发布模型、QA 清单 |
+| [`docs/DEVELOPER-HANDOFF.md`](docs/DEVELOPER-HANDOFF.md) | 新成员从 GitHub 加入到完整交付 |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | 分支、提交与协作约定 |
 
-- `/`：Hero 与已启用 CMS 内容的摘要入口
-- `/about`：About
-- `/capabilities`：Capabilities + Motifs
-- `/into-jiangnan`：Jiangnan
-- `/partners`：Partners
-- `/contact`：Contact 与合作咨询入口
+## 开源说明
 
-路由和导航由 Public API 已过滤的 blocks 统一派生。CMS 禁用 block 后，对应内容和导航入口一起消失；`scroll` CTA 的历史 target 会兼容映射到相应路由，`inquiry` 打开咨询 Dialog，`link` 仅执行 Contract 已允许的 HTTPS 或 mailto 地址。`/admin/homepage` 继续由独立入口加载，不经过公共 Router。
-
-## Homepage CMS 区块
-
-1. **Hero** — 视频背景 + 品牌宣言
-2. **About** — 机构介绍
-3. **Solutions** — 四项核心能力
-4. **Product Studio** — 文化母题产品卡片
-5. **Jiangnan** — 入江南旗舰内容
-6. **For Partners** — 合作对象
-7. **Contact** — 合作 CTA、联系方式、Footer 与咨询弹窗
-
-页面布局、响应式和交互由 `src/App.tsx` 与 `src/public/` 控制；以下七个区块的展示内容来自同一个经过校验的 Homepage Content Document：
-
-- `hero`
-- `about`
-- `capabilities`
-- `motifs`
-- `jiangnan`
-- `partners`
-- `contact`
-
-`src/components/` 保留旧版 GSAP/Tailwind 设计实现，属于 legacy，不是当前渲染入口。不要依据这些旧组件判断线上内容。
-
-`public/server/index.js` 是旧 API prototype，仅保留历史兼容；正式后端是 `backend/src/server.ts` 下的 Fastify API。
-
-首页 `zh-CN` 与 `en` 均通过一次 `GET /api/v1/content/pages/home?locale=...` 请求读取整份首页内容，不为每个区块单独请求。数据库 Document 固定包含七种唯一 block；Public DTO 会过滤 `enabled=false` 的 block/item，React 对可见子集条件渲染。语言切换成功后原子替换整个响应；失败时保留当前可用内容，不清空页面。
-
-品牌名、法定主体、旗舰名称和联系邮箱不属于 Contact block，统一由 `GET /api/v1/content/settings` 提供。合作咨询已接入 `POST /api/v1/inquiries`。
-
-英文 About 是甲方确认的正式文案，其 `contentStatus` 为 `approved`；英文 Hero、Capabilities、Motifs、Jiangnan、Partners、Contact 为待甲方确认的首期 draft，其 `contentStatus` 为 `draft`。状态保留在内容元数据和交接记录中，不作为官网访客提示；正式稿可逐块替换且无需改代码。
-
-本阶段沿用现有 PostgreSQL JSONB Content Document，没有修改数据库 Schema，也没有新增 Migration。
-
-## Homepage CMS Editor
-
-后台本阶段只提供 Homepage Editor 最小闭环，不是 Dashboard 或通用 Page Builder。管理员与编辑员登录后可在 `/admin/homepage` 读取完整中英文首页、编辑固定七个 Typed Blocks、从媒体库选择或上传文件，并以一份双语草稿原子保存。只有 `ADMIN` 可以发布；发布前的保存不会改变公共官网正在读取的 `page_translations`。
-
-后台前端把 JWT 保存在当前浏览器标签页的 `sessionStorage`，启动时通过 `/api/v1/admin/auth/me` 恢复会话；退出或收到 `401` 后清除会话。它不会把 token 写入 URL、Content Document 或长期 `localStorage`。
-
-草稿保存使用 revision optimistic lock：页面加载所得 `revision` 必须作为 `baseRevision` 回传。其他会话先保存后，旧编辑器会收到 `409`，必须重新读取并人工处理冲突，不能静默覆盖新内容。发布同样要求提交当前 `revision`。
-
-详细边界、接口、草稿/发布模型和最终 QA 清单见 [`docs/homepage-cms.md`](docs/homepage-cms.md)。本阶段明确不建设 News、Projects、Cases、Dashboard、通用 Page Builder、复杂审批流或媒体 DAM。
-
-### Fallback 策略
-
-迁移期间保留完整中文首页静态 fallback 和公开 Settings fallback，保证初次请求或 API 故障时仍有可用页面；语言切换失败则保留切换前的完整 Document。正式 CMS 编辑、发布和可用性监控稳定后，应逐步移除代码中与 CMS 重复的七块正式正文，只长期保留最小品牌/联系信息、通用故障提示和“保留当前已加载内容”的容错逻辑，避免维护两套独立官网文案。
+- **代码**：基于 [MIT License](LICENSE) 开源，可自由使用、修改、分发
+- **内容**：品牌名称、文案、图片、设计资产**不在 MIT 范围内**（详见 [LICENSE](LICENSE) 内容版权边界）——以本仓库为模板建站请替换全部品牌内容
+- 欢迎通过 Issue 反馈问题、通过 PR 贡献改进（约定见 [CONTRIBUTING.md](CONTRIBUTING.md)）
 
 ## 待完成
 
 | 优先级 | 任务 |
 |--------|------|
-| P0 | 真实产品摄影图片（替换 Lab 卡片渐变占位） |
+| P0 | 真实产品摄影图片（替换部分占位图） |
 | P0 | 微信二维码（替换 Contact 占位） |
 | P1 | 甲方确认 About 之外六个英文首页 block 的 draft 文案 |
-| P1 | 甲方验收 Homepage CMS Editor，并确认后续生产认证与监控策略 |
-| P2 | 图片优化管线（WebP/AVIF） |
+| P2 | UptimeRobot 等外部可用性监控接入 |
 
 ---
 

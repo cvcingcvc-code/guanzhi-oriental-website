@@ -99,7 +99,7 @@ const routes: FastifyPluginAsync = async (app) => {
     return { ok: true, data: after };
   });
 
-  app.post('/:id/publish', { schema: { tags: ['后台-页面'], summary: '发布页面', security: [{ bearerAuth: [] }] } }, async (request) => {
+  app.post('/:id/publish', { schema: { tags: ['后台-页面'], summary: '发布页面', security: [{ bearerAuth: [] }] }, preHandler: app.requireAdmin }, async (request) => {
     const id = parse(idSchema, (request.params as { id: string }).id);
     const before = await getPage(id);
     preventGenericHomepageWrite(before.slug);
@@ -111,7 +111,7 @@ const routes: FastifyPluginAsync = async (app) => {
     return { ok: true, data: after };
   });
 
-  app.post('/:id/unpublish', { schema: { tags: ['后台-页面'], summary: '撤回为草稿', security: [{ bearerAuth: [] }] } }, async (request) => {
+  app.post('/:id/unpublish', { schema: { tags: ['后台-页面'], summary: '撤回为草稿', security: [{ bearerAuth: [] }] }, preHandler: app.requireAdmin }, async (request) => {
     const id = parse(idSchema, (request.params as { id: string }).id);
     const before = await getPage(id);
     preventGenericHomepageWrite(before.slug);

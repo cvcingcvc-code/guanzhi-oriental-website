@@ -32,9 +32,11 @@ export function installDatabaseUnavailableErrorHandler(app: FastifyInstance) {
 }
 
 export async function buildApp() {
+  const hops = config.TRUST_PROXY_HOPS;
+  // Fastify v5 的 trustProxy 不再接受数字跳数：hops>0 时用函数按跳数信任
   const app = Fastify({
     logger: config.LOG_LEVEL === 'silent' ? false : { level: config.LOG_LEVEL },
-    trustProxy: config.TRUST_PROXY_HOPS > 0 ? config.TRUST_PROXY_HOPS : false,
+    trustProxy: hops > 0 ? (address: string, hop: number) => hop < hops : false,
     bodyLimit: 1024 * 1024,
   });
   configureDatabasePoolLogger(app.log);

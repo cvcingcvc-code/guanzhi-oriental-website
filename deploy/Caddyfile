@@ -1,0 +1,55 @@
+# 观止东方 · 生产 Caddyfile
+#
+# 职责：
+#   1. 对公网域名自动签发并续期 TLS（Let's Encrypt / ZeroSSL）
+#   2. 托管前端静态文件（dist/client 挂载到 /srv/www）
+#   3. /api/* 反代到 Fastify（API 容器，容器网络内主机名 api）
+#   4. SPA 路由回退：非静态资源路径回退到 index.html
+#   5. 静态资源长缓存 + 安全响应头
+#
+# 域名通过环境变量 SITE_DOMAIN 注入（compose.prod.yaml）。
+
+{$SITE_DOMAIN} {
+	encode zstd gzip
+
+	# ── 安全响应头 ────────────────────────────────────────
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		# 前端零内联脚本/样式、零外部资源：上严格 CSP（'unsafe-inline' 仅为 React dev 工具兼容兜底）
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+		-Server
+	}
+
+	# ── API 反代到 Fastify ───────────────────────────────
+	handle /api/* {
+		reverse_proxy api:8080 {
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-For {remote_host}
+		}
+	}
+
+	# ── CMS 上传媒体反代（Fastify /uploads/*，无 /api 前缀）──
+	handle /uploads/* {
+		reverse_proxy api:8080
+	}
+
+	# ── 管理后台入口（同 SPA 回退）────────────────────────
+	handle /admin/homepage {
+		try_files {path} /index.html
+		file_server
+	}
+
+	# ── 前端静态资源 ─────────────────────────────────────
+	handle {
+		# 带内容哈希的构建产物：长缓存
+		@immutable path /assets/* /fonts/*
+		header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+		# SPA 回退：优先静态文件，未命中回退 index.html
+		try_files {path} /index.html
+		file_server
+	}
+}

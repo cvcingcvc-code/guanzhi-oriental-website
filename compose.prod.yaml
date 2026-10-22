@@ -1,0 +1,106 @@
+# 观止东方 · 生产部署（单服务器：Caddy + 前端静态 + Fastify API + PostgreSQL）
+#
+# 与本地 compose.yaml 的区别：
+#   1. 新增 caddy 服务：TLS 自动签发、托管前端静态文件、/api 与 /uploads 反代到 Fastify
+#   2. 前端静态产物由 Dockerfile.web 在容器内构建（服务器无需 Node）
+#   3. API 只绑定 127.0.0.1，公网只暴露 80/443
+#
+# 服务器启动：
+#   cp .env.production.example .env   # 填入真实值
+#   docker compose -f compose.prod.yaml up --build -d
+#
+# 无需手动构建前端：caddy 服务会先构建 Dockerfile.web（容器内 npm build），
+# 构建产物随镜像挂载到 /srv/www（只读）。
+
+name: guanzhi-prod
+
+# 三个服务共用的日志轮转：单文件 10MB、最多 5 份（约 50MB 上限）
+x-default-logging: &default-logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "5" }
+
+services:
+  caddy:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    # 镜像 = Caddy 官方镜像 + 容器内构建的前端静态产物（/srv/www）
+    image: guanzhi-webclient-caddy
+    restart: unless-stopped
+    logging: *default-logging
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # Caddyfile 域名：支持逗号分隔多域名（取第一个），与 CORS_ORIGINS 保持一致
+      SITE_DOMAIN: ${PROD_SITE_DOMAIN:-${CORS_ORIGINS:-https://localhost}}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      TZ: Asia/Shanghai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # 不对宿主机暴露端口；DB 仅容器网络内可达
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:?POSTGRES_USER is required} -d ${POSTGRES_DB:?POSTGRES_DB is required}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 8080
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      DATABASE_URL: postgresql://${POSTGRES_USER:?POSTGRES_USER is required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@db:5432/${POSTGRES_DB:?POSTGRES_DB is required}
+      DB_POOL_MAX: ${DB_POOL_MAX:-10}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?ADMIN_EMAIL is required}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
+      CORS_ORIGINS: ${CORS_ORIGINS:?CORS_ORIGINS is required}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:?PUBLIC_BASE_URL is required}
+      UPLOAD_DIR: /app/data/uploads
+      IP_HASH_SALT: ${IP_HASH_SALT:?IP_HASH_SALT is required}
+      TRUST_PROXY_HOPS: ${TRUST_PROXY_HOPS:-1}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      NOTIFICATION_FROM: ${NOTIFICATION_FROM:-}
+      NOTIFICATION_TO: ${NOTIFICATION_TO:-}
+    command: ["sh", "-c", "node dist/scripts/migrate.js && node dist/scripts/seed.js && node dist/server.js"]
+    volumes:
+      - backend_uploads:/app/data/uploads
+    ports:
+      - "${API_BIND_HOST:-127.0.0.1}:${API_PORT:-8080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  backend_uploads:
+  caddy_data:
+  caddy_config:
