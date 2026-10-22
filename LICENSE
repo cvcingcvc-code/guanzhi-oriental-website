@@ -1,0 +1,38 @@
+MIT License
+
+Copyright (c) 2026 北京见山观止文化有限公司 (Beijing Jianshan Guanzhi Culture Co., Ltd.)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## 内容版权边界（Content License Boundary）
+
+本许可证仅覆盖本仓库的**软件代码**（源码、配置、构建脚本、部署编排）。
+
+以下内容**不在 MIT 授权范围内**，版权归 北京见山观止文化有限公司 所有，
+未经书面许可不得复制、转载、修改或用于任何商业用途：
+
+- 品牌名称、商标与品牌视觉（"观止东方"、"Guanzhi Oriental"、"入江南" 及 Logo）
+- 网站文案（`backend/src/scripts/seed.ts` 与数据库中的正式内容，中英文均含）
+- 图片、视频与设计资产（`public/images/`、`public/videos/`、`public/fonts/` 及 CMS 上传媒体）
+- `docs/` 下的正式业务文档（内容协议、CMS 边界、交接记录）
+
+允许的参考用途：阅读代码学习架构、本地运行演示、以本仓库为模板搭建自己的网站
+（替换全部品牌内容与文案后）。
