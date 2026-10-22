@@ -29,6 +29,11 @@
 		}
 	}
 
+	# ── CMS 上传媒体反代（Fastify /uploads/*，无 /api 前缀）──
+	handle /uploads/* {
+		reverse_proxy api:8080
+	}
+
 	# ── 管理后台入口（同 SPA 回退）────────────────────────
 	handle /admin/homepage {
 		try_files {path} /index.html
