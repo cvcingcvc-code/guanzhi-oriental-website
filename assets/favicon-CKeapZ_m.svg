@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="4" fill="#F9F7F2"/>
+  <text x="32" y="46" text-anchor="middle" font-family="serif" font-size="40" font-weight="700" fill="#1C2422" letter-spacing="0">观</text>
+  <rect x="0" y="0" width="64" height="3" rx="1.5" fill="#B54A3F"/>
+</svg>
