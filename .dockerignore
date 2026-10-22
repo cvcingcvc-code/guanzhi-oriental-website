@@ -1,0 +1,17 @@
+node_modules
+dist
+data
+.env
+.env.*
+*.log
+.git
+.github
+.vscode
+.idea
+coverage
+test-results
+playwright-report
+backend
+postgres-data
+*.md
+!README.md

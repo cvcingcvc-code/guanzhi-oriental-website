@@ -92,10 +92,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - name: Build frontend artifact
-        run: |
-          npm ci
-          npm run build
       - name: Create disposable production configuration
         run: |
           cp .env.production.example .env
@@ -107,6 +103,7 @@ jobs:
           sed -i 's/^IP_HASH_SALT=.*/IP_HASH_SALT=ci-ip-hash-salt-7f6c4e2a/' .env
       - name: Validate compose.prod.yaml configuration
         run: docker compose -f compose.prod.yaml config --quiet
+      # 无需手动构建前端：caddy 服务构建 Dockerfile.web（容器内 npm build）
       - name: Start production stack (HTTP only, no public TLS)
         run: docker compose -f compose.prod.yaml up --build -d --wait api db
       - name: Verify API health through Caddy
@@ -115,6 +112,10 @@ jobs:
           sleep 5
           curl --fail --silent --show-error --resolve your-domain.com:80:127.0.0.1 http://your-domain.com/api/v1/health || \
             curl --fail --silent --show-error http://127.0.0.1:80/api/v1/health -H "Host: localhost"
+      - name: Verify frontend served from image (no host dist needed)
+        run: |
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:80/ -H 'Host: localhost')" = "200"
+          curl --fail --silent http://127.0.0.1:80/ -H 'Host: localhost' | grep -o '<div id="root"></div>'
       - name: Verify Caddyfile syntax
         run: docker compose -f compose.prod.yaml exec -T caddy caddy validate --config /etc/caddy/Caddyfile
       - name: Show service logs on failure

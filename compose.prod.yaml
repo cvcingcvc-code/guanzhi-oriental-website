@@ -1,15 +1,16 @@
 # 观止东方 · 生产部署（单服务器：Caddy + 前端静态 + Fastify API + PostgreSQL）
 #
 # 与本地 compose.yaml 的区别：
-#   1. 新增 caddy 服务：TLS 自动签发、托管前端静态文件、/api 反代到 Fastify
-#   2. 新增 webclient 构建阶段产物挂载
+#   1. 新增 caddy 服务：TLS 自动签发、托管前端静态文件、/api 与 /uploads 反代到 Fastify
+#   2. 前端静态产物由 Dockerfile.web 在容器内构建（服务器无需 Node）
 #   3. API 只绑定 127.0.0.1，公网只暴露 80/443
 #
 # 服务器启动：
 #   cp .env.production.example .env   # 填入真实值
 #   docker compose -f compose.prod.yaml up --build -d
 #
-# 前提：先在服务器/CI 上构建前端 dist/client（见 docs/DEPLOY.md）
+# 无需手动构建前端：caddy 服务会先构建 Dockerfile.web（容器内 npm build），
+# 构建产物随镜像挂载到 /srv/www（只读）。
 
 name: guanzhi-prod
 
@@ -20,7 +21,11 @@ x-default-logging: &default-logging
 
 services:
   caddy:
-    image: caddy:2-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    # 镜像 = Caddy 官方镜像 + 容器内构建的前端静态产物（/srv/www）
+    image: guanzhi-webclient-caddy
     restart: unless-stopped
     logging: *default-logging
     ports:
@@ -31,7 +36,6 @@ services:
       SITE_DOMAIN: ${PROD_SITE_DOMAIN:-${CORS_ORIGINS:-https://localhost}}
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./dist/client:/srv/www:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
