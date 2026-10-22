@@ -10,6 +10,9 @@
 # 域名通过环境变量 SITE_DOMAIN 注入（compose.prod.yaml）。
 
 {$SITE_DOMAIN} {
+	# 静态文件根目录：Dockerfile.web 把前端产物放到 /srv/www（Caddy 默认 root 不在此）
+	root * /srv/www
+
 	encode zstd gzip
 
 	# ── 安全响应头 ────────────────────────────────────────
