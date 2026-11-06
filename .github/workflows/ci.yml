@@ -61,7 +61,8 @@ jobs:
 
   clean-deploy-smoke:
     name: Clean deployment smoke test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    # PR 阶段也要跑：容器部署是交付门槛，不能只在 master push 后才发现问题
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -88,7 +89,8 @@ jobs:
 
   prod-compose-smoke:
     name: Production compose validation
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    # PR 阶段也要跑：生产模式容器栈的验收证据必须在合并前可见
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -125,6 +127,10 @@ jobs:
           curl -k --fail --silent --resolve localhost:443:127.0.0.1 https://localhost/ | grep -o '<div id="root"></div>'
       - name: Verify Caddyfile syntax
         run: docker compose -f compose.prod.yaml exec -T caddy caddy validate --config /etc/caddy/Caddyfile
+      # 容器内真实业务验收：CMS 草稿/发布、询盘入库、媒体上传与 /uploads 反代、
+      # 备份脚本（含过期清理）、备份恢复、down/up 重建后的数据库与媒体持久化。
+      - name: Container acceptance (CMS / inquiry / media / backup / persistence)
+        run: bash scripts/ci/docker-acceptance.sh
       - name: Show service logs on failure
         if: failure()
         run: docker compose -f compose.prod.yaml logs --no-color
