@@ -25,5 +25,5 @@ docker compose -f "$COMPOSE_FILE" exec -T db \
 
 echo "[$(date -Is)] backup ok: $OUT ($(du -h "$OUT" | cut -f1))"
 
-# 清理过期备份
-find "$BACKUP_DIR" -name 'guanzi-db-*.sql.gz' -mtime "+$RETENTION_DAYS" -print -delete
+# 清理过期备份（通配名必须与上面的 $OUT 前缀一致，否则旧备份永远不会被删除）
+find "$BACKUP_DIR" -name 'guanzhi-db-*.sql.gz' -mtime "+$RETENTION_DAYS" -print -delete
