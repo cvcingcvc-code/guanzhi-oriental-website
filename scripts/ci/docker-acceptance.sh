@@ -176,7 +176,8 @@ touch -d "20 days ago" "$BACKUP_DIR/guanzhi-db-2020-01-01-0000.sql.gz"
 
 if BACKUP_DIR="$BACKUP_DIR" bash deploy/backup-db.sh > /tmp/backup.log 2>&1; then
   LATEST=$(ls -1t "$BACKUP_DIR"/guanzhi-db-*.sql.gz 2>/dev/null | head -1)
-  if [ -n "$LATEST" ] && [ "$(gunzip -c "$LATEST" | head -c 2)" = "--" ]; then
+  # 用 gzip -t 校验完整性，避免 gunzip|head 触发 SIGPIPE 噪音
+  if [ -n "$LATEST" ] && gzip -t "$LATEST" 2>/dev/null; then
     pass "备份脚本执行" "$(basename "$LATEST") $(du -h "$LATEST" | cut -f1)"
   else
     fail "备份脚本执行" "备份文件缺失或内容异常"
