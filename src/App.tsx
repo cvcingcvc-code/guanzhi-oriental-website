@@ -127,7 +127,7 @@ function CtaButton({
     const id = Date.now();
     setRipple({ x: event.clientX - rect.left, y: event.clientY - rect.top, id });
     setTimeout(() => setRipple(null), 600);
-    run(cta, event.currentTarget);
+    run(cta!, event.currentTarget);
   }
 
   return (
@@ -409,7 +409,7 @@ export default function App() {
           element={
             <PageTransition pageKey="home">
               <section id="main-content" className="route-page home-page">
-                <PageImage path="/" alt={hero?.media.alt ?? ''} eager />
+                <PageImage path="/" alt={hero?.media?.alt ?? ''} eager />
                 <div className="route-overlay" />
                 <div className="route-content hero-route-content">
                   <p className="eyebrow">{hero?.eyebrow}</p>
@@ -476,7 +476,7 @@ export default function App() {
             capabilities || motifs ? (
               <PageTransition pageKey="capabilities">
                 <section id="main-content" className="route-page capabilities-page">
-                  <PageImage path="/capabilities" alt={motifs?.items[0]?.media.alt ?? ''} />
+                  <PageImage path="/capabilities" alt={motifs?.items[0]?.media?.alt ?? ''} />
                   <div className="route-overlay" />
                   <article className="route-content">
                     <p className="eyebrow">{text.capabilities}</p>
@@ -558,7 +558,7 @@ export default function App() {
             partners ? (
               <PageTransition pageKey="partners">
                 <section id="main-content" className="route-page dark-page">
-                  <PageImage path="/partners" alt={partners.items[0]?.media.alt ?? ''} />
+                  <PageImage path="/partners" alt={partners.items[0]?.media?.alt ?? ''} />
                   <div className="route-overlay" />
                   <article className="route-content">
                     <p className="eyebrow">{text.partners}</p>

@@ -58,6 +58,7 @@ type Props = {
 export function InquiryDialog({ locale, email, open, onClose, returnFocus }: Props) {
   const panelRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const successCloseRef = useRef<HTMLButtonElement>(null);
   const submittingRef = useRef(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -108,7 +109,7 @@ export function InquiryDialog({ locale, email, open, onClose, returnFocus }: Pro
   }, [open, onClose, returnFocus]);
 
   useEffect(() => {
-    if (open && submitted) requestAnimationFrame(() => closeRef.current?.focus());
+    if (open && submitted) requestAnimationFrame(() => successCloseRef.current?.focus());
   }, [open, submitted]);
 
   // ── 单字段实时验证（blur 时触发） ────────────────────────────────────────
@@ -209,7 +210,7 @@ export function InquiryDialog({ locale, email, open, onClose, returnFocus }: Pro
             <p className="eyebrow">SUCCESS</p>
             <h2 id="contact-title">{text.success}</h2>
             <p>{text.successBody}</p>
-            <button className="primary-action" onClick={onClose}>
+            <button ref={successCloseRef} className="primary-action" onClick={onClose}>
               {text.again}<span>→</span>
             </button>
           </div>
