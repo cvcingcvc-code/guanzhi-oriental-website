@@ -1,0 +1,255 @@
+/* =========================================================================
+   交互增强补丁 — 叠加在 client-overrides.css 之后引入
+   目标：页面过渡 / 导航栏滚动感知 / CTA 波纹 / 图片淡入 /
+         overview 卡悬停 / 汉堡菜单动画 / 语言切换 loading
+   ========================================================================= */
+
+/* ── 1. 页面过渡 (PageTransition)
+   通过 React 内联 style 控制，CSS 此处无需额外声明。
+   willChange 在组件卸载时移除，避免合成层泄漏。              */
+
+/* ── 2. 导航栏滚动感知 ─────────────────────────────────────────────────────── */
+/* is-scrolled 类由 JS 动态添加 */
+.site-header {
+  transition: background 0.5s ease, backdrop-filter 0.5s ease,
+              -webkit-backdrop-filter 0.5s ease, height 0.35s ease;
+}
+
+/* ── 3. CTA 按钮 — 波纹点击效果 ─────────────────────────────────────────────
+   .cta-btn 包裹 position:relative + overflow:hidden
+   .cta-ripple 是一个缩放圆形 span                           */
+.cta-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-arrow {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.22, 0.8, 0.2, 1);
+  margin-left: 10px;
+}
+
+.cta-btn:hover .cta-arrow {
+  transform: translate(3px, -3px);
+}
+
+.cta-ripple {
+  pointer-events: none;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: rgba(247, 245, 240, 0.28);
+  animation: cta-ripple-expand 0.6s cubic-bezier(0.22, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes cta-ripple-expand {
+  0%   { transform: scale(0);   opacity: 1; }
+  100% { transform: scale(28);  opacity: 0; }
+}
+
+/* ── 4. 图片淡入 (PageImage)
+   opacity 过渡由 React 内联 style 控制，CSS 此处无需额外声明。 */
+
+/* ── 5. Home overview 卡 — 更丰富的悬停交互 ───────────────────────────────── */
+.home-overview a,
+.overview-item {
+  position: relative;
+  transition: background 0.28s ease, padding-left 0.28s ease !important;
+}
+
+.home-overview a:hover,
+.overview-item:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  padding-left: 20px !important;
+}
+
+.overview-arrow {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.22, 0.8, 0.2, 1), opacity 0.3s;
+  opacity: 0.55;
+  font-style: normal;
+}
+
+.home-overview a:hover .overview-arrow,
+.overview-item:hover .overview-arrow {
+  transform: translateX(5px);
+  opacity: 1;
+}
+
+/* ── 6. 汉堡菜单 — 两段式 × 形动画 ────────────────────────────────────────── */
+.menu-toggle i {
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: currentColor;
+  margin: 6px auto;
+  transition: transform 0.28s cubic-bezier(0.22, 0.8, 0.2, 1),
+              opacity   0.2s  ease;
+  transform-origin: center;
+}
+
+.menu-toggle.is-open i:first-child {
+  transform: translateY(3.5px) rotate(45deg);
+}
+
+.menu-toggle.is-open i:last-child {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+
+/* ── 7. 语言切换 loading 状态 ──────────────────────────────────────────────── */
+.language-switch button.lang-loading {
+  opacity: 0.45;
+  animation: lang-pulse 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes lang-pulse {
+  0%   { opacity: 0.3; }
+  100% { opacity: 0.65; }
+}
+
+/* ── 8. 导航链接 active 指示线（细微过渡） ─────────────────────────────────── */
+.route-header .top-nav a::after {
+  transition: right 0.35s cubic-bezier(0.22, 0.8, 0.2, 1) !important;
+}
+
+/* ── 9. motif 卡片图片缩放悬停 ─────────────────────────────────────────────── */
+.motif-card {
+  transition: transform 0.35s cubic-bezier(0.22, 0.8, 0.2, 1);
+}
+
+.motif-img-wrap {
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.motif-img-wrap img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  margin-bottom: 0;      /* 覆盖 client-overrides.css .motif-grid img 的 margin-bottom: 18px，防止双重间距 */
+  transition: transform 0.6s cubic-bezier(0.22, 0.8, 0.2, 1);
+  display: block;
+}
+
+.motif-card:hover .motif-img-wrap img {
+  transform: scale(1.04);
+}
+
+/* ── 10. partner-grid 卡片悬停高亮 ─────────────────────────────────────────── */
+.partner-grid article {
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.partner-grid article:hover {
+  background: rgba(7, 16, 19, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* ── 11. 联系邮件链接下划线动效 ────────────────────────────────────────────── */
+.contact-email {
+  position: relative;
+  display: block;        /* 保持原有 block 布局，避免行内元素换行异常 */
+  overflow: hidden;
+  border-bottom: none;   /* 移除静态下划线，改由 ::after 伪元素动效替代 */
+}
+
+.contact-email::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(1);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.22, 0.8, 0.2, 1);
+}
+
+.contact-email:hover::after {
+  transform: scaleX(0);
+  transform-origin: right;
+}
+
+/* ── 12. 表单字段 focus 动画（微妙的 outline 扩展） ───────────────────────── */
+.form-grid input,
+.form-grid textarea,
+.form-grid select {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.form-grid input:focus,
+.form-grid textarea:focus,
+.form-grid select:focus {
+  box-shadow: 0 2px 0 var(--cinnabar);
+}
+
+/* ── 13. 表单字段内联错误提示 ──────────────────────────────────────────────── */
+.field-error {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  color: var(--cinnabar);
+  line-height: 1.5;
+  animation: field-error-in 0.22s cubic-bezier(0.22, 0.8, 0.2, 1) both;
+}
+
+@keyframes field-error-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.form-grid label.has-error > input,
+.form-grid label.has-error > textarea,
+.form-grid label.has-error > select {
+  border-color: var(--cinnabar) !important;
+  box-shadow: 0 1px 0 var(--cinnabar);
+}
+
+/* brief 字段标签行 */
+.brief-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.char-count {
+  font-size: 0.6rem;
+  opacity: 0.42;
+  letter-spacing: 0.03em;
+  transition: color 0.3s, opacity 0.3s;
+}
+
+.char-count.near-limit {
+  color: var(--cinnabar);
+  opacity: 0.9;
+}
+
+/* 提交按钮箭头旋转（submitting 状态） */
+.cta-arrow.spin {
+  display: inline-block;
+  animation: arrow-spin 1s linear infinite;
+}
+
+@keyframes arrow-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ── 14. prefers-reduced-motion 降级 ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cta-ripple,
+  .lang-loading,
+  .cta-arrow,
+  .overview-arrow,
+  .motif-img-wrap img,
+  .contact-email::after,
+  .menu-toggle i {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
