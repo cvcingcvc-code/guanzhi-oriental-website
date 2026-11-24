@@ -60,6 +60,8 @@ export function InquiryDialog({ locale, email, open, onClose, returnFocus }: Pro
   const closeRef = useRef<HTMLButtonElement>(null);
   const successCloseRef = useRef<HTMLButtonElement>(null);
   const submittingRef = useRef(false);
+  // W-4: 保存 fetch AbortController，弹窗关闭或组件卸载时中断飞行中的请求
+  const fetchController = useRef<AbortController | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [globalError, setGlobalError] = useState('');
@@ -104,6 +106,8 @@ export function InquiryDialog({ locale, email, open, onClose, returnFocus }: Pro
       window.clearTimeout(focusTimer);
       document.removeEventListener('keydown', handleKey);
       document.body.classList.remove('overlay-open');
+      // W-4: 弹窗关闭时中断仍在飞行中的请求
+      fetchController.current?.abort();
       returnFocus?.focus();
     };
   }, [open, onClose, returnFocus]);
@@ -169,11 +173,15 @@ export function InquiryDialog({ locale, email, open, onClose, returnFocus }: Pro
     submittingRef.current = true;
     setSubmitting(true);
     setGlobalError('');
+    // W-4: 创建 AbortController 并保存，以便弹窗关闭时中断请求
+    const controller = new AbortController();
+    fetchController.current = controller;
     try {
       const response = await fetch('/api/v1/inquiries', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
       const result = await response.json().catch(() => null) as { ok?: boolean } | null;
       if (!response.ok || !result?.ok) {
@@ -185,6 +193,8 @@ export function InquiryDialog({ locale, email, open, onClose, returnFocus }: Pro
       setBriefLen(0);
       setSubmitted(true);
     } catch (reason) {
+      // W-4: AbortError 是弹窗主动关闭触发的，不显示给用户
+      if (reason instanceof Error && reason.name === 'AbortError') return;
       setGlobalError(
         reason instanceof Error && !/fetch|network/i.test(reason.message)
           ? reason.message

@@ -91,6 +91,12 @@ function PageImage({
   eager?: boolean;
 }) {
   const [loaded, setLoaded] = useState(false);
+
+  // W-2: 路由切换时重置加载状态，防止旧图闪烁
+  useEffect(() => {
+    setLoaded(false);
+  }, [path]);
+
   return (
     <div className="page-visual">
       <img
@@ -119,6 +125,14 @@ function CtaButton({
   className?: string;
 }) {
   const [ripple, setRipple] = useState<{ x: number; y: number; id: number } | null>(null);
+  // W-1: 用 ref 追踪 timer，卸载时清除防止内存泄漏
+  const rippleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (rippleTimer.current !== null) clearTimeout(rippleTimer.current);
+    };
+  }, []);
 
   if (!cta) return null;
 
@@ -126,7 +140,8 @@ function CtaButton({
     const rect = event.currentTarget.getBoundingClientRect();
     const id = Date.now();
     setRipple({ x: event.clientX - rect.left, y: event.clientY - rect.top, id });
-    setTimeout(() => setRipple(null), 600);
+    if (rippleTimer.current !== null) clearTimeout(rippleTimer.current);
+    rippleTimer.current = setTimeout(() => setRipple(null), 600);
     run(cta!, event.currentTarget);
   }
 
@@ -252,7 +267,8 @@ export default function App() {
   }, []);
 
   // ── 语言切换 ────────────────────────────────────────────────────────────────
-  async function changeLocale(target: ContentLocale) {
+  // W-3: 用 useCallback 包裹避免每次渲染产生新引用
+  const changeLocale = useCallback(async (target: ContentLocale) => {
     if (target === locale || switchingTo) return;
     localeController.current?.abort();
     const controller = new AbortController();
@@ -269,7 +285,7 @@ export default function App() {
       }
       setSwitchingTo(null);
     }
-  }
+  }, [locale, switchingTo, home, location.pathname, navigate]);
 
   // ── 询盘弹窗控制 ────────────────────────────────────────────────────────────
   const openInquiry = useCallback((trigger: HTMLElement) => {
