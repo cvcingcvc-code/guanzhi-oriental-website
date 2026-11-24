@@ -1,8 +1,8 @@
 # 冠芝东方网站 — 代码审计与修复完整报告
 
-**审计日期**：2026-11-24（已全部修复并验证）  
-**审计范围**：`feat/interaction-enhancements` 分支（含原始代码 + 新增交互增强代码 + 依赖升级）  
-**仓库**：[cvcingcvc-code/guanzhi-oriental-website](https://github.com/cvcingcvc-code/guanzhi-oriental-website)  
+**审计日期**：2026-11-24（已全部修复并验证）<br>
+**审计范围**：`feat/interaction-enhancements` 分支（含原始代码 + 新增交互增强代码 + 依赖升级）<br>
+**仓库**：[cvcingcvc-code/guanzhi-oriental-website](https://github.com/cvcingcvc-code/guanzhi-oriental-website)<br>
 **PR**：[#16 feat(ux): add frontend interaction enhancements](https://github.com/cvcingcvc-code/guanzhi-oriental-website/pull/16)
 
 ---
