@@ -18,7 +18,7 @@
 
 ### 1. 页面切换过渡动画 — `PageTransition` 组件
 
-**改前**：路由切换瞬间替换，内容突然出现。  
+**改前**：路由切换瞬间替换，内容突然出现。<br>
 **改后**：每次路由变化时，新页面以 `opacity 0→1` + `translateY(12px→0)` 淡入上滑，时长 550ms。
 
 ```tsx
@@ -35,7 +35,7 @@
 
 ### 2. 导航栏滚动感知 — `scrolled` 状态 + 毛玻璃
 
-**改前**：Header 始终半透明渐变，页面滚动后导航与背景混在一起。  
+**改前**：Header 始终半透明渐变，页面滚动后导航与背景混在一起。<br>
 **改后**：滚动超过 20px 后 header 自动加深背景色并启用 `backdrop-filter: blur(14px)`。
 
 ```tsx
@@ -58,7 +58,7 @@ useEffect(() => {
 
 ### 3. CTA 按钮点击波纹 — `.cta-ripple`
 
-**改前**：点击 CTA 只有 hover 状态变化，没有点击反馈。  
+**改前**：点击 CTA 只有 hover 状态变化，没有点击反馈。<br>
 **改后**：点击位置扩散出半透明白色圆形波纹，600ms 消散。
 
 ```tsx
@@ -77,7 +77,7 @@ function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
 
 ### 4. 页面图片加载淡入 — `PageImage` 组件
 
-**改前**：图片加载时白块闪烁，加载完成后突然出现。  
+**改前**：图片加载时白块闪烁，加载完成后突然出现。<br>
 **改后**：图片 `onLoad` 触发后以 900ms 淡入，加载期间背景色 `#081113` 保持。
 
 ```tsx
@@ -102,7 +102,7 @@ function PageImage({ path, alt, eager = false }) {
 
 ### 5. Home overview 卡片微交互增强
 
-**改前**：hover 只有 `background: #ffffff0d`，几乎感知不到。  
+**改前**：hover 只有 `background: #ffffff0d`，几乎感知不到。<br>
 **改后**：
 - hover 时左 padding 从 16px → 20px（`transition: padding-left 0.28s`），形成滑入感
 - 箭头 `→` 向右位移 5px，opacity 0.55 → 1
@@ -112,7 +112,7 @@ function PageImage({ path, alt, eager = false }) {
 
 ### 6. 汉堡菜单两段式 × 形动画
 
-**改前**：两段横线直接消失/出现，没有动画。  
+**改前**：两段横线直接消失/出现，没有动画。<br>
 **改后**：
 - 打开时：第一段旋转 +45°，第二段旋转 -45°，合并成 ×
 - 关闭时：反向还原
@@ -128,7 +128,7 @@ function PageImage({ path, alt, eager = false }) {
 
 ### 7. 语言切换 loading 状态
 
-**改前**：切换语言时按钮 `disabled`，无任何视觉反馈（用户以为没响应）。  
+**改前**：切换语言时按钮 `disabled`，无任何视觉反馈（用户以为没响应）。<br>
 **改后**：正在切换的那个语言按钮添加 `.lang-loading` 类，触发 0.9s 透明度脉冲动画。
 
 ```css
@@ -141,7 +141,7 @@ function PageImage({ path, alt, eager = false }) {
 
 ### 8. 询盘表单 — 逐字段实时验证
 
-**改前**：所有校验在提交时一次性触发，全部错误同时出现。  
+**改前**：所有校验在提交时一次性触发，全部错误同时出现。<br>
 **改后**：
 - `onBlur` 触发单字段校验，错误以内联小字 + 朱砂色标注
 - `onChange` 时清除该字段错误（即时反馈「已修正」）
@@ -165,7 +165,7 @@ function handleBlur(event: React.FocusEvent<...>) {
 
 ### 9. 表单 brief 字段字数计数
 
-**改前**：`maxLength={2000}` 存在但用户不知道还剩多少字。  
+**改前**：`maxLength={2000}` 存在但用户不知道还剩多少字。<br>
 **改后**：brief 标签行右侧实时显示 `n / 2000`，剩余不足 100 字时变为朱砂色警示。
 
 ```tsx
@@ -178,14 +178,14 @@ function handleBlur(event: React.FocusEvent<...>) {
 
 ### 10. motif 卡片图片缩放悬停
 
-**改前**：motif 图片静止，无悬停反馈。  
+**改前**：motif 图片静止，无悬停反馈。<br>
 **改后**：hover 时图片 `scale(1.04)`，600ms 过渡，`.motif-img-wrap` 设 `overflow: hidden` 裁剪溢出。
 
 ---
 
 ### 11. 联系邮件链接下划线动效
 
-**改前**：`border-bottom` 静态下划线。  
+**改前**：`border-bottom` 静态下划线。<br>
 **改后**：hover 时下划线从右向左收缩消失（`scaleX: 1 → 0`），形成「扫过」效果。
 
 ---
