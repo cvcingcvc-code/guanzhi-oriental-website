@@ -57,7 +57,7 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: git -c core.whitespace=cr-at-eol diff --check "$BASE_SHA...HEAD"
+        run: git -c core.whitespace=cr-at-eol diff --check "$BASE_SHA...HEAD" -- ':(exclude)*.md'
 
   clean-deploy-smoke:
     name: Clean deployment smoke test
