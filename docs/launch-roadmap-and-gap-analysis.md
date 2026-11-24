@@ -1,7 +1,7 @@
 # 观止东方官网 — 上线差距分析报告
 
-> 仓库：[cvcingcvc-code/guanzhi-oriental-website](https://github.com/cvcingcvc-code/guanzhi-oriental-website)  
-> 分析时间：2026-11-18  
+> 仓库：[cvcingcvc-code/guanzhi-oriental-website](https://github.com/cvcingcvc-code/guanzhi-oriental-website)<br>
+> 分析时间：2026-11-18<br>
 > 总体状态：**工程完整，内容/素材层面有缺口，可进入上线冲刺阶段**
 
 ---
