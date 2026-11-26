@@ -41,5 +41,8 @@
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0"
   }
 }
